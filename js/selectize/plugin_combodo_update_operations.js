@@ -29,7 +29,7 @@ Selectize.define("combodo_update_operations", function () {
 		let oOriginal = oSelf.setup;
 		return function () {
 			oOriginal.apply(oSelf, arguments);
-			oSelf.$operationsInput = $(`<input type="hidden" value="{}" name="${oSelf.$input.attr('name')}_operations">`)
+			oSelf.$operationsInput = $(`<input type="hidden" value="{}" name="operations_${oSelf.$input.attr('name').slice(0, -2) }">`)
 			oSelf.$wrapper.append(oSelf.$operationsInput);
 			oSelf.bIsInitialized = true;
 			oSelf.updateOperationsInput();

@@ -11,9 +11,10 @@ let oWidget{{ oUIBlock.GetId() }} = $('#{{ oUIBlock.GetId() }}').selectize({
     preload: true, {# call ajax directly #}
     loadingClass: '',
     {% endif %}
-    itemClass: 'item attribute-set-item',
+    itemClass: 'attribute-set-item',
     hasError: {{ oUIBlock.HasError()|var_export() }},
     placeholder: '{{ oUIBlock.GetPlaceholder() }}',
+    inputClass: 'ibo-input ibo-input-selectize ibo-input-set attribute-set selectize-input',
 
     {# Remove button plugin #}
     plugins: {
@@ -76,8 +77,6 @@ let oWidget{{ oUIBlock.GetId() }} = $('#{{ oUIBlock.GetId() }}').selectize({
     initial: {{ oUIBlock.GetValue()|raw }},
     items: {{ oUIBlock.GetValue()|raw }},
 
-    inputClass: 'ibo-input ibo-input-selectize ibo-input-set attribute-set selectize-input',
-
     {# Ajax data load #}
     {% if oDataProvider.IsAjaxProviderType %}
     load: function (query, callback) {
@@ -130,23 +129,25 @@ let oWidget{{ oUIBlock.GetId() }} = $('#{{ oUIBlock.GetId() }}').selectize({
     {# Renderers #}
     render: {
 
-        {# Options #}
+         {#Options#}
         {% if oUIBlock.HasOptionsTemplate() %}
         option: function(option) {
-            return CombodoGlobalToolbox.RenderTemplate('#{{ oUIBlock.GetId() }}_options_template', option, this.settings.optionClass)[0].outerHTML;
+            return CombodoGlobalToolbox.RenderTemplate('#{{ oUIBlock.GetId() }}_options_template', option, 'option')[0].outerHTML;
         },
         {% endif %}
 
-        {# Items #}
+         {#Items#}
         {% if oUIBlock.HasItemsTemplate() %}
         item: function (item) {
-            return CombodoGlobalToolbox.RenderTemplate('#{{ oUIBlock.GetId() }}_items_template', item, this.settings.itemClass)[0].outerHTML;
+            return CombodoGlobalToolbox.RenderTemplate('#{{ oUIBlock.GetId() }}_items_template', item, 'item')[0].outerHTML;
         },
         {% endif %}
 
     },
 
     onInitialize: function(){
+
+        let me = this;
 
         /**
          * Function to convert param array.
@@ -179,19 +180,34 @@ let oWidget{{ oUIBlock.GetId() }} = $('#{{ oUIBlock.GetId() }}').selectize({
             this.$control.toggleClass('selectize-input-error', bValue);
         };
 
+        /**
+         * Function to update tooltip.
+         *
+         */
+        this.updateTooltip = function(value, $item){
+            $item.attr({
+                'data-tooltip-content': this.options[value][this.settings.tooltipField],
+                'data-tooltip-html-enabled': true
+            });
+            CombodoTooltip.InitTooltipFromMarkup($item);
+        };
+
         {# Error #}
         this.toggleErrorClass(this.settings.hasError);
-    },
 
+        {# initialize items classes #}
+        $('.item', this.$control).addClass(this.settings.itemClass);
+        $('.item', this.$control).each(function(){
+            me.updateTooltip($(this).data('value'), $(this));
+        })
+
+        $('#{{ oUIBlock.GetId() }}_fake_input').remove();
+    },
 
     {# On item add #}
     onItemAdd: function(value, $item){
         $item.addClass(this.settings.itemClass);
-        $item.attr({
-            'data-tooltip-content': this.options[value][this.settings.tooltipField],
-            'data-tooltip-html-enabled': true
-        });
-        CombodoTooltip.InitTooltipFromMarkup($item);
+        this.updateTooltip(value, $item);
     },
 
     {# plugin combodo_add_button #}
@@ -200,6 +216,7 @@ let oWidget{{ oUIBlock.GetId() }} = $('#{{ oUIBlock.GetId() }}').selectize({
         alert('todo on add option');
     },
     {% endif %}
+
 });
 
 

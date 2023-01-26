@@ -180,18 +180,18 @@ class WizardHelper
 				}
 				else if ($oAttDef instanceof AttributeTagSet) // AttributeDate is derived from AttributeDateTime
 				{
-					if (is_null($value))
-					{
+					if (is_null($value)) {
 						// happens if field is hidden (see N°1827)
 						$value = array();
-					}
-					else
-					{
-						$value = json_decode($value, true);
+					} else {
+						if (!is_array($value)) {
+							$value = json_decode($value, true); // true means decode as a hash array (not an object)
+						} else {
+							$value = $value;
+						}
 					}
 					$oTagSet = new ormTagSet(get_class($oObj), $sAttCode, $oAttDef->GetMaxItems());
-					$oTagSet->SetValues($value['orig_value']);
-					$oTagSet->ApplyDelta($value);
+					$oTagSet->SetValues($value);
 					$oObj->Set($sAttCode, $oTagSet);
 				}
 				else if ($oAttDef instanceof AttributeSet) // AttributeDate is derived from AttributeDateTime

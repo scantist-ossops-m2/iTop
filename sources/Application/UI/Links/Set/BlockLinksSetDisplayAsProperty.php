@@ -130,10 +130,10 @@ class BlockLinksSetDisplayAsProperty extends UIContentBlock
 			$sTemplate = TwigHelper::RenderTemplate($this->oTwigEnv, $aItem, 'application/object/set/set_renderer');
 
 			// Friendly name
-			$sFriendlyNameForHtml = utils::HtmlEntities($aItem['friendlyname']);
+			$sFriendlyNameForHtml = utils::HtmlEntities($aItem['full_description']);
 
 			// Append value
-			$sHtml .= '<a'.$this->GenerateLinkUrl($aItem['key']).' class="attribute-set-item" data-label="'.$sFriendlyNameForHtml.'" data-tooltip-content="'.$sFriendlyNameForHtml.'">'.$sTemplate.'</a>';
+			$sHtml .= '<a'.$this->GenerateLinkUrl($aItem['key']).' class="attribute-set-item" data-label="'.$sFriendlyNameForHtml.'" data-tooltip-content="'.$sFriendlyNameForHtml.'" data-tooltip-html-enabled="true">'.$sTemplate.'</a>';
 		}
 
 		// Close container

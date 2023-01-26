@@ -220,7 +220,7 @@ Selectize.define("combodo_multi_values_synthesis", function (aOptions) {
 		return function ($item, sItem) {
 			const iOccurrence = oSelf.options[sItem]['occurrence'];
 			let sTooltip = '';
-			if(oSelf.options[sItem]['empty']){
+			if(iOccurrence === '0'){
 				sTooltip = aOptions.tooltip_links_will_be_created_for_all_objects;
 			}
 			else if(iOccurrence === '1'){

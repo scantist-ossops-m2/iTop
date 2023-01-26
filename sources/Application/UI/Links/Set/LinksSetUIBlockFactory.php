@@ -92,8 +92,8 @@ class LinksSetUIBlockFactory extends SetUIBlockFactory
 		$oSetUIBlock->GetDataProvider()->SetGroupField('group');
 		$oSetUIBlock->SetIsMultiValuesSynthesis(true);
 
-		// Data post processing
-		$aBinderSettings = [
+		// Data post processing settings
+		$aPostProcessingSettings = [
 			'bulk_oql'     => $aBulkContext['oql'],
 			'link_class'   => LinkSetModel::GetLinkedClass($oAttDef),
 			'target_field' => LinkSetModel::GetTargetField($oAttDef),
@@ -102,7 +102,7 @@ class LinksSetUIBlockFactory extends SetUIBlockFactory
 
 		// Initial options
 		$aOptions = $oSetUIBlock->GetDataProvider()->GetOptions();
-		$aOptions = LinksBulkDataPostProcessor::Execute($aOptions, $aBinderSettings);
+		$aOptions = LinksBulkDataPostProcessor::Execute($aOptions, $aPostProcessingSettings);
 		$oSetUIBlock->GetDataProvider()->SetOptions($aOptions);
 
 		// Data provider post processor
@@ -110,7 +110,7 @@ class LinksSetUIBlockFactory extends SetUIBlockFactory
 		$oDataProvider = $oSetUIBlock->GetDataProvider();
 		$oDataProvider->SetPostParam('data_post_processor', [
 			'class_name' => addslashes(LinksBulkDataPostProcessor::class),
-			'settings'   => $aBinderSettings,
+			'settings'   => $aPostProcessingSettings,
 		]);
 
 		return $oSetUIBlock;

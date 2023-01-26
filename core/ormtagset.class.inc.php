@@ -397,18 +397,17 @@ final class ormTagSet extends ormSet
 
 	/**
 	 * @param string $sTagCode
+	 * @param bool $bIgnoreLimit
 	 *
 	 * @throws \CoreException
 	 * @throws \CoreUnexpectedValue
 	 */
-	public function Add($sTagCode)
+	public function Add($sTagCode, bool $bIgnoreLimit = false)
 	{
-		if (($this->iLimit != 0) && ($this->Count() == $this->iLimit))
-		{
+		if (!$bIgnoreLimit && ($this->iLimit != 0) && ($this->Count() >= $this->iLimit)) {
 			throw new CoreException("Maximum number of tags ({$this->iLimit}) reached for {$this->sClass}:{$this->sAttCode}");
 		}
-		if ($this->IsTagInList($this->aPreserved, $sTagCode) || $this->IsTagInList($this->aAdded, $sTagCode))
-		{
+		if ($this->IsTagInList($this->aPreserved, $sTagCode) || $this->IsTagInList($this->aAdded, $sTagCode)) {
 			// nothing to do, already existing tag
 			return;
 		}

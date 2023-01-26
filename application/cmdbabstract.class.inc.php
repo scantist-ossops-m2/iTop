@@ -42,11 +42,13 @@ use Combodo\iTop\Application\UI\Base\Layout\UIContentBlockUIBlockFactory;
 use Combodo\iTop\Application\UI\Links\Direct\BlockDirectLinksViewTable;
 use Combodo\iTop\Application\UI\Links\Indirect\BlockIndirectLinksViewTable;
 use Combodo\iTop\Application\UI\Links\Set\LinksSetUIBlockFactory;
+use Combodo\iTop\Application\UI\Tagset\TagSetUIBlockFactory;
 use Combodo\iTop\Renderer\BlockRenderer;
 use Combodo\iTop\Renderer\Console\ConsoleBlockRenderer;
 use Combodo\iTop\Renderer\Console\ConsoleFormRenderer;
 use Combodo\iTop\Service\Links\LinkSetDataTransformer;
 use Combodo\iTop\Service\Links\LinkSetModel;
+use Combodo\iTop\Service\Set\SetDataTransformer;
 
 
 define('OBJECT_PROPERTIES_TAB', 'ObjectProperties');
@@ -2338,7 +2340,6 @@ EOF
 							$oTagSetBlock = LinksSetUIBlockFactory::MakeForLinkSet($iId, $oAttDef, $value, $sWizardHelperJsVarName);
 						}
 						$oTagSetBlock->SetName("attr_{$sFieldPrefix}{$sAttCode}{$sNameSuffix}");
-						$aEventsList[] = 'validate';
 						$aEventsList[] = 'change';
 						$sHTMLValue = ConsoleBlockRenderer::RenderBlockTemplateInPage($oPage, $oTagSetBlock);
 					} else {
@@ -2533,31 +2534,15 @@ JS
 
 				case 'Set':
 				case 'TagSet':
-				$sInputType = self::ENUM_INPUT_TYPE_TAGSET;
-				$oPage->add_linked_script(utils::GetAbsoluteUrlAppRoot().'js/selectize.min.js');
-				$oPage->add_linked_stylesheet(utils::GetAbsoluteUrlAppRoot().'css/selectize.default.css');
-				$oPage->add_linked_script(utils::GetAbsoluteUrlAppRoot().'js/jquery.itop-set-widget.js');
-
-				$oPage->add_dict_entry('Core:AttributeSet:placeholder');
-
-				/** @var \ormSet $value */
-				$sJson = $oAttDef->GetJsonForWidget($value, $aArgs);
-				$sEscapedJson = utils::EscapeHtml($sJson);
-				$sSetInputName = "attr_{$sFormPrefix}{$sAttCode}";
-
-				// handle form validation
-				$aEventsList[] = 'change';
-				$aEventsList[] = 'validate';
-				$sNullValue = '';
-				$sFieldToValidateId = $sFieldToValidateId.AttributeSet::EDITABLE_INPUT_ID_SUFFIX;
-
-				// generate form HTML output
-				$sValidationSpan = "<span class=\"form_validation ibo-field-validation\" id=\"v_{$sFieldToValidateId}\"></span>";
-				$sHTMLValue = '<div class="field_input_zone field_input_set ibo-input-wrapper ibo-input-tagset-wrapper" data-validation="untouched"><input id="'.$iId.'" name="'.$sSetInputName.'" type="hidden" value="'.$sEscapedJson.'"></div>'.$sValidationSpan.$sReloadSpan;
-				$sScript = "$('#$iId').set_widget({inputWidgetIdSuffix: '".AttributeSet::EDITABLE_INPUT_ID_SUFFIX."'});";
-				$oPage->add_ready_script($sScript);
-
-				break;
+					if (array_key_exists('bulk_context', $aArgs)) {
+						$oTagSetBlock = TagSetUIBlockFactory::MakeForBulkTagSet($iId, $oAttDef, $value, $aArgs);
+					} else {
+						$oTagSetBlock = TagSetUIBlockFactory::MakeForTagSet($iId, $oAttDef, $value, $aArgs);
+					}
+					$oTagSetBlock->SetName("attr_{$sFieldPrefix}{$sAttCode}{$sNameSuffix}");
+					$aEventsList[] = 'change';
+					$sHTMLValue = ConsoleBlockRenderer::RenderBlockTemplateInPage($oPage, $oTagSetBlock);
+					break;
 
 				case 'String':
 				default:
@@ -4075,22 +4060,20 @@ HTML;
 				case 'TagSet':
 					/** @var ormTagSet $oTagSet */
 					$oTagSet = $this->Get($sAttCode);
-					if (is_null($oTagSet))
-					{
+					if (is_null($oTagSet)) {
 						$oTagSet = new ormTagSet(get_class($this), $sAttCode, $oAttDef->GetMaxItems());
 					}
-					$oTagSet->ApplyDelta($value);
-					$this->Set($sAttCode, $oTagSet);
+					SetDataTransformer::ExecuteOperations($value, $oTagSet);
+					$this->Set($sAttCode, $oTagSet); // ensure field persistence
 					break;
 
 				case 'Set':
 					/** @var ormSet $oSet */
 					$oSet = $this->Get($sAttCode);
-					if (is_null($oSet))
-					{
+					if (is_null($oSet)) {
 						$oSet = new ormSet(get_class($this), $sAttCode, $oAttDef->GetMaxItems());
 					}
-					$oSet->ApplyDelta($value);
+					SetDataTransformer::ExecuteOperations($value, $oSet);
 					$this->Set($sAttCode, $oSet);
 					break;
 
@@ -4235,7 +4218,7 @@ HTML;
 				if ($oAttDef->GetDisplayStyle() === LINKSET_DISPLAY_STYLE_PROPERTY) {
 					$sLinkedClass = LinkSetModel::GetLinkedClass($oAttDef);
 					$sTargetField = LinkSetModel::GetTargetField($oAttDef);
-					$aOperations = json_decode(utils::ReadPostedParam("attr_{$sFormPrefix}{$sAttCode}_operations", '{}', 'raw_data'), true);
+					$aOperations = json_decode(utils::ReadPostedParam("operations_attr_{$sFormPrefix}{$sAttCode}", '{}', 'raw_data'), true);
 					$value = LinkSetDataTransformer::Encode($aOperations, $sLinkedClass, $sTargetField);
 					break;
 				}
@@ -4299,10 +4282,7 @@ HTML;
 
 			case 'Set':
 			case 'TagSet':
-				$sTagSetJson = utils::ReadPostedParam("attr_{$sFormPrefix}{$sAttCode}", null, 'raw_data');
-			if ($sTagSetJson !== null) { // bulk modify, direct linked set not handled
-				$value = json_decode($sTagSetJson, true);
-			}
+			$value = json_decode(utils::ReadPostedParam("operations_attr_{$sFormPrefix}{$sAttCode}", null, FILTER_SANITIZE_STRING), true);
 				break;
 
 			default:
@@ -5016,7 +4996,7 @@ HTML
 							$currValue = $aKeys[0]; // The only value is the first key
 							if ($oAttDef->GetEditClass() == 'LinkedSet') {
 								$oOrmLinkSet = $oDummyObj->Get($sAttCode);
-								LinkSetDataTransformer::StringToOrmLinkSet($aValues[$sAttCode][$currValue]['edit_value'], $oOrmLinkSet);
+								LinkSetDataTransformer::AppendValuesToOrmLinkSet($aValues[$sAttCode][$currValue]['edit_value'], $oOrmLinkSet);
 
 							} else {
 								$oDummyObj->Set($sAttCode, $currValue);
@@ -5051,30 +5031,19 @@ HTML
 							$sTip .= "</ul></p>";
 							$sTip = utils::HtmlEntities($sTip);
 
+							// for sets, we combine all values
 							if (($oAttDef->GetEditClass() == 'TagSet') || ($oAttDef->GetEditClass() == 'Set')) {
-								// Set the value by adding the values to the first one
-								reset($aMultiValues);
-								$aKeys = array_keys($aMultiValues);
-								$currValue = $aKeys[0];
-								$oDummyObj->Set($sAttCode, $currValue);
-								/** @var ormTagSet $oTagSet */
-								$oTagSet = $oDummyObj->Get($sAttCode);
-								$oTagSet->SetDisplayPartial(true);
-								foreach ($aKeys as $iIndex => $sValues) {
-									if ($iIndex == 0) {
-										continue;
-									}
-									$aTagCodes = $oAttDef->FromStringToArray($sValues);
-									$oTagSet->GenerateDiffFromArray($aTagCodes);
+								$oOrmSet = $oDummyObj->Get($sAttCode);
+								foreach ($aMultiValues as $key => $sValue) {
+									SetDataTransformer::AppendValuesToOrmSet($key, $oOrmSet, true);
 								}
-								$oDummyObj->Set($sAttCode, $oTagSet);
 							} else if ($oAttDef->GetEditClass() == 'LinkedSet') {
 								$oOrmLinkSet = $oDummyObj->Get($sAttCode);
 								foreach ($aMultiValues as $key => $sValue) {
-									LinkSetDataTransformer::StringToOrmLinkSet($sValue['edit_value'], $oOrmLinkSet);
+									LinkSetDataTransformer::AppendValuesToOrmLinkSet($sValue['edit_value'], $oOrmLinkSet);
 								}
-
 							} else {
+								// other fields will be empty as they can't be combined
 								$oDummyObj->Set($sAttCode, null);
 							}
 							$aComments[$sAttCode] = '';

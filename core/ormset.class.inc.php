@@ -271,17 +271,16 @@ class ormSet
 
 	/**
 	 * @param string $oItem
+	 * @param bool $bIgnoreLimit
 	 *
 	 * @throws \CoreException
 	 */
-	public function Add($oItem)
+	public function Add($oItem, bool $bIgnoreLimit = false)
 	{
-		if (($this->iLimit != 0) && ($this->Count() > $this->iLimit))
-		{
+		if (!$bIgnoreLimit && ($this->iLimit != 0) && ($this->Count() >= $this->iLimit)) {
 			throw new CoreException("Maximum number of items ({$this->iLimit}) reached for {$this->sClass}:{$this->sAttCode}");
 		}
-		if ($this->IsItemInList($this->aPreserved, $oItem) || $this->IsItemInList($this->aAdded, $oItem))
-		{
+		if ($this->IsItemInList($this->aPreserved, $oItem) || $this->IsItemInList($this->aAdded, $oItem)) {
 			// nothing to do, already existing tag
 			return;
 		}

@@ -87,10 +87,7 @@ class LinksBulkDataPostProcessor implements iDataPostProcessor
 
 					// If found, get information
 					if ($aFound !== null) {
-						$aItem['group'] = 'Objects already linked';
 						$aItem['occurrence'] = $aFound['_itop_count_'];
-						$aItem['occurrence_label'] = "Link on {$aFound['_itop_count_']} Objects(s)";
-						$aItem['occurrence_info'] = "({$aFound['_itop_count_']})";
 						$aItem['full'] = ($aFound['_itop_count_'] == $oDbObjectSetBulkObjects->Count());
 
 						// Retrieve linked objects keys
@@ -100,15 +97,9 @@ class LinksBulkDataPostProcessor implements iDataPostProcessor
 						$aItem['link_keys'] = $aLinkedObjects->GetColumnAsArray('id', false);
 
 					} else {
-						$aItem['group'] = 'Others';
-						$aItem['occurrence'] = '';
-						$aItem['empty'] = true;
+						$aItem['occurrence'] = 0;
 					}
-
 				}
-
-				// Order items
-				usort($aResult, [self::class, "CompareItems"]);
 			}
 			catch (Exception $e) {
 
@@ -120,20 +111,4 @@ class LinksBulkDataPostProcessor implements iDataPostProcessor
 		return $aResult;
 	}
 
-	/**
-	 * CompareItems.
-	 *
-	 * @param $aItemA
-	 * @param $aItemB
-	 *
-	 * @return array|int
-	 */
-	static private function CompareItems($aItemA, $aItemB): int
-	{
-		if ($aItemA['occurrence'] === $aItemB['occurrence']) {
-			return 0;
-		}
-
-		return ($aItemA['occurrence'] > $aItemB['occurrence']) ? -1 : 1;
-	}
 }

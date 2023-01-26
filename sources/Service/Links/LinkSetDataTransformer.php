@@ -149,13 +149,14 @@ class LinkSetDataTransformer
 	}
 
 	/**
-	 * Convert string representation of an orm linked set to object ormLinkSet.
+	 * Append values to orm link set object.
+	 * Values are separated by spaces.
 	 *
 	 * @param string $sValue
-	 * @param \ormLinkSet $oOrmLinkSet
+	 * @param ormLinkSet $oOrmLinkSet
 	 *
 	 */
-	static public function StringToOrmLinkSet(string $sValue, ormLinkSet $oOrmLinkSet)
+	static public function AppendValuesToOrmLinkSet(string $sValue, ormLinkSet $oOrmLinkSet)
 	{
 		try {
 			$aItems = explode(" ", $sValue);
