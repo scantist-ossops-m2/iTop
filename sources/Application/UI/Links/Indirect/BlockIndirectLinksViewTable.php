@@ -50,10 +50,11 @@ class BlockIndirectLinksViewTable extends AbstractBlockLinksViewTable
 			'extra_fields'  => $this->GetAttCodesToDisplay(),
 			'row_actions'   => $this->GetRowActions(),
 			'currentId' => $this->GetTableId(),
+			'panel_title' => $this->oAttDef->GetLabel(),
+			'panel_icon' => MetaModel::GetClassIcon($this->GetTargetClass(), false),
 		);
 		
-		// - Add creation in modal if the linkset is not readonly
-		
+		// Add creation in modal if the linkset is not readonly
 		if (!$this->oAttDef->GetReadOnly()) {
 			$aExtraParams['creation_in_modal_is_allowed'] = true;
 			$aExtraParams['creation_in_modal_js_handler'] = 'LinkSetWorker.CreateLinkedObject("'.$this->GetTableId().'");';

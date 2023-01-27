@@ -1304,17 +1304,12 @@ JS
 				}
 			}
 			if (count($aAuthorizedClasses) > 0) {
-				if ($this->m_oSet->CountWithLimit(1) > 0) {
-					if (empty($aExtraParams['currentId'])) {
-						$iListId = utils::GetUniqueId(); // Works only if not in an Ajax page !!
-					} else {
-						$iListId = $aExtraParams['currentId'];
-					}
-					$oBlock->AddSubBlock(DataTableUIBlockFactory::MakeForObject($oPage, $iListId, $this->m_oSet, $aExtraParams));
+				if (empty($aExtraParams['currentId'])) {
+					$iListId = utils::GetUniqueId(); // Works only if not in an Ajax page !!
 				} else {
-					// Empty set
-					$oBlock->bEmptySet = true;
+					$iListId = $aExtraParams['currentId'];
 				}
+				$oBlock->AddSubBlock(DataTableUIBlockFactory::MakeForObject($oPage, $iListId, $this->m_oSet, $aExtraParams));
 			} else {
 				// Not authorized
 				$oBlock->bNotAuthorized = true;
@@ -1337,43 +1332,13 @@ JS
 			}
 
 			// The list is made of only 1 class of objects, actions on the list are possible
-			if (($this->m_oSet->CountWithLimit(1) > 0) && (UserRights::IsActionAllowed($this->m_oSet->GetClass(), UR_ACTION_READ, $this->m_oSet) == UR_ALLOWED_YES)) {
+			if (UserRights::IsActionAllowed($this->m_oSet->GetClass(), UR_ACTION_READ, $this->m_oSet) == UR_ALLOWED_YES) {
 				$oBlock->AddSubBlock(cmdbAbstractObject::GetDisplaySetBlock($oPage, $this->m_oSet, $aExtraParams));
 			} else {
 				$oBlock->bEmptySet = true;
 				$oBlock->sClass = $this->m_oFilter->GetClass();
 				$oBlock->sClassLabel = MetaModel::GetName($oBlock->sClass);
-				$bDisplayMenu = isset($aExtraParams['menu']) ? ($aExtraParams['menu'] == true) : true;
-				if ($bDisplayMenu) {
-					if ((UserRights::IsActionAllowed($oBlock->sClass, UR_ACTION_MODIFY) == UR_ALLOWED_YES)) {
-						$oBlock->sLinkTarget = '';
-						$oAppContext = new ApplicationContext();
-						$oBlock->sParams = $oAppContext->GetForLink();
-						// 1:n links, populate the target object as a default value when creating a new linked object
-						if (isset($aExtraParams['target_attr'])) {
-							$oBlock->sLinkTarget = ' target="_blank" ';
-							$aExtraParams['default'][$aExtraParams['target_attr']] = $aExtraParams['object_id'];
-						}
-						if (!empty($aExtraParams['default'])) {
-							foreach ($aExtraParams['default'] as $sKey => $sValue) {
-								$oBlock->sDefault .= "&default[$sKey]=$sValue";
-							}
-						}
-						$oBlock->bCreateNew = true;
-					}
-				}
-
-				if (isset($aExtraParams["surround_with_panel"]) && $aExtraParams["surround_with_panel"]) {
-					$oPanel = PanelUIBlockFactory::MakeForClass($aExtraParams["panel_class"], $aExtraParams["panel_title"]);
-					if(isset($aExtraParams["panel_icon"]) && strlen($aExtraParams["panel_icon"]) > 0){
-						$oPanel->SetIcon($aExtraParams["panel_icon"]);
-					}
-					$oPanel->AddSubBlock($oBlock);
-
-					return $oPanel;
-				}
 			}
-
 		}
 
 		return $oBlock;
@@ -1800,13 +1765,14 @@ class MenuBlock extends DisplayBlock
 			$bIsCreationAllowed = (UserRights::IsActionAllowed($sClass, UR_ACTION_CREATE) === UR_ALLOWED_YES) && ($oReflectionClass->IsSubclassOf('cmdbAbstractObject'));
 			$bIsModifyAllowed = (UserRights::IsActionAllowed($sClass, UR_ACTION_MODIFY, $oSet) === UR_ALLOWED_YES) && ($oReflectionClass->IsSubclassOf('cmdbAbstractObject'));
 
+			// Create in new tab
+			if ($bIsCreationAllowed && !$bIsCreationInModalAllowed) {
+				$this->AddNewObjectMenuAction($aRegularActions, $sClass, $sDefaultValuesAsUrlParams);
+			}
+
 			// Any style actions
 			// - Bulk actions on objects set
 			if ($iSetCount > 1) {
-				if ($bIsCreationAllowed && !$bIsCreationInModalAllowed) {
-					$this->AddNewObjectMenuAction($aRegularActions, $sClass, $sDefaultValuesAsUrlParams);
-				}
-
 				// Bulk actions for each selected classes (eg. "link" and "remote" on n:n relations)
 				foreach ($aSelectedClasses as $sSelectedAlias => $sSelectedClass) {
 					$sSelectedClassName = MetaModel::GetName($sSelectedClass);
@@ -1881,22 +1847,9 @@ class MenuBlock extends DisplayBlock
 			// NOT "listInObject" style actions
 			if ($this->m_sStyle !== 'listInObject') {
 				switch ($iSetCount) {
-					case 0:
-						// No object in the set, the only possible action is "new"
-						if ($bIsCreationAllowed) {
-							$this->AddNewObjectMenuAction($aRegularActions, $sClass, $sDefaultValuesAsUrlParams);
-						}
-						break;
-
 					case 1:
 						$oObj = $oSet->Fetch();
-						if (is_null($oObj)) {
-							if (!isset($aExtraParams['link_attr'])) {
-								if ($bIsCreationAllowed) {
-									$this->AddNewObjectMenuAction($aRegularActions, $sClass, $sDefaultValuesAsUrlParams);
-								}
-							}
-						} else {
+						if (false === is_null($oObj)) {
 							$id = $oObj->GetKey();
 							if (empty($sRefreshAction) && utils::ReadParam('operation') == 'details') {
 								if ($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -1923,9 +1876,6 @@ class MenuBlock extends DisplayBlock
 											'label' => Dict::S('UI:Menu:Modify'),
 											'url'   => "{$sRootUrl}pages/$sUIPage?route=object.modify&class=$sClass&id=$id{$sContext}#",
 										) + $aActionParams;
-								}
-								if ($bIsCreationAllowed) {
-									$this->AddNewObjectMenuAction($aRegularActions, $sClass, $sDefaultValuesAsUrlParams);
 								}
 								if ($bIsDeleteAllowed) {
 									$aRegularActions['UI:Menu:Delete'] = array(
@@ -2207,6 +2157,26 @@ class MenuBlock extends DisplayBlock
 				$oActionsToolbar->AddSubBlock($oActionButton);
 			}
 
+			// - Creation in modal
+			if ($bIsCreationInModalAllowed === true) {
+				$oAddLinkActionButton = ButtonUIBlockFactory::MakeIconAction(
+					'fas fa-plus',
+					Dict::S('UI:Links:New:Button:Tooltip'),
+					'UI:Links:New',
+					'',
+					false
+				);
+
+				// - If we are used in a Datatable, 'datatable_' will be prefixed to our $sId, so we do the same here
+				$sRealId = $sId;
+				if(in_array($this->m_sStyle, ['list', 'links', 'listInObject'])){
+					$sRealId = 'datatable_' . $sId;
+				}
+				$oAddLinkActionButton->AddCSSClasses(['ibo-action-button', 'ibo-regular-action-button'])
+					->SetOnClickJsCode("$('#$sRealId').trigger('open_creation_modal.object.itop');");
+				$oActionsToolbar->AddSubBlock($oAddLinkActionButton);
+			}
+
 			// - Refresh
 			if (utils::IsNotNullOrEmptyString($sRefreshAction)) {
 				$oActionButton = ButtonUIBlockFactory::MakeAlternativeNeutral('', 'UI:Button:Refresh');
@@ -2222,26 +2192,6 @@ class MenuBlock extends DisplayBlock
 				$oActionButton = ButtonUIBlockFactory::MakeIconLink('fas fa-search', Dict::Format('UI:SearchFor_Class', MetaModel::GetName($sClass)), "{$sRootUrl}pages/UI.php?operation=search_form&do_search=0&class=$sClass{$sContext}", '', 'UI:SearchFor_Class');
 				$oActionButton->AddCSSClasses(['ibo-action-button', 'ibo-regular-action-button']);
 				$oActionsToolbar->AddSubBlock($oActionButton);
-			} 
-			
-			// - Creation in modal
-			if($bIsCreationInModalAllowed === true){
-				$oAddLinkActionButton = ButtonUIBlockFactory::MakeIconAction(
-					'fas fa-plus',
-					Dict::S('UI:Links:New:Button:Tooltip'),
-					'UI:Links:New',
-					'',
-					false
-				);
-				
-				// - If we are used in a Datatable, 'datatable_' will be prefixed to our $sId, so we do the same here
-				$sRealId = $sId;
-				if(in_array($this->m_sStyle, ['list', 'links', 'listInObject'])){
-					$sRealId = 'datatable_' . $sId;
-				}
-				$oAddLinkActionButton->AddCSSClasses(['ibo-action-button', 'ibo-regular-action-button'])
-					->SetOnClickJsCode("$('#$sRealId').trigger('open_creation_modal.object.itop');");
-				$oActionsToolbar->AddSubBlock($oAddLinkActionButton);
 			}
 
 			// - Others

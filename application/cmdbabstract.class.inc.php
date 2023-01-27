@@ -724,8 +724,10 @@ HTML
 				continue;
 			}
 
+			$sTabCode = 'Class:'.$sClass.'/Attribute:'.$sAttCode;
+			$sTabDescription = utils::IsNotNullOrEmptyString($oAttDef->GetDescription()) ? $oAttDef->GetDescription() : null;
 			$sCount = ($iCount != 0) ? " ($iCount)" : "";
-			$oPage->SetCurrentTab('Class:'.$sClass.'/Attribute:'.$sAttCode, $oAttDef->GetLabel().$sCount);
+			$oPage->SetCurrentTab($sTabCode, $oAttDef->GetLabel().$sCount, $sTabDescription);
 
 			$aArgs = array('this' => $this);
 			$bReadOnly = ($iFlags & (OPT_ATT_READONLY | OPT_ATT_SLAVE));
@@ -796,12 +798,12 @@ HTML
 				$oPage->SetCurrentTab('UI:NotificationsTab', Dict::S('UI:NotificationsTab').$sCount);
 
 				foreach ($aNotificationClasses as $sNotifClass) {
-					$oClassIcon = new MedallionIcon(MetaModel::GetClassIcon($sNotifClass, false));
-					$oClassIcon->SetDescription(MetaModel::GetName($sNotifClass))->AddCSSClass('ibo-block-list--medallion');
-					$oPage->AddUiBlock($oClassIcon);
-
 					$oBlock = new DisplayBlock($aNotifSearches[$sNotifClass], 'list', false);
-					$oBlock->Display($oPage, 'notifications_'.$sNotifClass, array('menu' => false));
+					$oBlock->Display($oPage, 'notifications_'.$sNotifClass, [
+						'menu' => false,
+						'panel_title' => MetaModel::GetName($sNotifClass),
+						'panel_icon' => MetaModel::GetClassIcon($sNotifClass, false),
+					]);
 				}
 			}
 		}
@@ -4441,7 +4443,7 @@ HTML;
 
 		// Protection against reentrance (e.g. cascading the update of ticket logs)
 		// Note: This is based on the fix made on r 3190 in DBObject::DBUpdate()
-		if (!MetaModel::StartReentranceProtection(Metamodel::REENTRANCE_TYPE_UPDATE, $this)) {
+		if (!MetaModel::StartReentranceProtection($this)) {
 			$sClass = get_class($this);
 			$sKey = $this->GetKey();
 			IssueLog::Debug("CRUD: DBUpdate $sClass::$sKey Rejected (reentrance)", LogChannels::DM_CRUD);
@@ -4460,7 +4462,7 @@ HTML;
 		}
 		finally
 		{
-			MetaModel::StopReentranceProtection(Metamodel::REENTRANCE_TYPE_UPDATE, $this);
+			MetaModel::StopReentranceProtection($this);
 		}
 
 		$aChanges = $this->ListChanges();

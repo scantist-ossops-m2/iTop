@@ -9,7 +9,7 @@ namespace Combodo\iTop\Application\UI\Links;
 use ApplicationException;
 use ArchivedObjectException;
 use AttributeLinkedSet;
-use Combodo\iTop\Application\UI\Base\Component\MedallionIcon\MedallionIcon;
+use Combodo\iTop\Application\UI\Base\Component\Alert\AlertUIBlockFactory;
 use Combodo\iTop\Application\UI\Base\Layout\UIContentBlock;
 use CoreException;
 use CoreWarning;
@@ -121,10 +121,12 @@ abstract class AbstractBlockLinksViewTable extends UIContentBlock
 	 */
 	private function InitHeader()
 	{
-		// MedallionIcon
-		$oClassIcon = new MedallionIcon(MetaModel::GetClassIcon($this->sTargetClass, false));
-		$oClassIcon->SetDescription($this->oAttDef->GetDescription())->AddCSSClass('ibo-block-list--medallion');
-		$this->AddSubBlock($oClassIcon);
+		// Linkset description as an informative alert
+		$sDescription = $this->oAttDef->GetDescription();
+		if (utils::IsNotNullOrEmptyString($sDescription)) {
+			$oAlert = AlertUIBlockFactory::MakeForInformation('', $sDescription);
+			$this->AddSubBlock($oAlert);
+		}
 	}
 
 	/**
