@@ -11705,8 +11705,8 @@ class AttributeTagSet extends AttributeSet
 				} else {
 					$sTagLabelEscaped = utils::EscapeHtml($sTagLabel);
 					$sTooltipContent = <<<HTML
-<h4>$sTagLabelEscaped</h4>
-<div>$sTagDescription</div>
+$sTagLabelEscaped
+<i><small>$sTagDescription</small></i>
 HTML;
 					$sTooltipHtmlEnabled = 'true';
 				}

@@ -58,9 +58,7 @@ class SetDataTransformer
 			return $aOperation['operation'] === 'add';
 		}, ARRAY_FILTER_USE_BOTH);
 		foreach ($aAddOperations as $sElement => $aOperation) {
-			if (!$oOrmSet->Contains($sElement)) {
-				$oOrmSet->Add($sElement);
-			}
+			$oOrmSet->Add($sElement);
 		}
 
 	}
