@@ -72,10 +72,10 @@ class SetDataTransformer
 	 * @param bool $bIgnoreLimit
 	 *
 	 */
-	static public function AppendValuesToOrmSet(string $sValue, ormSet $oOrmSet, bool $bIgnoreLimit)
+	static public function AppendValuesToOrmSet(string $sValue, ormSet $oOrmSet, bool $bIgnoreLimit, string $sSeparator)
 	{
 		try {
-			$aItems = explode(" ", $sValue);
+			$aItems = explode($sSeparator, $sValue);
 			foreach ($aItems as $sItem) {
 				if (!empty($sItem)) {
 					$oOrmSet->Add($sItem, $bIgnoreLimit);

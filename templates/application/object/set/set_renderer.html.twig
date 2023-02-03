@@ -1,4 +1,4 @@
-<div data-template-attr-title="friendlyname">
+<div class="object-set-renderer" data-template-attr-title="friendlyname">
 
     {# obsolescence #}
     {% if obsolescence_flag %}
@@ -8,6 +8,6 @@
     {% endif %}
 
     {# friendly name #}
-    <span data-template-text="friendlyname">{{ friendlyname }}</span>
+    <span class="object-set-renderer--friendlyname" data-template-text="friendlyname" >{{ friendlyname }}</span>
 
 </div>

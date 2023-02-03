@@ -271,7 +271,7 @@ class ormSet
 
 	/**
 	 * @param string $oItem
-	 * @param bool $bIgnoreLimit
+	 * @param bool $bIgnoreLimit @since 3.1 for bulk usages
 	 *
 	 * @throws \CoreException
 	 */

@@ -87,8 +87,8 @@ class LinksBulkDataPostProcessor implements iDataPostProcessor
 
 					// If found, get information
 					if ($aFound !== null) {
-						$aItem['occurrence'] = $aFound['_itop_count_'];
-						$aItem['full'] = ($aFound['_itop_count_'] == $oDbObjectSetBulkObjects->Count());
+						$aItem['occurrence'] = intval($aFound['_itop_count_']);
+						$aItem['full'] = $aItem['occurrence'] === $oDbObjectSetBulkObjects->Count();
 
 						// Retrieve linked objects keys
 						$sOqlLinkKeys = "SELECT $sLinkClass AS lnk WHERE lnk.$sOriginField IN ($sBulkList) AND lnk.$sTargetField = {$aItem['key']}";

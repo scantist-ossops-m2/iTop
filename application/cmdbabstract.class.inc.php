@@ -2537,6 +2537,9 @@ JS
 				case 'Set':
 				case 'TagSet':
 					if (array_key_exists('bulk_context', $aArgs)) {
+						if ($value === null) {
+							$value = new ormSet($sClass, $sAttCode, $oAttDef->GetMaxItems());
+						}
 						$oTagSetBlock = TagSetUIBlockFactory::MakeForBulkTagSet($iId, $oAttDef, $value, $aArgs);
 					} else {
 						$oTagSetBlock = TagSetUIBlockFactory::MakeForTagSet($iId, $oAttDef, $value, $aArgs);
@@ -5034,10 +5037,22 @@ HTML
 							$sTip = utils::HtmlEntities($sTip);
 
 							// for sets, we combine all values
-							if (($oAttDef->GetEditClass() == 'TagSet') || ($oAttDef->GetEditClass() == 'Set')) {
+							if ($oAttDef->GetEditClass() == 'Set') {
 								$oOrmSet = $oDummyObj->Get($sAttCode);
+								if ($oOrmSet === null) {
+									$oOrmSet = new ormSet($sClass, $sAttCode, $oAttDef->GetMaxItems());
+									$oDummyObj->Set($sAttCode, $oOrmSet);
+								}
 								foreach ($aMultiValues as $key => $sValue) {
-									SetDataTransformer::AppendValuesToOrmSet($key, $oOrmSet, true);
+									SetDataTransformer::AppendValuesToOrmSet($key, $oOrmSet, true, ", ");
+								}
+							} else if ($oAttDef->GetEditClass() == 'TagSet') {
+								$oOrmTagSet = $oDummyObj->Get($sAttCode);
+								if ($oOrmTagSet === null) {
+									$oOrmTagSet = new ormTagSet($sClass, $sAttCode, $oAttDef->GetMaxItems());
+								}
+								foreach ($aMultiValues as $key => $sValue) {
+									SetDataTransformer::AppendValuesToOrmSet($key, $oOrmTagSet, true, " ");
 								}
 							} else if ($oAttDef->GetEditClass() == 'LinkedSet') {
 								$oOrmLinkSet = $oDummyObj->Get($sAttCode);

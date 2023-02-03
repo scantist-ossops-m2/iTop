@@ -32,7 +32,6 @@ let oWidget{{ oUIBlock.GetId() }} = $('#{{ oUIBlock.GetId() }}').selectize({
         {% endif %}
         {% if oUIBlock.IsMultiValuesSynthesis() %}
         'combodo_multi_values_synthesis' : {
-
             tooltip_links_will_be_created_for_all_objects: '{{ 'UI:Links:Bulk:LinkWillBeCreatedForAllObjects'|dict_s }}',
             tooltip_links_will_be_deleted_from_all_objects: '{{ 'UI:Links:Bulk:LinkWillBeDeletedFromAllObjects'|dict_s }}',
             tooltip_links_will_be_created_for_one_object: '{{ 'UI:Links:Bulk:LinkWillBeCreatedFor1Object'|dict_s }}',

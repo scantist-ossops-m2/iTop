@@ -397,10 +397,11 @@ final class ormTagSet extends ormSet
 
 	/**
 	 * @param string $sTagCode
-	 * @param bool $bIgnoreLimit
+	 * @param bool $bIgnoreLimit @since 3.1 for bulk usages
 	 *
 	 * @throws \CoreException
 	 * @throws \CoreUnexpectedValue
+	 *
 	 */
 	public function Add($sTagCode, bool $bIgnoreLimit = false)
 	{

@@ -220,10 +220,10 @@ Selectize.define("combodo_multi_values_synthesis", function (aOptions) {
 		return function ($item, sItem) {
 			const iOccurrence = oSelf.options[sItem]['occurrence'];
 			let sTooltip = '';
-			if(iOccurrence === '0'){
+			if(iOccurrence === 0){
 				sTooltip = aOptions.tooltip_links_will_be_created_for_all_objects;
 			}
-			else if(iOccurrence === '1'){
+			else if(iOccurrence === 1){
 				sTooltip = aOptions.tooltip_links_will_be_created_for_one_object;
 			}
 			else{
@@ -241,7 +241,7 @@ Selectize.define("combodo_multi_values_synthesis", function (aOptions) {
 			if(oSelf.options[sItem]['full']){
 				sTooltip = aOptions.tooltip_links_will_be_deleted_from_all_objects;
 			}
-			else if(oSelf.options[sItem]['occurrence'] === '1'){
+			else if(oSelf.options[sItem]['occurrence'] === 1){
 				sTooltip = aOptions.tooltip_links_will_be_deleted_from_one_object;
 			}
 			else{
@@ -259,7 +259,7 @@ Selectize.define("combodo_multi_values_synthesis", function (aOptions) {
 			if(oSelf.options[sItem]['full']){
 				sTooltip = aOptions.tooltip_links_exist_for_all_objects;
 			}
-			else if(iOccurrence === '1'){
+			else if(iOccurrence === 1){
 				sTooltip = aOptions.tooltip_links_exist_for_one_object;
 			}
 			else{

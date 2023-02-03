@@ -1,0 +1,14 @@
+/*
+ * @copyright   Copyright (C) 2010-2021 Combodo SARL
+ * @license     http://opensource.org/licenses/AGPL-3.0
+ */
+
+// Class itself
+
+
+.object-set-renderer--friendlyname{
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap!important;
+}
