@@ -10956,8 +10956,7 @@ class AttributeClassAttCodeSet extends AttributeSet
 
 						$sLabelForHtmlAttribute = utils::HtmlEntities(MetaModel::GetLabel($sAttClass, $sAttCode)." ($sAttCode)");
 						$aLocalizedValues[] = '<span class="attribute-set-item" data-code="'.$sAttCode.'" data-label="'.$sLabelForHtmlAttribute.'" data-description="" data-tooltip-content="'.$sLabelForHtmlAttribute.'">'.$sAttCode.'</span>';
-					} catch (Exception $e)
-					{
+					} catch (Exception $e) {
 						// Ignore bad values
 					}
 				}
@@ -10965,7 +10964,14 @@ class AttributeClassAttCodeSet extends AttributeSet
 			}
 			$value = implode('', $value);
 		}
+
 		return '<span class="'.implode(' ', $this->aCSSClasses).'">'.$value.'</span>';
+	}
+
+	/** @inheritDoc */
+	public static function IsBulkModifyCompatible(): bool
+	{
+		return false;
 	}
 }
 
