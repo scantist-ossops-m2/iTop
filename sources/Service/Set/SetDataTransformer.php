@@ -86,4 +86,25 @@ class SetDataTransformer
 			ExceptionLog::LogException($e);
 		}
 	}
+
+
+	static public function SetSynthesis($oAttDef, $oObj, &$aOptions, $currValue)
+	{
+		$aAllowedValues = $oAttDef->GetPossibleValues(['this' => $oObj]);
+
+		foreach ($aAllowedValues as $sCode => $sLabel) {
+			if (!array_key_exists($sCode, $aOptions)) {
+				$aOption = [
+					'code'       => $sCode,
+					'label'      => $sLabel,
+					'occurrence' => 0,
+				];
+				$aOptions[$sCode] = $aOption;
+			}
+
+			if (str_contains($currValue, $sCode)) {
+				$aOptions[$sCode]['occurrence']++;
+			}
+		}
+	}
 }

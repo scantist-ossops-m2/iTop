@@ -85,17 +85,12 @@ class TagSetUIBlockFactory extends SetUIBlockFactory
 
 		// Bulk modify specific
 		$oSetUIBlock->SetIsMultiValuesSynthesis(true);
-		$oSetUIBlock->SetMaxItems(null); // can't handle max items in bulk, need to be performed on field update
+		$oSetUIBlock->SetMaxItems(null); // can't handle max items in bulk, need to be performed on field
 
-		// Data post processing settings
-		$aPostProcessingSettings = [
-			'bulk_oql'       => $aArgs['bulk_context']['oql'],
-			'tag_field_code' => $oAttributeSet->GetCode(),
-		];
+		$aCurrentValues = $oAttributeSet->GetPossibleValues($aArgs);
 
-		// Initial options
-		$aOptions = $oSetUIBlock->GetDataProvider()->GetOptions();
-		$aOptions = SetBulkDataPostProcessor::Execute($aOptions, $aPostProcessingSettings);
+		// retrieve options
+		$aOptions = array_values($aArgs['bulk_context']['options'][$oAttributeSet->GetCode()]);
 		$oSetUIBlock->GetDataProvider()->SetOptions($aOptions);
 
 		return $oSetUIBlock;

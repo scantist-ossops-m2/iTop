@@ -4914,12 +4914,15 @@ HTML
 			// Compute the distribution of the values for each field to determine which of the "scalar or linked set" fields are homogeneous
 			$aList = MetaModel::ListAttributeDefs($sClass);
 			$aValues = array();
+			$aSetOptions = [];
 			foreach($aList as $sAttCode => $oAttDef)
 			{
 				if ($oAttDef->IsBulkModifyCompatible()) {
 					$aValues[$sAttCode] = array();
+					$aSetOptions[$sAttCode] = [];
 				}
 			}
+
 			while ($oObj = $oSet->Fetch())
 			{
 				foreach($aList as $sAttCode => $oAttDef)
@@ -4930,10 +4933,9 @@ HTML
 						if ($oAttDef instanceof AttributeCaseLog) {
 							$currValue = ''; // Put a single scalar value to force caselog to mock a new entry. For more info see N°1059.
 						} elseif ($currValue instanceof ormSet) {
-							$aAllowedValues = $oAttDef->GetPossibleValues(['this' => $oObj]);
+							SetDataTransformer::SetSynthesis($oAttDef, $oObj, $aSetOptions[$sAttCode], $currValue);
 							$currValue = $oAttDef->GetEditValue($currValue, $oObj);
 						} else if ($currValue instanceof ormLinkSet) {
-//							$aAllowedValues = $oAttDef->GetPossibleValues(['this' => $oObj]);
 							$sHtmlValue = $oAttDef->GetAsHTML($currValue);
 							$editValue = $oAttDef->GetEditValue($currValue, $oObj);
 							$currValue = $sHtmlValue;
@@ -5110,7 +5112,8 @@ HTML
 				'disabled_fields'  => $sDisableFields,
 				'disable_plugins'  => true,
 				'bulk_context'     => [
-					'oql' => $sOQL,
+					'oql'     => $sOQL,
+					'options' => $aSetOptions,
 				],
 			);
 			$aParams = $aParams + $aContextData; // merge keeping associations

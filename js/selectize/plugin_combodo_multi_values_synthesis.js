@@ -254,6 +254,7 @@ Selectize.define("combodo_multi_values_synthesis", function (aOptions) {
 	// Update ignore tooltip
 	oSelf.UpdateIgnoreTooltip = (function () {
 		return function ($item, sItem) {
+			console.log(oSelf.options);
 			const iOccurrence = oSelf.options[sItem]['occurrence'];
 			let sTooltip = '';
 			if(oSelf.options[sItem]['full']){
