@@ -2544,10 +2544,13 @@ JS
 					} else {
 						$oTagSetBlock = TagSetUIBlockFactory::MakeForTagSet($iId, $oAttDef, $value, $aArgs);
 					}
-					$oTagSetBlock->SetName("attr_{$sFieldPrefix}{$sAttCode}{$sNameSuffix}");
-					$aEventsList[] = 'change';
-					$sHTMLValue = ConsoleBlockRenderer::RenderBlockTemplateInPage($oPage, $oTagSetBlock);
-					break;
+				$oTagSetBlock->SetName("attr_{$sFieldPrefix}{$sAttCode}{$sNameSuffix}");
+				$aEventsList[] = 'change';
+				$sValidationSpan = "<span class=\"form_validation ibo-field-validation\" id=\"v_{$sFieldToValidateId}\"></span>";
+				$sHTMLValue = '<div class="field_input_zone field_input_set ibo-input-wrapper ibo-input-tagset-wrapper" data-validation="untouched">';
+				$sHTMLValue .= ConsoleBlockRenderer::RenderBlockTemplateInPage($oPage, $oTagSetBlock);
+				$sHTMLValue .= '</div>'.$sValidationSpan.$sReloadSpan;;
+				break;
 
 				case 'String':
 				default:
@@ -4927,8 +4930,10 @@ HTML
 						if ($oAttDef instanceof AttributeCaseLog) {
 							$currValue = ''; // Put a single scalar value to force caselog to mock a new entry. For more info see N°1059.
 						} elseif ($currValue instanceof ormSet) {
+							$aAllowedValues = $oAttDef->GetPossibleValues(['this' => $oObj]);
 							$currValue = $oAttDef->GetEditValue($currValue, $oObj);
 						} else if ($currValue instanceof ormLinkSet) {
+//							$aAllowedValues = $oAttDef->GetPossibleValues(['this' => $oObj]);
 							$sHtmlValue = $oAttDef->GetAsHTML($currValue);
 							$editValue = $oAttDef->GetEditValue($currValue, $oObj);
 							$currValue = $sHtmlValue;

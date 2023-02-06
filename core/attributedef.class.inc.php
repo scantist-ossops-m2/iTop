@@ -10968,11 +10968,6 @@ class AttributeClassAttCodeSet extends AttributeSet
 		return '<span class="'.implode(' ', $this->aCSSClasses).'">'.$value.'</span>';
 	}
 
-	/** @inheritDoc */
-	public static function IsBulkModifyCompatible(): bool
-	{
-		return false;
-	}
 }
 
 class AttributeQueryAttCodeSet extends AttributeSet
