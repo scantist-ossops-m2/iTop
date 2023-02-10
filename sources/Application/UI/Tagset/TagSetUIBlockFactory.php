@@ -95,4 +95,48 @@ class TagSetUIBlockFactory extends SetUIBlockFactory
 
 		return $oSetUIBlock;
 	}
+
+
+	/**
+	 * Make a tag set block.
+	 *
+	 * @param string $sId
+	 * @param \AttributeSet $oAttributeSet
+	 * @param \ormSet $oValue
+	 * @param array $aArgs
+	 * @param string $sWizardHelperJsVarName
+	 *
+	 * @return \Combodo\iTop\Application\UI\Base\Component\Input\Set\Set
+	 * @throws \CoreException
+	 * @throws \OQLException
+	 */
+	public static function MakeForTagSet2(string $sId, AttributeSet $oAttributeSet, ormSet $oValue, array $aArgs, string $sWizardHelperJsVarName, $aDependents): Set
+	{
+		$aAllowedValues = $oAttributeSet->GetPossibleValues($aArgs);
+
+		$aOptions = [];
+		foreach ($aAllowedValues as $sCode => $sLabel) {
+			$aOptions[] = [
+				'code'  => $sCode,
+				'label' => $sLabel,
+			];
+		}
+
+
+		// Set UI block for OQL
+		$oSetUIBlock = SetUIBlockFactory::MakeForAjax($sId, 'object.allowed', [
+			'code' => $oAttributeSet->GetCode(),
+		], 'label', 'code', ['label']);
+		$oSetUIBlock->SetValue(json_encode($oValue->GetValues()));
+		$oSetUIBlock->SetMaxItems($oAttributeSet->GetMaxItems());
+
+		/** @var \Combodo\iTop\Application\UI\Base\Component\Input\Set\DataProvider\AjaxDataProvider $oAjaxDataProvider */
+		$oAjaxDataProvider = $oSetUIBlock->GetDataProvider();
+		$oAjaxDataProvider->SetPostParam('this_object_data', $sWizardHelperJsVarName != null ? "EVAL_JAVASCRIPT{{$sWizardHelperJsVarName}.UpdateWizardToJSON();}" : "",);
+
+		$test = get_class($aArgs['this']);
+		$oSetUIBlock->SetDependantFields(\MetaModel::GetDependentAttributes(get_class($aArgs['this']), $oAttributeSet->GetCode()));
+
+		return $oSetUIBlock;
+	}
 }

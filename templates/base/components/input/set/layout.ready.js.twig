@@ -148,6 +148,9 @@ let oWidget{{ oUIBlock.GetId() }} = $('#{{ oUIBlock.GetId() }}').selectize({
 
         let me = this;
 
+        let aDependantFields = {{ oUIBlock.GetDependantFields|json_encode()|raw  }}
+        console.log(aDependantFields);
+
         /**
          * Function to convert param array.
          *

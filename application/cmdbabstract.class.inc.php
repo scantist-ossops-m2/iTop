@@ -2542,7 +2542,7 @@ JS
 						}
 						$oTagSetBlock = TagSetUIBlockFactory::MakeForBulkTagSet($iId, $oAttDef, $value, $aArgs);
 					} else {
-						$oTagSetBlock = TagSetUIBlockFactory::MakeForTagSet($iId, $oAttDef, $value, $aArgs);
+						$oTagSetBlock = TagSetUIBlockFactory::MakeForTagSet2($iId, $oAttDef, $value, $aArgs, $sWizardHelperJsVarName, $aDependencies);
 					}
 				$oTagSetBlock->SetName("attr_{$sFieldPrefix}{$sAttCode}{$sNameSuffix}");
 				$aEventsList[] = 'change';

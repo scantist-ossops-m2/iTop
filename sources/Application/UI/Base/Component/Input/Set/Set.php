@@ -394,4 +394,22 @@ class Set extends AbstractInput
 	{
 		return $this->bHasError;
 	}
+
+
+	private ?array $aDependencies = null;
+
+	/**
+	 * SetDependantFields.
+	 *
+	 * @return void
+	 */
+	public function SetDependantFields(array $aDependencies)
+	{
+		$this->aDependencies = $aDependencies;
+	}
+
+	public function GetDependantFields()
+	{
+		return $this->aDependencies;
+	}
 }

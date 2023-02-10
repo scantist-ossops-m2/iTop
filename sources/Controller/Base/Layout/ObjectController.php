@@ -585,4 +585,40 @@ JS;
 		]);
 	}
 
+	/**
+	 * OperationAllowed.
+	 **
+	 *
+	 * @return JsonPage
+	 */
+	public function OperationAllowed(): JsonPage
+	{
+		$oPage = new JsonPage();
+
+		// Retrieve query params
+		$sCode = utils::ReadParam('code', '', false, utils::ENUM_SANITIZATION_FILTER_STRING);
+
+		// Retrieve this reference object (for OQL)
+		$sThisObjectData = utils::ReadPostedParam('this_object_data', null, utils::ENUM_SANITIZATION_FILTER_RAW_DATA);
+		$oThisObj = ObjectRepository::GetObjectFromWizardHelperData($sThisObjectData);
+
+		$oAttributeDefinition = MetaModel::GetAttributeDef(get_class($oThisObj), $sCode);
+		$aArgs = [
+			'this' => $oThisObj,
+		];
+		$aAllowedValues = $oAttributeDefinition->GetPossibleValues($aArgs);
+
+		$aOptions = [];
+		foreach ($aAllowedValues as $sCode => $sLabel) {
+			$aOptions[] = [
+				'code'  => $sCode,
+				'label' => $sLabel,
+			];
+		}
+
+		return $oPage->SetData([
+			'search_data' => $aOptions,
+			'success'     => true,
+		]);
+	}
 }
