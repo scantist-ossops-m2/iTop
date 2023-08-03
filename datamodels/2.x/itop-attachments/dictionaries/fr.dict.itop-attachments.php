@@ -90,4 +90,6 @@ Dict::Add('FR FR', 'French', 'Français', array(
 Dict::Add('FR FR', 'French', 'Français', array(
 	'Class:TriggerOnAttachmentDownload' => 'Déclencheur sur le téléchargement d\'une pièce jointe d\'un objet',
 	'Class:TriggerOnAttachmentDownload+' => '',
+	'Class:TriggerOnCreateAttachment' => 'Déclencheur sur la création d\'une pièce jointe',
+	'Class:TriggerOnCreateAttachment+' => '',
 ));

@@ -88,4 +88,6 @@ Dict::Add('ZH CN', 'Chinese', '简体中文', array(
 Dict::Add('ZH CN', 'Chinese', '简体中文', array(
 	'Class:TriggerOnAttachmentDownload' => 'Trigger (on object\'s attachment download)~~',
 	'Class:TriggerOnAttachmentDownload+' => 'Trigger on object\'s attachment download of [a child class of] the given class~~',
+	'Class:TriggerOnCreateAttachment' => 'Trigger (on object\'s attachment create)~~',
+	'Class:TriggerOnCreateAttachment+' => 'Trigger on object\'s attachment create~~',
 ));

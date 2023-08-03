@@ -93,4 +93,6 @@ Dict::Add('JA JP', 'Japanese', '日本語', array(
 Dict::Add('JA JP', 'Japanese', '日本語', array(
 	'Class:TriggerOnAttachmentDownload' => 'Trigger (on object\'s attachment download)~~',
 	'Class:TriggerOnAttachmentDownload+' => 'Trigger on object\'s attachment download of [a child class of] the given class~~',
+	'Class:TriggerOnCreateAttachment' => 'Trigger (on object\'s attachment create)~~',
+	'Class:TriggerOnCreateAttachment+' => 'Trigger on object\'s attachment create~~',
 ));
