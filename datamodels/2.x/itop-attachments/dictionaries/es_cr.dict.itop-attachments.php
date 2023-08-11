@@ -94,8 +94,10 @@ Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
 //
 
 Dict::Add('ES CR', 'Spanish', 'Español, Castellano', array(
-	'Class:TriggerOnAttachmentDownload' => 'Trigger (on object\'s attachment download)~~',
-	'Class:TriggerOnAttachmentDownload+' => 'Trigger on object\'s attachment download of [a child class of] the given class~~',
-	'Class:TriggerOnCreateAttachment' => 'Trigger (on object\'s attachment create)~~',
-	'Class:TriggerOnCreateAttachment+' => 'Trigger on object\'s attachment create~~',
+	'Class:TriggerOnAttachmentDownload'                       => 'Trigger (on object\'s attachment download)~~',
+	'Class:TriggerOnAttachmentDownload+'                      => 'Trigger on object\'s attachment download of [a child class of] the given class~~',
+	'Class:TriggerOnAttachmentCreate'                         => 'Trigger (on object\'s attachment create)~~',
+	'Class:TriggerOnAttachmentCreate+'                        => 'Trigger on object\'s attachment create~~',
+	'Class:TriggerOnAttachmentCreate/Attribute:filter_class'  => 'Clase destino',
+	'Class:TriggerOnAttachmentCreate/Attribute:filter_class+' => 'Clase destino',
 ));

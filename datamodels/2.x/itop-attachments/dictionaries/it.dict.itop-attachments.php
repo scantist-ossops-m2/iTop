@@ -92,8 +92,10 @@ Dict::Add('IT IT', 'Italian', 'Italiano', array(
 //
 
 Dict::Add('IT IT', 'Italian', 'Italiano', array(
-	'Class:TriggerOnAttachmentDownload' => 'Trigger (on object\'s attachment download)~~',
-	'Class:TriggerOnAttachmentDownload+' => 'Trigger on object\'s attachment download of [a child class of] the given class~~',
-	'Class:TriggerOnCreateAttachment' => 'Trigger (on object\'s attachment create)~~',
-	'Class:TriggerOnCreateAttachment+' => 'Trigger on object\'s attachment create~~',
+	'Class:TriggerOnAttachmentDownload'                       => 'Trigger (on object\'s attachment download)~~',
+	'Class:TriggerOnAttachmentDownload+'                      => 'Trigger on object\'s attachment download of [a child class of] the given class~~',
+	'Class:TriggerOnAttachmentCreate'                         => 'Trigger (on object\'s attachment create)~~',
+	'Class:TriggerOnAttachmentCreate+'                        => 'Trigger on object\'s attachment create~~',
+	'Class:TriggerOnAttachmentCreate/Attribute:filter_class'  => 'Classe Bersaglio',
+	'Class:TriggerOnAttachmentCreate/Attribute:filter_class+' => '',
 ));
