@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="shortcut icon" href="{{ asset_image('DI/flask-adaptive.svg') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src=" https://releases.jquery.com/git/ui/jquery-ui-git.js"></script>
+    <script src="{{ asset_js('ckeditor/ckeditor.js') }}"></script>
+    <script src="{{ asset_js('DI/form.js') }}"></script>
+    <script src="{{ asset_js('DI/text_widget.js') }}"></script>
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+    <script src="https://kit.fontawesome.com/f2d58012d0.js" crossorigin="anonymous"></script>
+
+    <style>
+        body{
+            font-family: 'Montserrat';
+        }
+        .combodo-row{
+            display: flex;
+        }
+        .combodo-row fieldset{
+            flex-grow: 1;
+        }
+        .combodo-column{
+            padding: 10px;
+        }
+        .combodo-field-set{
+            border: #b7b7b7 dashed 1px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .combodo-field-set-label{
+            font-weight: bold;
+            border-bottom: 2px solid #b7b7b7;
+            margin-bottom: 10px;
+        }
+        .loading{
+            position: relative;
+        }
+        .loading:after{
+            content: 'loading...';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-color: #0d6efd11;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+        label.required:after{
+            content: ' *';
+            color: red;
+        }
+        form{
+            background-color: #f8f8f8;
+            border-radius: 10px;
+            padding: 5px;
+        }
+        form.actions button,a{
+            margin: 0 3px;
+        }
+        [data-block="container"]:has(.test:empty) {
+            display: none;
+        }
+        .z_list_list{
+            display: flex;
+        }
+    </style>
+    {% block head %}{% endblock %}
+
+    <script>
+
+        const addFormToCollection = (e) => {
+
+            const collectionHolder = document.querySelector('.' + e.currentTarget.dataset.collectionHolderClass);
+
+            const item = document.createElement('tr');
+
+            item.innerHTML = collectionHolder
+                    .dataset
+                    .prototype
+                    .replace(
+                            /__name__/g,
+                            collectionHolder.dataset.index
+                    );
+
+            collectionHolder.appendChild(item);
+
+            collectionHolder.dataset.index++;
+        };
+
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><img src="{{ asset_image('DI/flask-solid.svg') }}" width="24px"> Router / DI / Forms</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ path('home') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('object_view',  {'class': 'Person', 'id': 1}) }}" class="nav-link">View Person</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('object_json',  {'class': 'Person', 'id': 1}) }}" class="nav-link" target="_blank">View Person (JSON)</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('object_edit',  {'class': 'Person', 'id': 1}) }}" class="nav-link">Edit Person</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('object_edit',  {'class': 'UserRequest', 'id': 1}) }}" class="nav-link">Edit UserRequest</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('configuration_edit') }}" class="nav-link">Edit Configuration</a>
+                    </li>
+                </ul>
+                <form class="actions d-flex">
+                    {% block actions %}{% endblock %}
+                </form>
+            </div>
+        </div>
+    </nav>
+    <div class="m-3">
+        {% block body %}{% endblock %}
+    </div>
+    <div class="toast-container position-static">
+    </div>
+</body>
+</html>

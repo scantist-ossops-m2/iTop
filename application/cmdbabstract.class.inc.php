@@ -6279,4 +6279,19 @@ JS
 		return $iFlags;
 	}
 
+
+	public function __call($name, $args)
+	{
+		return $this->Get($name);
+	}
+
+	public function __get($property)
+	{
+		return $this->Get($property);
+	}
+
+	public function __set($property, $value): void
+	{
+		$this->Set($property, $value);
+	}
 }

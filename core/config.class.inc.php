@@ -105,6 +105,9 @@ class Config
 	//for each conf entry, whether the non interpreted value can be kept in case is is written back to the disk.
 	private $m_aCanOverrideSettings;
 
+	public function GetSettings(){
+		return $this->m_aSettings;
+	}
 	/**
 	 * New way to store the settings !
 	 *
@@ -2868,4 +2871,7 @@ class ConfigPlaceholdersResolver
 		IssueLog::Error($sErrorMessage, self::class, array($sSourceName, $sKey, $sDefault, $sWholeMask));
 		throw new ConfigException($sErrorMessage);
 	}
+
+
+
 }

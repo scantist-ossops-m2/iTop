@@ -196,7 +196,7 @@
         {% set attr = attr|merge({class: (attr.class|default('') ~ ' is-invalid')|trim}) %}
     {% endif -%}
     {{ parent() }}
-{%- endblock widget_attributes -%}
+{%- endblock widget_attributes -%}form_labelform_label
 
 {%- block button_widget -%}
     {%- set attr = attr|merge({class: (attr.class|default('btn-secondary') ~ ' btn')|trim}) -%}

@@ -1,0 +1,38 @@
+{% extends "DI/base.html.twig" %}
+
+{% block title %}
+    Object Edition
+{% endblock %}
+
+{% block actions %}
+    <a href="{{ path('object_edit',  {'class': class, 'id': id - 1}) }}" class="btn btn-light btn {% if id <= 1 %} disabled {% endif %}"><i class="fa-solid fa-arrow-left"></i></a>
+    <a href="{{ path('object_edit',  {'class': class, 'id': id + 1}) }}" class="btn btn-light btn"><i class="fa-solid fa-arrow-right"></i></a>
+    <button type="submit" class="btn-primary btn" form="object_form">Save Object</button>
+{% endblock %}
+
+{% block body %}
+
+    <div>
+
+        {# database informations #}
+        <div class="alert alert-primary" role="alert">
+            <b><i class="fa-solid fa-database"></i> Database information</b>
+            <div><u>Host:</u> {{ db_host }} <u>Database name:</u> {{ db_name }}</div>
+        </div>
+
+        {# inject form #}
+        <div>
+            {{ form(form, {'attr': {'id' : 'object_form'}}) }}
+        </div>
+
+    </div>
+
+    <script>
+
+        {# form handler #}
+        di = new DIForm('{{ reload_url }}');
+        di.handleElement(document);
+
+    </script>
+
+{% endblock %}

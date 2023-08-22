@@ -1,0 +1,134 @@
+{# column #}
+{%- block column_widget -%}
+
+    {{ form_widget(form, {'attr': {'class': 'combodo-column'}}) }}
+    {{ form_help(form) }}
+    {{ form_errors(form) }}
+
+{%- endblock column_widget -%}
+
+{# row #}
+{%- block row_widget -%}
+
+    {{ form_widget(form, {'attr': {'class': 'combodo-row'}}) }}
+    {{ form_help(form) }}
+    {{ form_errors(form) }}
+
+{%- endblock row_widget -%}
+
+{# fieldset #}
+{%- block field_set_widget -%}
+
+    {{ form_widget(form, {'attr': {'class': 'combodo-field-set'}}) }}
+    {{ form_help(form) }}
+    {{ form_errors(form) }}
+
+{%- endblock field_set_widget -%}
+
+{# DocumentType #}
+{%- block document_widget -%}
+
+    <div class="d-flex align-items-center">
+        <img src="{{ data }}" alt="" class="m-2">
+        <div>
+            <div><span>Type:</span><span>{{ mime_type }}</span></div>
+            <div><span>Finename:</span><span>{{ filename }}</span></div>
+        </div>
+    </div>
+
+    {{ form_widget(form, {'attr': {'class': 'combodo-document'}}) }}
+    {{ form_help(form) }}
+    {{ form_errors(form) }}
+
+{%- endblock document_widget -%}
+
+
+{# fieldset #}
+{%- block link_set_widget -%}
+
+    <script>
+
+
+        $(document).ready(function(){
+            document
+                    .querySelectorAll('.add_item_link')
+                    .forEach(btn => {
+                        btn.addEventListener("click", addFormToCollection)
+                    });
+
+            document
+                    .querySelectorAll('.btn-remove-link')
+                    .forEach(btn => {
+                        btn.addEventListener("click", (e) => {
+                            btn.closest('tr').remove()
+                        })
+                    });
+
+        });
+
+
+
+    </script>
+
+
+
+        <table class="table link_set_widget" >
+            <thead>
+            <tr>
+                {% for l in labels %}
+                <th>{{ l }}</th>
+                {% endfor %}
+                <th></th>
+            </tr>
+            </thead>
+            <tbody class="{{ form.vars.id }}"
+                    data-index="{{ form.vars.value|length > 0 ? form.vars.value|length : 0 }}"
+                    data-prototype="{{ form_widget(form.vars.prototype)|e('html_attr') }}">
+        {% for child in form %}
+            <tr>
+            {% for child2 in child %}
+                <td>
+                    {{ form_widget(child2) }}
+                </td>
+            {% endfor %}
+                <td style="text-align: right;">
+                    <a class="btn btn-danger btn-remove-link"><i class="fa-solid fa-trash"></i></a>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="{{ labels|length+1 }}">Aucune donnée</td></tr>
+        {% endfor %}
+            </tbody>
+        </table>
+
+    <button type="button" class="add_item_link btn btn-primary" data-collection-holder-class="{{ form.vars.id }}">Add</button>
+
+    {{ form_help(form) }}
+    {{ form_errors(form) }}
+
+{%- endblock link_set_widget -%}
+
+
+
+{# Object #}
+{%- block object_widget -%}
+
+   {% if z_list == 'list' %}
+        <tr>
+            <input type="hidden" name="classe_a_instancier" id="classe_a_instancier">
+            {% for child in form %}
+            <td>
+                {{ form_widget(child) }}
+            </td>
+            {% endfor %}
+            <td style="text-align: right;">
+                <a class="btn btn-danger btn-remove-link"><i class="fa-solid fa-trash"></i></a>
+            </td>
+        </tr>
+    {% else %}
+
+        {{ form_widget(form) }}
+
+    {% endif %}
+
+{%- endblock object_widget -%}

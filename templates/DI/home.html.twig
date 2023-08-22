@@ -1,0 +1,52 @@
+{% extends "DI/base.html.twig" %}
+
+{% block title %}
+    Router / DI / Forms
+{% endblock %}
+
+{% block body %}
+
+    {# Form Type #}
+    <h4 class="text-primary">FormType</h4>
+    <p>Création de types container pour organiser avec la logique des z-list.</p>
+    <div class="" style="margin-bottom: 30px;">
+        <h5>RowType</h5>
+        <p>Pour insérer une ligne.</p>
+        <h5>ColType</h5>
+        <p>Pour insérer une colonne.</p>
+        <h5>FieldSetType</h5>
+        <p>Pour insérer un field set.</p>
+        <img src="{{ asset_image('DI/container.png') }}" width="1200px">
+    </div>
+
+    {# Dependencies #}
+    <h4 class="text-primary">Reload Dependencies</h4>
+    <p>
+        Rechargement des champs quand un champ dépendant change.<br>
+        Requête avec la valeur de la donnée dont le widget dépends.<br>
+        Prise en compte d'un formulaire avec la prise en compte de la donnée qui a changée.<br>
+        Génération d'un formulaire simple avec le champs a mettre à jour.
+    </p>
+    <div  style="margin-bottom: 30px;"><img src="{{ asset_image('DI/reload.png') }}" width="1200px"></div>
+
+    {# Dynamics #}
+    <h4 class="text-primary">Client Side Dynamic</h4>
+    <p>
+        Gestion de la visibilité dynamique coté client.<br>
+        Utilisation des attributs data pour le déclenchement automatique.<br>
+        <code>data-disable-when</code>   /   <code>data-hide-when</code>
+    </p>
+
+    <div  style="margin-bottom: 30px;"><img src="{{ asset_image('DI/dynamics.gif') }}" width="1200px"></div>
+
+    {# Widgets #}
+    <h4 class="text-primary">Widgets</h4>
+    <p>
+        Initialisation des widget.<br>
+        Utilisation des attributs data du widget pour l'instanciation automatique.<br>
+        <code>data-widget</code>   /   <code>data-widget-attributes</code><br>
+    </p>
+    <div  style="margin-bottom: 30px;"><img src="{{ asset_image('DI/widget.png') }}" width="800px"></div>
+    <div  style="margin-bottom: 30px;"></div>
+
+{% endblock %}

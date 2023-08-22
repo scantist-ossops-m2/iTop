@@ -1,0 +1,22 @@
+{% extends "bootstrap_5_horizontal_layout.html.twig" %}
+
+{# no label for fields set #}
+{%- block field_set_label -%}
+{% endblock field_set_label %}
+
+
+{# fieldset #}
+{%- block field_set_widget -%}
+
+    <div id="{{ form.vars.id }}" class="d-flex">
+        {% if form.vars.icon is not empty %}
+            <i class="{{ form.vars.icon }} p-3 alert alert-primary me-3" style="font-size: 2rem;width: 80px;text-align: center;"></i>
+        {% endif %}
+        <div class="flex-grow-1">
+            {% for child in form.children %}
+                {{ form_row(child) }}
+            {% endfor %}
+        </div>
+    </div>
+
+{%- endblock field_set_widget -%}

@@ -460,6 +460,9 @@
           <default_value>active</default_value>
           <is_null_allowed>false</is_null_allowed>
           <display_style>list</display_style>
+          <dependencies>
+            <attribute id="org_id"/>
+          </dependencies>
         </field>
         <field id="org_id" xsi:type="AttributeExternalKey">
           <sql>org_id</sql>
@@ -865,6 +868,7 @@
                   <items>
                     <item id="name">
                       <rank>10</rank>
+                      <hide_if>org_id=3</hide_if>
                     </item>
                     <item id="first_name">
                       <rank>20</rank>

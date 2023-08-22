@@ -28,7 +28,7 @@ require_once('dbobjectiterator.php');
  * @license     http://opensource.org/licenses/AGPL-3.0
  */
 
-class ormLinkSet implements iDBObjectSetIterator, Iterator, SeekableIterator
+class ormLinkSet implements iDBObjectSetIterator, Iterator, SeekableIterator, ArrayAccess
 {
 	public const LINK_ALIAS = 'Link';
 	public const REMOTE_ALIAS = 'Remote';
@@ -886,4 +886,44 @@ class ormLinkSet implements iDBObjectSetIterator, Iterator, SeekableIterator
 	{
 		return $this->oOriginalSet;
 	}
+
+
+	// to allow usage of CollectionType with orm link set
+	// Value needs to implement ArrayAccess
+
+	public function offsetExists($offset)
+	{
+		$aOriginalObjects = array_flip($this->aOriginalObjects);
+		return array_key_exists($offset, $aOriginalObjects);
+	}
+
+	public function offsetGet($offset)
+	{
+		$aOriginalObjects = array_flip($this->aOriginalObjects);
+		return MetaModel::GetObject($this->sClass, $aOriginalObjects[$offset]);
+	}
+
+	public function offsetSet($offset, $value)
+	{
+		$aData = array_flip($this->aPreserved);
+		if(array_key_exists($offset, $aData)){
+			$this->ModifyItem($value);
+		}
+		else{
+			$this->AddItem($value);
+		}
+	}
+
+	public function offsetUnset($offset)
+	{
+		$aData = array_flip($this->aPreserved);
+		if(array_key_exists($offset, $aData)){
+			$this->RemoveItem($aData[$offset]);
+		}
+	}
+
+	public function IsDeleted($value){
+		return (array_key_exists($value->GetKey(), $this->aRemoved));
+	}
 }
+
