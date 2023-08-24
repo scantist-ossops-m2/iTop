@@ -1,0 +1,165 @@
+{% use "bootstrap_5_layout.html.twig" %}
+
+{# LAYOUT #}
+
+{# column #}
+{%- block column_widget -%}
+
+    {{ form_widget(form, {'attr': {'class': 'combodo-column'}}) }}
+    {{ form_help(form) }}
+    {{ form_errors(form) }}
+
+{%- endblock column_widget -%}
+
+{# row #}
+{%- block row_widget -%}
+
+    {{ form_widget(form, {'attr': {'class': 'combodo-row'}}) }}
+    {{ form_help(form) }}
+    {{ form_errors(form) }}
+
+{%- endblock row_widget -%}
+
+{# fieldset #}
+{%- block field_set_widget -%}
+
+    {{ form_widget(form, {'attr': {'class': 'combodo-field-set'}}) }}
+    {{ form_help(form) }}
+    {{ form_errors(form) }}
+
+{%- endblock field_set_widget -%}
+
+{# ATTRIBUTE #}
+
+{# DocumentType #}
+{%- block document_widget -%}
+
+    <div class="d-flex align-items-center">
+        <img src="{{ data }}" alt="" class="m-2">
+        <div>
+            <div><span>Type:</span><span>{{ mime_type }}</span></div>
+            <div><span>Finename:</span><span>{{ filename }}</span></div>
+        </div>
+    </div>
+
+    {{ form_widget(form, {'attr': {'class': 'combodo-document'}}) }}
+    {{ form_help(form) }}
+    {{ form_errors(form) }}
+
+{%- endblock document_widget -%}
+
+{# ExternalKeyType #}
+{%- block external_key_widget -%}
+
+    <div class="d-flex">
+
+        <div class="flex-grow-1">
+            {{ form_widget(form) }}
+        </div>
+
+        {% if allow_target_creation %}
+            <button type="button" class="btn btn-secondary ms-1"><i class="fa-solid fa-plus"></i></button>
+        {% endif %}
+    </div>
+
+{%- endblock external_key_widget -%}
+
+{# LinkSetType #}
+{%- block link_set_widget -%}
+
+    {% if is_indirect %}
+        <span class="badge bg-warning">Indirect</span>
+    {% endif %}
+
+    {% if is_abstract %}
+        <span class="badge bg-danger">abstract</span>
+    {% endif %}
+
+    {# container #}
+    <div class="link_set_widget_container">
+
+        {# table #}
+        <table class="table link_set_widget" >
+
+            {# header #}
+            <thead>
+                <tr>
+                    {% for l in labels %}
+                    <th>{{ l }}</th>
+                    {% endfor %}
+                    <th></th>
+                </tr>
+            </thead>
+
+            {# body #}
+            <tbody class="{{ form.vars.id }}"
+                data-index="{{ form.vars.value|length > 0 ? form.vars.value|length : 0 }}"
+                data-prototype="{{ form_widget(form.vars.prototype)|e('html_attr') }}">
+
+                {# no data row #}
+                <tr class="no_data" {% if form|length != 0 %} style="display: none"{% endif %}><td colspan="{{ labels|length+1 }}">Aucune donnée</td></tr>
+
+                {# links #}
+                {% for child in form %}
+                    {{ form_widget(child) }}
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% set buttonDataAttributes = 'data-object-class="' ~ object_class ~ '" data-ext-key-to-me="' ~ ext_key_to_me ~ '"' %}
+
+        {% if is_abstract %}
+            {# create item button #}
+            <div class="d-inline-block">
+                <div class="dropdown">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Create
+                    </button>
+                    <ul class="dropdown-menu dropdown_scroll_300">
+                        {% for object_class in object_classes %}
+                            <li><a class="dropdown-item create_item_link" href="#" {{ buttonDataAttributes|raw }}>{{ object_class }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% elseif is_indirect %}
+            {# add item button #}
+            <button type="button" class="add_item_link btn btn-secondary btn-sm" data-collection-holder-class="{{ form.vars.id }}">Add {{ target_class }}</button>
+        {% else %}
+            {# create item button #}
+            <button type="button" class="btn btn-secondary create_item_link btn-sm" {{ buttonDataAttributes|raw }}>Create {{ target_class }}</button>
+        {% endif %}
+
+    </div>
+
+    {{ form_help(form) }}
+    {{ form_errors(form) }}
+
+{%- endblock link_set_widget -%}
+
+{# COMPOUND #}
+
+{# Object #}
+{%- block object_widget -%}
+
+   {% if z_list == 'list' %}
+        <tr data-block="container">
+            {% for child in form %}
+            <td data-block="container">
+                {{ form_widget(child) }}
+            </td>
+            {% endfor %}
+            <td style="text-align: right;width: 40px;">
+                <a class="btn btn-danger btn-remove-link"><i class="fa-solid fa-trash"></i></a>
+            </td>
+        </tr>
+    {% else %}
+
+        {{ form_widget(form) }}
+
+    {% endif %}
+
+{%- endblock object_widget -%}
+

@@ -40,6 +40,8 @@ class ITopKernel extends BaseKernel
 	 * @param \Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator $container
 	 *
 	 * @return void
+	 *
+	 * @suppress-unused-warning
 	 */
 	protected function configureContainer(ContainerConfigurator $container): void
 	{

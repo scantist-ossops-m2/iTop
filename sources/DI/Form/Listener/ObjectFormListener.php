@@ -36,7 +36,7 @@ class ObjectFormListener implements EventSubscriberInterface
 	 * When form is first initialized, it hasn't data set yet.
 	 * So we listen for form PRE_SET_DATA event to modify form with data.
 	 *
-	 * @param FormEvent $oEvent
+	 * @param FormEvent $oEvent form event
 	 *
 	 * @suppress-unused-warning
 	 */
@@ -50,7 +50,7 @@ class ObjectFormListener implements EventSubscriberInterface
 	 * Previous preSetData handling doesn't know about form submission data.
 	 * So, to allow us to use our DBObject for filters we need to update it before.
 	 *
-	 * @param FormEvent $oEvent
+	 * @param FormEvent $oEvent form event
 	 *
 	 * @suppress-unused-warning
 	 */
@@ -71,6 +71,7 @@ class ObjectFormListener implements EventSubscriberInterface
 	 *
 	 * We need to reset fields to take into account object values.
 	 * The form fields options can't be changed at this time.
+	 * All fields are reset to keep fields order.
 	 *
 	 * @param FormInterface $oForm
 	 * @param FormEvent $oEvent
@@ -113,6 +114,8 @@ class ObjectFormListener implements EventSubscriberInterface
 
 	/**
 	 * Handle posted data.
+	 * The data are the view data. We skipped data transformation !!
+	 * @todo handle data transformation
 	 *
 	 * @param FormInterface $form
 	 * @param DBObject $oDBObject

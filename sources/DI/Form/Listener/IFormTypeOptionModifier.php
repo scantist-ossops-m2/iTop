@@ -11,10 +11,12 @@ use DBObject;
 interface IFormTypeOptionModifier
 {
 	/**
-	 * @param array $aInitialOptions form type option
+	 * Return new form type options for the provided DB object.
+	 *
+	 * @param array $aInitialOptions initial form type options
 	 * @param DBObject $oObject iTop DB object
 	 *
-	 * @return array
+	 * @return array new form type options
 	 */
 	public function getNewOptions(array $aInitialOptions, DBObject $oObject) : array;
 }

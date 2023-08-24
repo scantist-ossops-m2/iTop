@@ -4,35 +4,57 @@
     Object Edition
 {% endblock %}
 
+{% block head %}
+
+    <script src="{{ asset_js('DI/widget/text_widget.js') }}"></script>
+
+{% endblock %}
+
 {% block actions %}
-    <a href="{{ path('object_edit',  {'class': class, 'id': id - 1}) }}" class="btn btn-light btn {% if id <= 1 %} disabled {% endif %}"><i class="fa-solid fa-arrow-left"></i></a>
-    <a href="{{ path('object_edit',  {'class': class, 'id': id + 1}) }}" class="btn btn-light btn"><i class="fa-solid fa-arrow-right"></i></a>
-    <button type="submit" class="btn-primary btn" form="object_form">Save Object</button>
+    <a href="{{ path('object_edit',  {'class': class, 'id': id - 1}) }}" class="btn btn-secondary btn {% if id <= 1 %} disabled {% endif %}"><i class="fa-solid fa-arrow-left"></i></a>
+    <a href="{{ path('object_edit',  {'class': class, 'id': id + 1}) }}" class="btn btn-secondary btn"><i class="fa-solid fa-arrow-right"></i></a>
+    <button type="reset" class="btn-secondary btn" form="object_form">Reset</button>
+    <button type="submit" class="btn-primary btn" form="object_form">Save</button>
+{% endblock %}
+
+{% block toasts %}
+
+    {# database information toast #}
+    <div id="toast" role="alert" aria-live="assertive" aria-atomic="true" class="toast text-bg-primary" data-bs-autohide="true">
+        <div class="toast-body">
+            <h6><i class="fa-solid fa-database"></i> Database information</h6>
+            <div><b>Host:</b> {{ db_host }} <b>Database name:</b> {{ db_name }}</div>
+        </div>
+    </div>
+
 {% endblock %}
 
 {% block body %}
 
+    {# inject form #}
     <div>
-
-        {# database informations #}
-        <div class="alert alert-primary" role="alert">
-            <b><i class="fa-solid fa-database"></i> Database information</b>
-            <div><u>Host:</u> {{ db_host }} <u>Database name:</u> {{ db_name }}</div>
-        </div>
-
-        {# inject form #}
-        <div>
-            {{ form(form, {'attr': {'id' : 'object_form'}}) }}
-        </div>
-
+        {{ form(form, {'attr': {'id' : 'object_form'}}) }}
     </div>
 
-    <script>
+{% endblock %}
 
-        {# form handler #}
-        di = new DIForm('{{ reload_url }}');
-        di.handleElement(document);
+{% block ready_scripts %}
 
-    </script>
+    {# Widget #}
+    const oWidget = new Widget();
+    oWidget.handleElement(document);
+
+    {# Form #}
+    const oForm = new Form(oWidget);
+    oForm.handleElement(document);
+
+    {# Collection #}
+    const oCollection = new Collection(oForm, '{{ path('object_form', {'class': 'object_class', 'id' : 0, 'name': 'form_name'}) }}');
+    oCollection.handleElement(document);
+
+    {# toast database information #}
+    const toastLiveExample = document.getElementById('toast')
+    const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+    toastBootstrap.show();
 
 {% endblock %}

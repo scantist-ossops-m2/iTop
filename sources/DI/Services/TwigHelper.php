@@ -2,6 +2,7 @@
 
 namespace Combodo\iTop\DI\Services;
 
+use MetaModel;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -11,7 +12,8 @@ use Twig\TwigFunction;
  */
 class TwigHelper extends AbstractExtension
 {
-	private string $sAppRoot = '';
+	/** @var string|mixed application root */
+	private string $sAppRoot;
 
 	/**
 	 * Constructor.
@@ -19,7 +21,7 @@ class TwigHelper extends AbstractExtension
 	 */
 	public function __construct()
 	{
-		$this->sAppRoot = \MetaModel::GetConfig()->Get('app_root_url');
+		$this->sAppRoot = MetaModel::GetConfig()->Get('app_root_url');
 	}
 
 	/** @inheritdoc  */
@@ -37,7 +39,7 @@ class TwigHelper extends AbstractExtension
 	 *
 	 * @return string
 	 */
-	public function asset_js($name)
+	public function asset_js($name) : string
 	{
 		return $this->sAppRoot . 'js/' . $name;
 	}
@@ -47,7 +49,7 @@ class TwigHelper extends AbstractExtension
 	 *
 	 * @return string
 	 */
-	public function asset_css($name)
+	public function asset_css($name) : string
 	{
 		return $this->sAppRoot . 'css/' . $name;
 	}
@@ -57,7 +59,7 @@ class TwigHelper extends AbstractExtension
 	 *
 	 * @return string
 	 */
-	public function asset_image($name)
+	public function asset_image($name) : string
 	{
 		return $this->sAppRoot . 'images/' . $name;
 	}

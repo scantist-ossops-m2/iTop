@@ -1,0 +1,86 @@
+body{
+	font-family: 'Montserrat', serif;
+	padding-top: 64px;
+}
+
+.combodo-row{
+	display: flex;
+}
+.combodo-row fieldset{
+	flex-grow: 1;
+}
+.combodo-column{
+	padding: 10px;
+}
+.combodo-field-set{
+	border: #b7b7b7 dashed 1px;
+	padding: 10px;
+	border-radius: 10px;
+}
+.combodo-field-set-label{
+	font-weight: bold;
+	border-bottom: 2px solid #b7b7b7;
+	margin-bottom: 10px;
+}
+.loading{
+	position: relative;
+}
+.loading:after{
+	content: 'loading...';
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background-color: #0d6efd11;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 10px;
+}
+label.required:after{
+	content: ' *';
+	color: red;
+}
+label.locked:after{
+	content: "\f023";
+	font-family: "Font Awesome 5 Free", serif;
+	font-weight: 600;
+	margin-left: 8px;
+	color: #ffcc00;
+	font-size: .7rem;
+}
+form{
+	/*background-color: #f8f8f8;*/
+	border-radius: 10px;
+	padding: 5px;
+}
+form.actions button,a{
+	margin: 0 3px;
+}
+[data-block="container"]:has(.test:empty) {
+	display: none;
+}
+.z_list_list{
+	display: flex;
+}
+body[data-bs-theme="dark"] .app_icon{
+	filter: invert(1);
+}
+.combodo-field-set-label.is_indirect_1:after{
+	content: 'indirect';
+	margin-left: 5px;
+	font-size: .8rem;
+	color: #0C63E4;
+}
+.combodo-field-set-label.is_abstract_1:after{
+	content: 'abstract';
+	margin-left: 5px;
+	font-size: .8rem;
+	color: #0C63E4;
+}
+.dropdown_scroll_300{
+	max-height: 300px;
+	overflow-y: auto;
+	overflow-x: clip;
+}

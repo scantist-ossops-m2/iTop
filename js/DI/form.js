@@ -1,7 +1,21 @@
+/**
+ * Forms handling.
+ *
+ * @param oWidget
+ * @returns {{handleElement: handleElement}}
+ * @constructor
+ */
+const Form = function(oWidget){
 
-const DIForm = function(reload_url){
+	const DEPENDS_ON_SEPARATOR = ' ';
 
-	const SELECTOR = '[data-block="container"]';
+	const aSelectors = {
+		dataDependsOn: '[data-depends-on]',
+		dataHideWhen: '[data-hide-when]',
+		dataDisableWhen: '[data-disable-when]',
+		dataBlockContainer: '[data-block="container"]',
+		dataAttCode: '[data-att-code="{0}"]'
+	};
 
 	/**
 	 * hideEmptyContainers.
@@ -10,22 +24,11 @@ const DIForm = function(reload_url){
 	 * Ex: FieldSetType with no children
 	 *
 	 */
-	const hideEmptyContainers = function(oElement){
-		$('.combodo-field-set', oElement).each(function(e){
+	function hideEmptyContainers(oElement){
+		$('.combodo-field-set', oElement).each(function(){
 			$(this).parent().toggle($(this).children().length !== 0);
 		});
-	};
-
-	/**
-	 * parseTextToHtml.
-	 *
-	 * @param sText
-	 * @returns {Document}
-	 */
-	const parseTextToHtml = (sText) => {
-		const oParser = new DOMParser();
-		return oParser.parseFromString(sText, 'text/html');
-	};
+	}
 
 	/**
 	 * updateForm.
@@ -35,7 +38,7 @@ const DIForm = function(reload_url){
 	 * @param sMethod
 	 * @returns {Promise<string>}
 	 */
-	const updateForm = async (aData, sUrl, sMethod) => {
+	async function updateForm(aData, sUrl, sMethod){
 		const req = await fetch(sUrl, {
 			method: sMethod,
 			body: aData,
@@ -46,7 +49,7 @@ const DIForm = function(reload_url){
 		});
 
 		return await req.text();
-	};
+	}
 
 	/**
 	 * changeOptions.
@@ -55,7 +58,7 @@ const DIForm = function(reload_url){
 	 * @param sId
 	 * @returns {Promise<void>}
 	 */
-	const changeOptions = async (oEvent, sId) => {
+	async function changeOptions(oEvent, sId){
 
 		// retrieve field that's need to be updated
 		const oDependentField = document.getElementById(sId);
@@ -66,21 +69,28 @@ const DIForm = function(reload_url){
 		const oForm = oDependentField.closest('form');
 
 		// retrieve field container
-		const oContainer = oDependentField.closest('[data-block="container"]');
+		const oContainer = oDependentField.closest(aSelectors.dataBlockContainer);
 
 		// set field container loading state
 		oContainer.classList.add('loading');
 
-		// prepare quest data
-		let sRequestBody = 'object_single_attribute['+oEvent.target.dataset.attCode + ']=' + oEvent.target.value;
+		// prepare request body
+		const oFormData = new FormData(oForm);
+		let sRequestBody = '';
+		function encode(s){ return encodeURIComponent(s).replace(/%20/g,'+'); }
+		for(let pair of oFormData.entries()){
+			if(typeof pair[1]=='string'){
+				sRequestBody += (sRequestBody?'&':'') + encode(pair[0])+'='+encode(pair[1]);
+			}
+		}
 		sRequestBody += '&att_code=' + oDependentField.dataset.attCode;
 		sRequestBody += '&dependency_att_code=' + oEvent.target.dataset.attCode;
 
 		// update fom
-		const sUpdateFormResponse = await updateForm(sRequestBody, reload_url, oForm.getAttribute('method'));
-		const oHtml = parseTextToHtml(sUpdateFormResponse);
+		const sUpdateFormResponse = await updateForm(sRequestBody, oForm.dataset.reloadUrl, oForm.getAttribute('method'));
+		const oHtml = oToolkit.parseTextToHtml(sUpdateFormResponse);
 		let oSingle = oHtml.getElementById('object_single_attribute');
-		oContainer.innerHTML = oSingle.innerHTML;
+		oContainer.replaceWith(oSingle.firstChild);
 
 		// remove loading state
 		oContainer.classList.remove('loading');
@@ -92,22 +102,23 @@ const DIForm = function(reload_url){
 		oNewDependentField.setAttribute('data-att-code', sAttCode);
 
 		// init dynamics
+		initDependencies(oContainer);
 		initDynamicsInvisible(oContainer);
 		initDynamicsDisable(oContainer);
 
 		// init widgets
-		initWidgets(oContainer);
-	};
+		oWidget.handleElement(oContainer);
+	}
 
 	/**
 	 * initDependencies.
 	 *
 	 *  @param oElement
 	 */
-	const initDependencies = function(oElement){
+	function initDependencies(oElement){
 
 		// get all dependent fields
-		const aDependentsFields = oElement.querySelectorAll('[data-depends-on]');
+		const aDependentsFields = oElement.querySelectorAll(aSelectors.dataDependsOn);
 
 		// iterate throw dependent fields...
 		aDependentsFields.forEach(function (oDependentField) {
@@ -116,13 +127,13 @@ const DIForm = function(reload_url){
 			const sDependsOn = oDependentField.dataset.dependsOn;
 
 			// may have multiple dependencies
-			let aDependsEls = sDependsOn.split(' ');
+			let aDependsEls = sDependsOn.split(DEPENDS_ON_SEPARATOR);
 
 			// iterate throw dependencies...
 			aDependsEls.forEach(function(sEl){
 
 				// retrieve dependency
-				const oDependsOnElement = document.querySelector(`[id$="${sEl}"]`);
+				const oDependsOnElement = oElement.querySelector(`[id$="${sEl}"]`);
 
 				// listen for changes
 				if(oDependsOnElement != null){
@@ -130,17 +141,17 @@ const DIForm = function(reload_url){
 				}
 			});
 		});
-	};
+	}
 
 	/**
 	 * initDynamicsInvisible.
 	 *
 	 *  @param oElement
 	 */
-	const initDynamicsInvisible = function(oElement){
+	function initDynamicsInvisible(oElement){
 
 		// get all dynamic hide fields
-		const aInvisibleFields = oElement.querySelectorAll('[data-hide-when]');
+		const aInvisibleFields = oElement.querySelectorAll(aSelectors.dataHideWhen);
 
 		// iterate throw fields...
 		aInvisibleFields.forEach(function (oInvisibleField) {
@@ -149,29 +160,29 @@ const DIForm = function(reload_url){
 			const aHideWhenCondition = JSON.parse(oInvisibleField.dataset.hideWhen);
 
 			// retrieve condition data
-			const oHideWhenElement = document.querySelector(`[data-att-code="${aHideWhenCondition.att_code}"]`);
+			const oHideWhenElement = oElement.querySelector(String.format(aSelectors.dataAttCode, aHideWhenCondition.att_code));
 
 			// initial hidden state
-			oInvisibleField.closest(SELECTOR).hidden = (oHideWhenElement.value === aHideWhenCondition.value);
+			oInvisibleField.closest(aSelectors.dataBlockContainer).hidden = (oHideWhenElement.value === aHideWhenCondition.value);
 
 			// listen for changes
 			oHideWhenElement.addEventListener('change', (e) => {
-				oInvisibleField.closest(SELECTOR).hidden = (e.target.value === aHideWhenCondition.value);
-				oInvisibleField.closest(SELECTOR).style.visibility = (e.target.value === aHideWhenCondition.value) ? 'hidden' : '';
+				oInvisibleField.closest(aSelectors.dataBlockContainer).hidden = (e.target.value === aHideWhenCondition.value);
+				oInvisibleField.closest(aSelectors.dataBlockContainer).style.visibility = (e.target.value === aHideWhenCondition.value) ? 'hidden' : '';
 			});
 		});
 
-	};
+	}
 
 	/**
 	 * initDynamicsDisable.
 	 *
 	 * @param oElement
 	 */
-	const initDynamicsDisable = function(oElement){
+	function initDynamicsDisable(oElement){
 
 		// get all dynamic hide fields
-		const aDisabledFields = oElement.querySelectorAll('[data-disable-when]');
+		const aDisabledFields = oElement.querySelectorAll(aSelectors.dataDisableWhen);
 
 		// iterate throw fields...
 		aDisabledFields.forEach(function (oDisabledField) {
@@ -180,55 +191,33 @@ const DIForm = function(reload_url){
 			const aDisableWhenCondition = JSON.parse(oDisabledField.dataset.disableWhen);
 
 			// retrieve condition data
-			const oDisableWhenElement = document.querySelector(`[data-att-code="${aDisableWhenCondition.att_code}"]`);
+			const oDisableWhenElement = oElement.querySelector(`[data-att-code="${aDisableWhenCondition.att_code}"]`);
 
 			// initial disabled state
-			oDisabledField.closest(SELECTOR).disabled = (oDisableWhenElement.value === aDisableWhenCondition.value);
+			oDisabledField.closest(aSelectors.dataBlockContainer).disabled = (oDisableWhenElement.value === aDisableWhenCondition.value);
 
 			// listen for changes
 			oDisableWhenElement.addEventListener('change', (e) => {
-				oDisabledField.closest(SELECTOR).disabled  = (e.target.value === aDisableWhenCondition.value);
+				oDisabledField.closest(aSelectors.dataBlockContainer).disabled  = (e.target.value === aDisableWhenCondition.value);
 			});
 		});
-	};
-
-	/**
-	 * initWidgets.
-	 *
-	 * @param oElement
-	 */
-	const initWidgets = function(oElement){
-
-		// get all widgets
-		const aWidgetFields = oElement.querySelectorAll('[data-widget]');
-
-		// iterate throw widgets...
-		aWidgetFields.forEach(function (widgetField) {
-
-			// initialize widget
-			const sWidgetName = widgetField.dataset.widget;
-			const oWidget = eval(`$(widgetField).${sWidgetName}()`);
-			console.log('Init widget: ' + sWidgetName);
-			console.log(oWidget);
-		});
-
-	};
+	}
 
 	/**
 	 * handleElement.
 	 *
 	 * @param element
 	 */
-	const handleElement = function(element){
+	function handleElement(element){
 		hideEmptyContainers(element);
 		initDependencies(element);
-		initWidgets(element);
 		initDynamicsInvisible(element);
 		initDynamicsDisable(element);
+		oWidget.handleElement(element);
 	}
 
 	return {
-		handleElement
+		handleElement,
 	}
 };
 

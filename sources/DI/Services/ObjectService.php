@@ -3,7 +3,10 @@
 namespace Combodo\iTop\DI\Services;
 
 use AttributeLinkedSet;
+use Combodo\iTop\Core\MetaModel\FriendlyNameType;
+use Combodo\iTop\Service\Base\ObjectRepository;
 use DBObject;
+use DBObjectSet;
 use MetaModel;
 use ormLinkSet;
 
@@ -28,19 +31,51 @@ class ObjectService
 	}
 
 	/**
+	 * @param string $sClass
+	 * @param $sRef
+	 *
+	 * @return DBObject
+	 * @throws \ArchivedObjectException
+	 * @throws \CoreException
+	 */
+	public function getObject(string $sClass, $sRef) : DBObject
+	{
+		if($sRef !== 0){
+			return MetaModel::GetObject($sClass, $sRef);
+		}
+		else{
+			return MetaModel::NewObject($sClass);
+		}
+	}
+
+	/**
 	 * Convert object set to array of choices.
 	 *
-	 * @param $oObjectsSet
+	 * @param DBObjectSet $oObjectsSet
 	 *
 	 * @return array
+	 * @throws \CoreException
+	 * @throws \CoreUnexpectedValue
+	 * @throws \DictExceptionMissingString
+	 * @throws \MySQLException
 	 */
-	public function ToChoices($oObjectsSet) : array
+	public function ToChoices(DBObjectSet $oObjectsSet) : array
 	{
 		$aChoices = [];
 
-		$i = 0;
+		// Retrieve friendly name complementary specification
+		$aComplementAttributeSpec = MetaModel::GetNameSpec($oObjectsSet->GetClass(), FriendlyNameType::COMPLEMENTARY);
 
-		while ($i < 100 && $oObj = $oObjectsSet->Fetch()) {
+		// Retrieve image attribute code
+		$sObjectImageAttCode = MetaModel::GetImageAttributeCode($oObjectsSet->GetClass());
+
+		// Prepare fields to load
+		$aDefaultFieldsToLoad = ObjectRepository::GetDefaultFieldsToLoad($aComplementAttributeSpec, $sObjectImageAttCode);
+
+		$oObjectsSet->OptimizeColumnLoad([$oObjectsSet->GetClassAlias() => $aDefaultFieldsToLoad]);
+
+		$i = 0;
+		while ($i < 30 && $oObj = $oObjectsSet->Fetch()) {
 			$aChoices[$oObj->GetName()] = $oObj->GetKey();
 			$i++;
 		}
@@ -64,12 +99,27 @@ class ObjectService
 		return $this->sDbName;
 	}
 
+	/**
+	 * @param \DBObject $object
+	 *
+	 * @return void
+	 * @throws \ArchivedObjectException
+	 * @throws \CoreCannotSaveObjectException
+	 * @throws \CoreException
+	 * @throws \CoreUnexpectedValue
+	 * @throws \CoreWarning
+	 * @throws \DeleteException
+	 * @throws \MySQLException
+	 * @throws \MySQLHasGoneAwayException
+	 * @throws \OQLException
+	 * @throws \Exception
+	 */
 	public function handleLinkSetDB(DBObject $object){
 		foreach($object->GetValues() as $key => $value){
 			if($value instanceof ormLinkSet){
 
-					/** @var AttributeLinkedSet $a */
-				 $a = MetaModel::GetAttributeDef(get_class($object), $key);
+				/** @var AttributeLinkedSet $a */
+				$a = MetaModel::GetAttributeDef(get_class($object), $key);
 
 				/** @var DBObject $link */
 				foreach($value->ListModifiedLinks() as $link){
@@ -77,7 +127,6 @@ class ObjectService
 						$link->DBDelete();
 					}
 				}
-
 
 				/** @var DBObject $link */
 				foreach($value->ListModifiedLinks() as $link){

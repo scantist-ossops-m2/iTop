@@ -2,16 +2,18 @@
 
 namespace Combodo\iTop\DI\Controller;
 
-use Combodo\iTop\DI\Form\Type\ConfigurationType;
-use Combodo\iTop\DI\Form\Type\ObjectType;
-use Combodo\iTop\DI\Form\Type\ObjectSingleAttributeType;
+use Combodo\iTop\DI\Form\Type\Compound\ConfigurationType;
+use Combodo\iTop\DI\Form\Type\Compound\ObjectSingleAttributeType;
+use Combodo\iTop\DI\Form\Type\Compound\ObjectType;
 use Combodo\iTop\DI\Services\ObjectService;
 use Exception;
 use MetaModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class Controller extends AbstractController
@@ -38,7 +40,7 @@ class Controller extends AbstractController
 	 */
 	public function objectView(string $class, int $id) : Response
 	{
-		// retrieve person
+		// retrieve object
 		try{
 			$oObject = MetaModel::GetObject($class, $id);
 		}
@@ -46,7 +48,7 @@ class Controller extends AbstractController
 			throw $this->createNotFoundException("The $class $id does not exist");
 		}
 
-		// return person view
+		// return object view
 		return $this->render('DI/object/view.html.twig', [
 			'id' => $id,
 			'class' => $class,
@@ -59,7 +61,7 @@ class Controller extends AbstractController
 	 */
 	public function objectJSon(string $class, int $id) : Response
 	{
-		// retrieve person
+		// retrieve object
 		try{
 			$oObject = MetaModel::GetObject($class, $id);
 		}
@@ -67,7 +69,7 @@ class Controller extends AbstractController
 			throw $this->createNotFoundException("The $class $id does not exist");
 		}
 
-		// return person as json response
+		// return object as json response
 		$oResponse = new JsonResponse($oObject->GetValues());
 		$oResponse->setEncodingOptions($oResponse->getEncodingOptions() | JSON_PRETTY_PRINT);
 		return $oResponse;
@@ -78,14 +80,9 @@ class Controller extends AbstractController
 	 */
 	public function objectEdit(Request $request, string $class, int $id, ObjectService $oObjectService) : Response
 	{
-		// retrieve person
+		// retrieve object
 		try{
-			if($id !== 0){
-				$oObject = MetaModel::GetObject($class, $id);
-			}
-			else{
-				$oObject = MetaModel::NewObject($class);
-			}
+			$oObject= $oObjectService->getObject($class, $id);
 		}
 		catch(Exception $e){
 			throw $this->createNotFoundException("The $class $id does not exist");
@@ -93,7 +90,10 @@ class Controller extends AbstractController
 
 		// create object form
 		$oForm = $this->createForm(ObjectType::class, $oObject, [
-			'object_class' => $class
+			'object_class' => $class,
+			'attr' => [
+				'data-reload-url' => $this->generateUrl('object_reload', ['class' => $class, "id" => $id])
+			]
 		]);
 
 		// handle HTTP request
@@ -105,11 +105,16 @@ class Controller extends AbstractController
 			// retrieve object
 			$oObject = $oForm->getData();
 
-			// handle link set (apply DbInsert, DbDelete, DbUpdate) could be automatic ?
-			$oObjectService->handleLinkSetDB($oObject);
+			try {
+				// handle link set (apply DbInsert, DbDelete, DbUpdate) could be automatic ?
+				$oObjectService->handleLinkSetDB($oObject);
 
-			// save object
-			$oObject->DBUpdate();
+				// save object
+				$oObject->DBUpdate();
+			}
+			catch(Exception $e){
+				throw new HttpException(500, 'Error while trying to save object');
+			}
 
 			// redirect to view object
 			return $this->redirectToRoute('object_view', [
@@ -118,35 +123,94 @@ class Controller extends AbstractController
 			]);
 		}
 
-		// return person edition form
+		// return object edition form
 		return $this->renderForm('DI/object/edit.html.twig', [
 			'id' => $id,
 			'class' => $class,
 			'form' => $oForm,
-			'reload_url' => $this->generateUrl('object_reload', ['class' => $class, "id" => $id]),
 			'db_host' => $oObjectService->getDbHost(),
 			'db_name' => $oObjectService->getDbName()
 		]);
 	}
 
+	/**
+	 * @Route("/{class<\w+>}/{id<\d+>}/{name<\w+>}/form", name="object_form", methods={"POST"})
+	 */
+	public function objectForm(Request $request, string $name, string $class, int $id, ObjectService $oObjectService, FormFactoryInterface $oFormFactory) : Response
+	{
+		// retrieve object
+		try{
+			$oObject= $oObjectService->getObject($class, $id);
+		}
+		catch(Exception $e){
+			throw $this->createNotFoundException("The $class $id does not exist");
+		}
+
+		// decode data
+		$aData = json_decode($request->getContent(), true);
+
+		// create object form
+		$oForm = $oFormFactory->createNamed($name, ObjectType::class, $oObject, [
+			'object_class' => $class,
+			'locked_attributes' => $aData['locked_attributes'],
+			'attr' => [
+				'data-reload-url' => $this->generateUrl('object_reload', [
+					'class' => $class,
+					'id' => $id
+				])
+			]
+		]);
+
+		// handle HTTP request
+		$oForm->handleRequest($request);
+
+		// submitted and valid
+		if ($oForm->isSubmitted() && $oForm->isValid()) {
+
+			// retrieve object
+			$oObject = $oForm->getData();
+
+			try {
+				// handle link set (apply DbInsert, DbDelete, DbUpdate) could be automatic ?
+				$oObjectService->handleLinkSetDB($oObject);
+
+				// save object
+				$oObject->DBUpdate();
+			}
+			catch(Exception $e){
+				throw new HttpException(500, 'Error while trying to save object');
+			}
+
+			// redirect to view object
+			return new JsonResponse();
+		}
+
+		// return object form
+		return new JsonResponse([
+			'template' => $this->renderView('DI/form.html.twig', [
+				'id' => $id,
+				'class' => $class,
+				'form' => $oForm->createView(),
+			])
+		]);
+	}
 
 	/**
 	 * @Route("/{class<\w+>}/{id<\d+>}/reload", name="object_reload")
 	 */
-	public function objectReload(Request $request, string $class, int $id) : Response
+	public function objectReload(Request $request, string $class, int $id, ObjectService $oObjectService) : Response
 	{
-		// retrieve person
+		// retrieve object
 		try{
-			$oObject = MetaModel::GetObject($class, $id);
+			$oObject= $oObjectService->getObject($class, $id);
 		}
 		catch(Exception $e){
 			throw $this->createNotFoundException("The $class $id does not exist");
 		}
 
 		// create form with request data (dependent field)
-		$oForm = $this->createForm(ObjectSingleAttributeType::class, $oObject, [
+		$oForm = $this->createForm(ObjectType::class, $oObject, [
 			'object_class' => $class,
-			'att_code' => $request->get('dependency_att_code')
 		]);
 
 		// handle form data
@@ -161,8 +225,8 @@ class Controller extends AbstractController
 			'att_code' => $request->get('att_code')
 		]);
 
-		// return person edition form
-		return $this->renderForm('DI/object/object_single_attribute.html.twig', [
+		// return object form
+		return $this->renderForm('DI/form.html.twig', [
 			'form' => $oForm,
 		]);
 	}
@@ -178,7 +242,7 @@ class Controller extends AbstractController
 		// handle HTTP request
 		$oForm->handleRequest($request);
 
-		// return person edition form
+		// return object form
 		return $this->renderForm('DI/configuration/edit.html.twig', [
 			'form' => $oForm
 		]);

@@ -1,138 +1,128 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <link rel="shortcut icon" href="{{ asset_image('DI/flask-adaptive.svg') }}">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <script src=" https://releases.jquery.com/git/ui/jquery-ui-git.js"></script>
-    <script src="{{ asset_js('ckeditor/ckeditor.js') }}"></script>
-    <script src="{{ asset_js('DI/form.js') }}"></script>
-    <script src="{{ asset_js('DI/text_widget.js') }}"></script>
-    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
-    <script src="https://kit.fontawesome.com/f2d58012d0.js" crossorigin="anonymous"></script>
 
-    <style>
-        body{
-            font-family: 'Montserrat';
-        }
-        .combodo-row{
-            display: flex;
-        }
-        .combodo-row fieldset{
-            flex-grow: 1;
-        }
-        .combodo-column{
-            padding: 10px;
-        }
-        .combodo-field-set{
-            border: #b7b7b7 dashed 1px;
-            padding: 10px;
-            border-radius: 10px;
-        }
-        .combodo-field-set-label{
-            font-weight: bold;
-            border-bottom: 2px solid #b7b7b7;
-            margin-bottom: 10px;
-        }
-        .loading{
-            position: relative;
-        }
-        .loading:after{
-            content: 'loading...';
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background-color: #0d6efd11;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-        }
-        label.required:after{
-            content: ' *';
-            color: red;
-        }
-        form{
-            background-color: #f8f8f8;
-            border-radius: 10px;
-            padding: 5px;
-        }
-        form.actions button,a{
-            margin: 0 3px;
-        }
-        [data-block="container"]:has(.test:empty) {
-            display: none;
-        }
-        .z_list_list{
-            display: flex;
-        }
-    </style>
-    {% block head %}{% endblock %}
+    <head>
 
-    <script>
+        {# page #}
+        <title>{% block title %}{% endblock %}</title>
+        <link rel="shortcut icon" href="{{ asset_image('DI/flask-adaptive.svg') }}">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        const addFormToCollection = (e) => {
+        {# lib #}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <script src=" https://releases.jquery.com/git/ui/jquery-ui-git.js"></script>
+        <script src="{{ asset_js('ckeditor/ckeditor.js') }}"></script>
+        <script src="https://kit.fontawesome.com/f2d58012d0.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
 
-            const collectionHolder = document.querySelector('.' + e.currentTarget.dataset.collectionHolderClass);
+        {# css #}
+        <link href='{{ asset_css('DI/app.css') }}' rel='stylesheet'>
 
-            const item = document.createElement('tr');
+        {# JS #}
+        <script src="{{ asset_js('DI/toolkit.js') }}"></script>
+        <script src="{{ asset_js('DI/app.js') }}"></script>
+        <script src="{{ asset_js('DI/collection.js') }}"></script>
+        <script src="{{ asset_js('DI/form.js') }}"></script>
+        <script src="{{ asset_js('DI/widget.js') }}"></script>
 
-            item.innerHTML = collectionHolder
-                    .dataset
-                    .prototype
-                    .replace(
-                            /__name__/g,
-                            collectionHolder.dataset.index
-                    );
+        {# - BLOCK HEAD - #}
+        {% block head %}{% endblock %}
 
-            collectionHolder.appendChild(item);
+    </head>
 
-            collectionHolder.dataset.index++;
-        };
+    <body data-bs-theme="light">
 
-    </script>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#"><img src="{{ asset_image('DI/flask-solid.svg') }}" width="24px"> Router / DI / Forms</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{{ path('home') }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ path('object_view',  {'class': 'Person', 'id': 1}) }}" class="nav-link">View Person</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ path('object_json',  {'class': 'Person', 'id': 1}) }}" class="nav-link" target="_blank">View Person (JSON)</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ path('object_edit',  {'class': 'Person', 'id': 1}) }}" class="nav-link">Edit Person</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ path('object_edit',  {'class': 'UserRequest', 'id': 1}) }}" class="nav-link">Edit UserRequest</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ path('configuration_edit') }}" class="nav-link">Edit Configuration</a>
-                    </li>
-                </ul>
-                <form class="actions d-flex">
-                    {% block actions %}{% endblock %}
-                </form>
+        <!-- nav -->
+        <nav class="navbar navbar-expand-lg fixed-top bg-body-tertiary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#"><img class="app_icon" src="{{ asset_image('DI/flask-solid.svg') }}" width="24px"> Forms SDK</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="{{ path('home') }}">Home</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Edit Object
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'Organization', 'id': 1}) }}">Organization</a></li>
+                                <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'Person', 'id': 1}) }}">Person</a></li>
+                                <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'User', 'id': 1}) }}">User</a></li>
+                                <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'UserRequest', 'id': 1}) }}">UserRequest</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ path('configuration_edit') }}" class="nav-link">Edit Configuration</a>
+                        </li>
+                    </ul>
+                    <div>
+                        <button id="dark_mode" type="button" class="btn" role="button" data-bs-toggle="button" aria-pressed="false"><i class="fa-solid fa-moon text-warning"></i></button>
+                    </div>
+                    <form class="actions d-flex">
+                        {% block actions %}{% endblock %}
+                    </form>
+                </div>
+            </div>
+        </nav>
+
+        <div class="m-3">
+
+            {# - BLOCK BODY - #}
+            {% block body %}{% endblock %}
+
+        </div>
+
+        <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3">
+
+            {# - BLOCK TOASTS - #}
+            {% block toasts %}{% endblock %}
+
+        </div>
+
+        <!-- Full screen modal -->
+        <div class="modal fade" id="object_modal" tabindex="-1" aria-labelledby="object_modal1" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-4" id="exampleModalFullscreenLabel">Create object</h1>
+                        <div>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Confirm">Confirm</button>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                </div>
             </div>
         </div>
-    </nav>
-    <div class="m-3">
-        {% block body %}{% endblock %}
-    </div>
-    <div class="toast-container position-static">
-    </div>
-</body>
+
+
+        <script>
+
+            // Toolkit
+            const oToolkit = new Toolkit();
+            oToolkit.init();
+
+            // App initialization
+            const oApp = new App();
+            oApp.init();
+
+            $(document).ready(function(e) {
+
+                {# - BLOCK READY SCRIPTS - #}
+                {% block ready_scripts %}{% endblock %}
+
+            });
+
+        </script>
+
+    </body>
+
 </html>
