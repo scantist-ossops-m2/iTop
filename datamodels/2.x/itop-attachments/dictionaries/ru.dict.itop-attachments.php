@@ -84,6 +84,6 @@ Dict::Add('RU RU', 'Russian', 'Русский', array(
 	'Class:TriggerOnAttachmentDownload+'                      => 'Trigger on object\'s attachment download of [a child class of] the given class~~',
 	'Class:TriggerOnAttachmentCreate'                         => 'Trigger (on object\'s attachment create)~~',
 	'Class:TriggerOnAttachmentCreate+'                        => 'Trigger on object\'s attachment create~~',
-	'Class:TriggerOnAttachmentCreate/Attribute:filter_class'  => 'Целевой класс',
-	'Class:TriggerOnAttachmentCreate/Attribute:filter_class+' => 'Класс объектов, для которых будет срабатывать данный триггер',
+	'Class:TriggerOnAttachmentDelete'                         => 'Trigger (on object\'s attachment delete)~~',
+	'Class:TriggerOnAttachmentDelete+'                        => 'Trigger on object\'s attachment delete~~',
 ));

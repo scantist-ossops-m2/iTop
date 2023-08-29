@@ -92,6 +92,6 @@ Dict::Add('FR FR', 'French', 'Français', array(
 	'Class:TriggerOnAttachmentDownload+'                      => '',
 	'Class:TriggerOnAttachmentCreate'                         => 'Déclencheur sur la création d\'une pièce jointe',
 	'Class:TriggerOnAttachmentCreate+'                        => '',
-	'Class:TriggerOnAttachmentCreate/Attribute:filter_class'  => 'Classe cible',
-	'Class:TriggerOnAttachmentCreate/Attribute:filter_class+' => 'Classe d\'objets allant activer ce déclencheur',
+	'Class:TriggerOnAttachmentDelete'                         => 'Déclencheur sur la suppression d\'une pièce jointe',
+	'Class:TriggerOnAttachmentDelete+'                        => '',
 ));

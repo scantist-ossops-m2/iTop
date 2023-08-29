@@ -98,6 +98,6 @@ Dict::Add('DE DE', 'German', 'Deutsch', array(
 	'Class:TriggerOnAttachmentDownload+'                      => 'Trigger für das Herunterladen des Attachments der angegebenen Klasse oder einer Unterklasse',
 	'Class:TriggerOnAttachmentCreate'                         => 'Trigger (on object\'s attachment create)~~',
 	'Class:TriggerOnAttachmentCreate+'                        => 'Trigger on object\'s attachment create~~',
-	'Class:TriggerOnAttachmentCreate/Attribute:filter_class'  => 'Zielklasse',
-	'Class:TriggerOnAttachmentCreate/Attribute:filter_class+' => '',
+	'Class:TriggerOnAttachmentDelete'                         => 'Trigger (on object\'s attachment delete)~~',
+	'Class:TriggerOnAttachmentDelete+'                        => 'Trigger on object\'s attachment delete~~',
 ));
