@@ -103,6 +103,7 @@ class AttributeBuilder
 			$aFormType['options']['allow_target_creation'] = $oAttributeDefinition->AllowTargetCreation();
 			$aFormType['options']['object_class'] =  $oAttributeDefinition->GetTargetClass();
 			$aFormType['options']['att_code'] =  $oAttributeDefinition->GetCode();
+			$aFormType['options']['is_locked'] = $bIsLocked;
 			try{
 				$oObjectsSet = MetaModel::GetAllowedValuesAsObjectSet($oAttributeDefinition->GetHostClass(), $oAttributeDefinition->GetCode(), []);
 				$aFormType['options']['choices'] = $this->oObjectService->ToChoices($oObjectsSet);
@@ -155,7 +156,7 @@ class AttributeBuilder
 			$aFormType['options']['is_abstract'] = MetaModel::IsAbstract(LinkSetModel::GetTargetClass($oAttributeDefinition));
 			$aFormType['options']['target_class'] = LinkSetModel::GetTargetClass($oAttributeDefinition);
 			if($aFormType['options']['is_abstract']){
-				$aFormType['options']['object_classes'] = MetaModel::EnumChildClasses(LinkSetModel::GetTargetClass($oAttributeDefinition));
+				$aFormType['options']['object_classes'] = $this->oObjectService->listConcreteChildClasses(LinkSetModel::GetTargetClass($oAttributeDefinition));
 			}
 			$aFormType['options']['entry_options'] = [
 				'object_class' => $oAttributeDefinition->GetLinkedClass(),

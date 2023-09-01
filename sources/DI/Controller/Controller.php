@@ -3,7 +3,7 @@
 namespace Combodo\iTop\DI\Controller;
 
 use Combodo\iTop\DI\Form\Type\Compound\ConfigurationType;
-use Combodo\iTop\DI\Form\Type\Compound\ObjectSingleAttributeType;
+use Combodo\iTop\DI\Form\Type\Compound\PartialObjectType;
 use Combodo\iTop\DI\Form\Type\Compound\ObjectType;
 use Combodo\iTop\DI\Services\ObjectService;
 use Exception;
@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class Controller extends AbstractController
 {
@@ -209,8 +210,9 @@ class Controller extends AbstractController
 		}
 
 		// create form with request data (dependent field)
-		$oForm = $this->createForm(ObjectType::class, $oObject, [
+		$oForm = $this->createForm(PartialObjectType::class, $oObject, [
 			'object_class' => $class,
+			'att_codes' => explode(',', $request->get('dependency_att_codes'))
 		]);
 
 		// handle form data
@@ -220,9 +222,9 @@ class Controller extends AbstractController
 		$oObject->ComputeValues();
 
 		// create a new form for affected field with updated (but not persist) data
-		$oForm = $this->createForm(ObjectSingleAttributeType::class, $oObject, [
+		$oForm = $this->createForm(PartialObjectType::class, $oObject, [
 			'object_class' => $class,
-			'att_code' => $request->get('att_code')
+			'att_codes' => explode(',', $request->get('att_codes'))
 		]);
 
 		// return object form

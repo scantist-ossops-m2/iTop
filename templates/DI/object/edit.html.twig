@@ -46,7 +46,9 @@
 
     {# Form #}
     const oForm = new Form(oWidget);
-    oForm.handleElement(document);
+    document.querySelectorAll('form').forEach((formEl) => {
+        oForm.handleElement(formEl);
+    });
 
     {# Collection #}
     const oCollection = new Collection(oForm, '{{ path('object_form', {'class': 'object_class', 'id' : 0, 'name': 'form_name'}) }}');

@@ -12,7 +12,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  * Used to handle depends on fields.
  *
  */
-class ObjectSingleAttributeType extends AbstractType
+class PartialObjectType extends AbstractType
 {
 	/** @var ObjectFormListener object form modifier */
 	private ObjectFormListener $oObjectFormModifier;
@@ -37,7 +37,7 @@ class ObjectSingleAttributeType extends AbstractType
 	{
 		$resolver->setDefaults( [
 			'object_class' => null,
-			'att_code' => null
+			'att_codes' => null
 		]);
 	}
 
@@ -46,11 +46,15 @@ class ObjectSingleAttributeType extends AbstractType
 	 */
 	public function buildForm(FormBuilderInterface $builder, array $options): void
 	{
-		// build form from options
-		$sFormType = $this->oAttributeBuilder->createAttribute($options['object_class'], $options['att_code']);
+		// add requested attributes form types...
+		foreach ($options['att_codes'] as $sAttCode){
 
-		// add form field
-		$builder->add($options['att_code'], $sFormType['type'], $sFormType['options']);
+			// create attribute type
+			$sFormType = $this->oAttributeBuilder->createAttribute($options['object_class'], $sAttCode, null);
+
+			// build form type
+			$builder->add($sAttCode, $sFormType['type'], $sFormType['options']);
+		}
 
 		// dynamic form handling
 		$builder->addEventSubscriber($this->oObjectFormModifier);

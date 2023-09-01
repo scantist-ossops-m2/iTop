@@ -9,6 +9,7 @@ use DBObject;
 use DBObjectSet;
 use MetaModel;
 use ormLinkSet;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class ObjectService
 {
@@ -18,16 +19,20 @@ class ObjectService
 	/** @var string database name */
 	private string $sDbName;
 
+	/** @var \Symfony\Component\Stopwatch\Stopwatch  */
+	private Stopwatch $oStopWatch;
+
 	/**
 	 * Constructor.
 	 *
 	 * @param $sDbHost
 	 * @param $sDbName
 	 */
-	public function __construct($sDbHost, $sDbName)
+	public function __construct($sDbHost, $sDbName, Stopwatch $oStopWatch)
 	{
 		$this->sDbHost = $sDbHost;
 		$this->sDbName = $sDbName;
+		$this->oStopWatch = $oStopWatch;
 	}
 
 	/**
@@ -61,6 +66,8 @@ class ObjectService
 	 */
 	public function ToChoices(DBObjectSet $oObjectsSet) : array
 	{
+		$this->oStopWatch->start('ToChoices');
+
 		$aChoices = [];
 
 		// Retrieve friendly name complementary specification
@@ -75,10 +82,12 @@ class ObjectService
 		$oObjectsSet->OptimizeColumnLoad([$oObjectsSet->GetClassAlias() => $aDefaultFieldsToLoad]);
 
 		$i = 0;
-		while ($i < 30 && $oObj = $oObjectsSet->Fetch()) {
+		while ($i < 10 && $oObj = $oObjectsSet->Fetch()) {
 			$aChoices[$oObj->GetName()] = $oObj->GetKey();
 			$i++;
 		}
+
+		$this->oStopWatch->stop('ToChoices');
 
 		return $aChoices;
 	}
@@ -142,5 +151,14 @@ class ObjectService
 				}
 			}
 		}
+	}
+
+
+	public function listConcreteChildClasses(string $sObjectClass)
+	{
+		$aChildClasses = MetaModel::EnumChildClasses($sObjectClass);
+		return array_filter($aChildClasses, function ($sChildClass){
+			return !MetaModel::IsAbstract($sChildClass);
+		});
 	}
 }

@@ -35,6 +35,7 @@ class ExternalKeyType extends AbstractType implements IFormTypeOptionModifier
 			'allow_target_creation' => false,
 			'object_class' => null,
 			'att_code' => null,
+			'is_locked' => false,
 		]);
 	}
 
@@ -54,9 +55,16 @@ class ExternalKeyType extends AbstractType implements IFormTypeOptionModifier
 	public function getNewOptions(array $aInitialOptions, DBObject $oObject) : array
 	{
 		try{
-//			$iVal = $oObject->Get($aInitialOptions['att_code']); // because we can't list all items du to performance, we want to force current value to be present, even if it's not part of the result
-			$oObjectsSet = MetaModel::GetAllowedValuesAsObjectSet(get_class($oObject), $aInitialOptions['att_code'], ['this' => $oObject]/*, null, $iVal*/);
+			$iVal = $oObject->Get($aInitialOptions['att_code']); // because we can't list all items du to performance, we want to force current value to be present, even if it's not part of the result
+			$oObjectsSet = MetaModel::GetAllowedValuesAsObjectSet(get_class($oObject), $aInitialOptions['att_code'], ['this' => $oObject]);
 			$aInitialOptions['choices'] = $this->oObjectService->ToChoices($oObjectsSet);
+			if($aInitialOptions['is_locked']){
+				$aInitialOptions['choices']['Object in creation'] = 0;
+			}
+
+			// !!! ensure current value is part of result
+			$object = MetaModel::GetObject($aInitialOptions['object_class'], $iVal);
+			$aInitialOptions['choices'][$object->GetName()] = $iVal;
 		}
 		catch(Exception $e){
 

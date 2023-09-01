@@ -52,62 +52,96 @@ const Form = function(oWidget){
 	}
 
 	/**
-	 * changeOptions.
+	 * updateField.
 	 *
 	 * @param oEvent
-	 * @param sId
+	 * @param oForm
+	 * @param oElement
+	 * @param aDependentAttCodes
 	 * @returns {Promise<void>}
 	 */
-	async function changeOptions(oEvent, sId){
+	async function updateField(oEvent, oForm, oElement, aDependentAttCodes){
 
-		// retrieve field that's need to be updated
-		const oDependentField = document.getElementById(sId);
-		const sName = oDependentField.getAttribute('name');
-		const sAttCode = oDependentField.getAttribute('data-att-code');
+		const aDependenciesAttCodes = [];
 
-		// retrieve parent form
-		const oForm = oDependentField.closest('form');
+		/////////////////////////////////
+		// I - CONSTRUCT DEPENDENCIES (The original event target but also other required dependencies)
 
-		// retrieve field container
-		const oContainer = oDependentField.closest(aSelectors.dataBlockContainer);
+		// the value of the field change, sAttCodes needs to be updated
+		aDependentAttCodes.forEach((sAttCode) => {
 
-		// set field container loading state
-		oContainer.classList.add('loading');
+			// field to update
+			const oDependsOnElement = oElement.querySelector(String.format(aSelectors.dataAttCode, sAttCode));
 
-		// prepare request body
-		const oFormData = new FormData(oForm);
+			// retrieve field container
+			const oContainer = oDependsOnElement.closest(aSelectors.dataBlockContainer);
+
+			// set field container loading state
+			oContainer.classList.add('loading');
+
+			// retrieve dependency data
+			const sDependsOn = oDependsOnElement.dataset.dependsOn;
+
+			// may have multiple dependencies
+			let aDependsEls = sDependsOn.split(DEPENDS_ON_SEPARATOR);
+
+			aDependsEls.forEach((sAtt) => {
+				if(!aDependenciesAttCodes.includes(sAtt)){
+					aDependenciesAttCodes.push(sAtt);
+				}
+			});
+		});
+
+		/////////////////////////////////
+		// II - PREPARE RELOAD REQUEST
+
+		// prepare quest data
 		let sRequestBody = '';
-		function encode(s){ return encodeURIComponent(s).replace(/%20/g,'+'); }
-		for(let pair of oFormData.entries()){
-			if(typeof pair[1]=='string'){
-				sRequestBody += (sRequestBody?'&':'') + encode(pair[0])+'='+encode(pair[1]);
+		let $bFirst = true;
+
+		// iterate throw dependencies...
+		aDependenciesAttCodes.forEach(function(sAtt) {
+
+			const oDependsOnElement = oElement.querySelector(String.format(aSelectors.dataAttCode, sAtt));
+			if(!$bFirst){
+				sRequestBody += '&';
 			}
-		}
-		sRequestBody += '&att_code=' + oDependentField.dataset.attCode;
-		sRequestBody += '&dependency_att_code=' + oEvent.target.dataset.attCode;
+			sRequestBody += 'partial_object['+oDependsOnElement.dataset.attCode + ']=' + oDependsOnElement.value;
+			$bFirst = false;
+		});
+
+		sRequestBody += '&att_codes=' + aDependentAttCodes.join(',');
+		sRequestBody += '&dependency_att_codes=' + aDependenciesAttCodes.join(',');
+
+		/////////////////////////////////
+		// III - UPDATE THE FORM
 
 		// update fom
-		const sUpdateFormResponse = await updateForm(sRequestBody, oForm.dataset.reloadUrl, oForm.getAttribute('method'));
-		const oHtml = oToolkit.parseTextToHtml(sUpdateFormResponse);
-		let oSingle = oHtml.getElementById('object_single_attribute');
-		oContainer.replaceWith(oSingle.firstChild);
 
-		// remove loading state
-		oContainer.classList.remove('loading');
+		const sReloadResponse = await updateForm(sRequestBody, oForm.dataset.reloadUrl, oForm.getAttribute('method'));
 
-		// update new dependent field
-		const oNewDependentField = document.querySelector(`[id$="${sAttCode}"]`);
-		oNewDependentField.setAttribute('name', sName);
-		oNewDependentField.setAttribute('id', sId);
-		oNewDependentField.setAttribute('data-att-code', sAttCode);
+		const oReloadedElement = oToolkit.parseTextToHtml(sReloadResponse);
 
-		// init dynamics
-		initDependencies(oContainer);
-		initDynamicsInvisible(oContainer);
-		initDynamicsDisable(oContainer);
+		let oPartial = oReloadedElement.getElementById('partial_object');
 
-		// init widgets
-		oWidget.handleElement(oContainer);
+		aDependentAttCodes.forEach((sAtt) => {
+
+			// dependent element
+			const oDependentElement = oElement.querySelector(String.format(aSelectors.dataAttCode, sAtt));
+			const oContainer = oDependentElement.closest(aSelectors.dataBlockContainer);
+			const sId = oDependentElement.getAttribute('id');
+			const sName = oDependentElement.getAttribute('name');
+
+			// new element
+			const oNewElement = oPartial.querySelector(String.format(aSelectors.dataAttCode, sAtt));
+			const oNewContainer = oNewElement.closest(aSelectors.dataBlockContainer);
+			oNewElement.setAttribute('id', sId);
+			oNewElement.setAttribute('name', sName);
+
+			// replace element
+			oContainer.replaceWith(oNewContainer);
+		});
+
 	}
 
 	/**
@@ -117,7 +151,13 @@ const Form = function(oWidget){
 	 */
 	function initDependencies(oElement){
 
-		// get all dependent fields
+		// retrieve parent form
+		const oForm = oElement.closest('form');
+
+		// compute dependencies map
+		let aMapDependencies = {};
+
+		// get all field with dependencies
 		const aDependentsFields = oElement.querySelectorAll(aSelectors.dataDependsOn);
 
 		// iterate throw dependent fields...
@@ -129,18 +169,30 @@ const Form = function(oWidget){
 			// may have multiple dependencies
 			let aDependsEls = sDependsOn.split(DEPENDS_ON_SEPARATOR);
 
-			// iterate throw dependencies...
+			// iterate throw the dependencies...
 			aDependsEls.forEach(function(sEl){
 
-				// retrieve dependency
-				const oDependsOnElement = oElement.querySelector(`[id$="${sEl}"]`);
-
-				// listen for changes
-				if(oDependsOnElement != null){
-					oDependsOnElement.addEventListener('change', (event) => changeOptions(event, oDependentField.id));
+				// add dependency att code to map
+				if(!(sEl in aMapDependencies)){
+					aMapDependencies[sEl] = [];
 				}
+				aMapDependencies[sEl].push(oDependentField.dataset.attCode);
+
 			});
+
 		});
+
+		// iterate throw dependencies map...
+		for(let sAttCode in aMapDependencies){
+
+			// retrieve corresponding field
+			const oDependsOnElement = oElement.querySelector(String.format(aSelectors.dataAttCode, sAttCode));
+
+			// listen changes
+			if(oDependsOnElement !== null){
+				oDependsOnElement.addEventListener('change', (event) => updateField(event, oForm, oElement, aMapDependencies[sAttCode]));
+			}
+		}
 	}
 
 	/**

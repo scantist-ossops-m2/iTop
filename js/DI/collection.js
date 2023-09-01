@@ -130,7 +130,9 @@ const Collection = function(oForm, objectFormUrl){
 		.then((data) => {
 			const oModalBody = $('#object_modal .modal-body');
 			oModalBody.html(data.template);
-			oForm.handleElement(oModalBody[0]);
+			oModalBody[0].querySelectorAll('form').forEach((formEl) => {
+				oForm.handleElement(formEl);
+			});
 		})
 		.catch(function (error) {
 			console.error(error);
