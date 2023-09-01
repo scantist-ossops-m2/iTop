@@ -2,7 +2,6 @@
 
 namespace Combodo\iTop\DI\Controller;
 
-use Combodo\iTop\DI\Form\Type\Compound\ConfigurationType;
 use Combodo\iTop\DI\Form\Type\Compound\PartialObjectType;
 use Combodo\iTop\DI\Form\Type\Compound\ObjectType;
 use Combodo\iTop\DI\Services\ObjectService;
@@ -15,25 +14,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Stopwatch\Stopwatch;
 
-class Controller extends AbstractController
+/**
+ * Object controller.
+ *
+ */
+class ObjectController extends AbstractController
 {
-	/**
-	 * @Route ("/", name="root")
-	 */
-	public function root(): Response
-	{
-		return $this->redirectToRoute('home');
-	}
 
-	/**
-	 * @Route ("/home", name="home")
-	 */
-	public function home(): Response
-	{
-		return $this->render('DI/home.html.twig');
-	}
 
 	/**
 	 * @Route ("/{class<\w+>}/{id<\d+>}/view", name="object_view")
@@ -83,7 +71,7 @@ class Controller extends AbstractController
 	{
 		// retrieve object
 		try{
-			$oObject= $oObjectService->getObject($class, $id);
+			$oObject = $oObjectService->getObject($class, $id);
 		}
 		catch(Exception $e){
 			throw $this->createNotFoundException("The $class $id does not exist");
@@ -103,15 +91,19 @@ class Controller extends AbstractController
 		// submitted and valid
 		if ($oForm->isSubmitted() && $oForm->isValid()) {
 
-			// retrieve object
-			$oObject = $oForm->getData();
-
 			try {
+
 				// handle link set (apply DbInsert, DbDelete, DbUpdate) could be automatic ?
 				$oObjectService->handleLinkSetDB($oObject);
 
 				// save object
-				$oObject->DBUpdate();
+				if($id === 0){
+					$id = $oObject->DBInsert();
+				}
+				else{
+					$oObject->DBUpdate();
+				}
+
 			}
 			catch(Exception $e){
 				throw new HttpException(500, 'Error while trying to save object');
@@ -141,7 +133,7 @@ class Controller extends AbstractController
 	{
 		// retrieve object
 		try{
-			$oObject= $oObjectService->getObject($class, $id);
+			$oObject = $oObjectService->getObject($class, $id);
 		}
 		catch(Exception $e){
 			throw $this->createNotFoundException("The $class $id does not exist");
@@ -167,9 +159,6 @@ class Controller extends AbstractController
 
 		// submitted and valid
 		if ($oForm->isSubmitted() && $oForm->isValid()) {
-
-			// retrieve object
-			$oObject = $oForm->getData();
 
 			try {
 				// handle link set (apply DbInsert, DbDelete, DbUpdate) could be automatic ?
@@ -203,7 +192,7 @@ class Controller extends AbstractController
 	{
 		// retrieve object
 		try{
-			$oObject= $oObjectService->getObject($class, $id);
+			$oObject = $oObjectService->getObject($class, $id);
 		}
 		catch(Exception $e){
 			throw $this->createNotFoundException("The $class $id does not exist");
@@ -233,20 +222,4 @@ class Controller extends AbstractController
 		]);
 	}
 
-	/**
-	 * @Route("/configuration/edit", name="configuration_edit")
-	 */
-	public function configurationEdit(Request $request) : Response
-	{
-		// create object form
-		$oForm = $this->createForm(ConfigurationType::class, []);
-
-		// handle HTTP request
-		$oForm->handleRequest($request);
-
-		// return object form
-		return $this->renderForm('DI/configuration/edit.html.twig', [
-			'form' => $oForm
-		]);
-	}
 }

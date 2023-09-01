@@ -24,9 +24,6 @@
         {# JS #}
         <script src="{{ asset_js('DI/toolkit.js') }}"></script>
         <script src="{{ asset_js('DI/app.js') }}"></script>
-        <script src="{{ asset_js('DI/collection.js') }}"></script>
-        <script src="{{ asset_js('DI/form.js') }}"></script>
-        <script src="{{ asset_js('DI/widget.js') }}"></script>
 
         {# - BLOCK HEAD - #}
         {% block head %}{% endblock %}
@@ -56,6 +53,17 @@
                                 <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'Person', 'id': 1}) }}">Person</a></li>
                                 <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'User', 'id': 1}) }}">User</a></li>
                                 <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'UserRequest', 'id': 1}) }}">UserRequest</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                New Object
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'Organization', 'id': 0}) }}">Organization</a></li>
+                                <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'Person', 'id': 0}) }}">Person</a></li>
+                                <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'User', 'id': 0}) }}">User</a></li>
+                                <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'UserRequest', 'id': 0}) }}">UserRequest</a></li>
                             </ul>
                         </li>
                         <li class="nav-item">
@@ -107,7 +115,7 @@
         <script>
 
             // Toolkit
-            const oToolkit = new Toolkit();
+            var oToolkit = new Toolkit();
             oToolkit.init();
 
             // App initialization

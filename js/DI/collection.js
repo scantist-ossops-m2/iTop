@@ -79,10 +79,13 @@ const Collection = function(oForm, objectFormUrl){
 			);
 
 		// create item element
-		const item = oToolkit.createElementFromHtml(text);
+		const fragment = oToolkit.createElementFromHtml(text);
+		collectionHolder.appendChild(fragment);
+
+		// form handling
+		const item = collectionHolder.querySelector('tr:last-child');
 		listenRemoveItem(item);
 		oForm.handleElement(item);
-		collectionHolder.appendChild(item);
 
 		// store new index
 		collectionHolder.dataset.index++;

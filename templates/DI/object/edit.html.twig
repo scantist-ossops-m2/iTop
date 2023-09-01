@@ -6,13 +6,19 @@
 
 {% block head %}
 
+    <script src="{{ asset_js('DI/widget.js') }}"></script>
+    <script src="{{ asset_js('DI/dynamic.js') }}"></script>
+    <script src="{{ asset_js('DI/form.js') }}"></script>
+    <script src="{{ asset_js('DI/collection.js') }}"></script>
     <script src="{{ asset_js('DI/widget/text_widget.js') }}"></script>
 
 {% endblock %}
 
 {% block actions %}
-    <a href="{{ path('object_edit',  {'class': class, 'id': id - 1}) }}" class="btn btn-secondary btn {% if id <= 1 %} disabled {% endif %}"><i class="fa-solid fa-arrow-left"></i></a>
-    <a href="{{ path('object_edit',  {'class': class, 'id': id + 1}) }}" class="btn btn-secondary btn"><i class="fa-solid fa-arrow-right"></i></a>
+    {% if id !=  0 %}
+        <a href="{{ path('object_edit',  {'class': class, 'id': id - 1}) }}" class="btn btn-secondary btn {% if id <= 1 %} disabled {% endif %}"><i class="fa-solid fa-arrow-left"></i></a>
+        <a href="{{ path('object_edit',  {'class': class, 'id': id + 1}) }}" class="btn btn-secondary btn"><i class="fa-solid fa-arrow-right"></i></a>
+    {% endif %}
     <button type="reset" class="btn-secondary btn" form="object_form">Reset</button>
     <button type="submit" class="btn-primary btn" form="object_form">Save</button>
 {% endblock %}
@@ -42,10 +48,12 @@
 
     {# Widget #}
     const oWidget = new Widget();
-    oWidget.handleElement(document);
+
+    {# Dynamic #}
+    const oDynamic = new Dynamic();
 
     {# Form #}
-    const oForm = new Form(oWidget);
+    const oForm = new Form(oWidget, oDynamic);
     document.querySelectorAll('form').forEach((formEl) => {
         oForm.handleElement(formEl);
     });

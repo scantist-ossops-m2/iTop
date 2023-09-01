@@ -2,17 +2,16 @@
  * Forms handling.
  *
  * @param oWidget
+ * @param oDynamic
  * @returns {{handleElement: handleElement}}
  * @constructor
  */
-const Form = function(oWidget){
+const Form = function(oWidget, oDynamic){
 
 	const DEPENDS_ON_SEPARATOR = ' ';
 
 	const aSelectors = {
 		dataDependsOn: '[data-depends-on]',
-		dataHideWhen: '[data-hide-when]',
-		dataDisableWhen: '[data-disable-when]',
 		dataBlockContainer: '[data-block="container"]',
 		dataAttCode: '[data-att-code="{0}"]'
 	};
@@ -261,11 +260,9 @@ const Form = function(oWidget){
 	 * @param element
 	 */
 	function handleElement(element){
-		hideEmptyContainers(element);
 		initDependencies(element);
-		initDynamicsInvisible(element);
-		initDynamicsDisable(element);
 		oWidget.handleElement(element);
+		oDynamic.handleElement(element);
 	}
 
 	return {
