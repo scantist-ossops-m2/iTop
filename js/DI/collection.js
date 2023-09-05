@@ -64,11 +64,14 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 	 */
 	function addFormToCollection(e){
 
+		alert('addFormToCollection');
+
 		// retrieve link set container
 		const oContainer = e.currentTarget.closest('.link_set_widget_container');
 
 		// retrieve collection holder
-		const collectionHolder = oContainer.querySelector('.' + e.currentTarget.dataset.collectionHolderClass);
+		const exp = e.currentTarget.dataset.collectionHolderClass.replaceAll(/:/g, '\\:');
+		const collectionHolder = oContainer.querySelector('.' + exp);
 
 		// compute template
 		const text = collectionHolder
@@ -141,6 +144,7 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 			oModalBody.html(data.template);
 			oModalBody[0].querySelectorAll('form').forEach((formEl) => {
 				oForm.handleElement(formEl);
+				handleElement(formEl);
 			});
 		})
 		.catch(function (error) {
@@ -153,8 +157,10 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 	 *
 	 * @param oContainer
 	 */
-	const handleElement = function(oContainer)
+	function handleElement(oContainer)
 	{
+		console.log('collection handleElement ' + oContainer);
+
 		listenAddItem(oContainer);
 		listenCreateItem(oContainer);
 		listenRemoveItem(oContainer);
@@ -168,17 +174,12 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 
 			const oForm = document.querySelector('form[name="new"]');
 
-
 			for(let instanceName in CKEDITOR.instances) {
-
 				CKEDITOR.instances[instanceName].updateElement();
 			}
 
 			const data = new URLSearchParams();
 			for (const pair of new FormData(oForm)) {
-
-				console.log(pair[0] + ' = ' + pair[1]);
-
 				data.append(pair[0], pair[1]);
 			}
 			data.append('locked_attributes', '');

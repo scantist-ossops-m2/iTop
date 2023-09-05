@@ -6,7 +6,6 @@ use Combodo\iTop\DI\Form\Builder\AttributeBuilder;
 use Combodo\iTop\DI\Form\Builder\LayoutBuilder;
 use Dict;
 use MetaModel;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
@@ -58,10 +57,6 @@ class ObjectPresentationService
 		$level = $this->handleLevel($aPresentation, $class, $lockedAttributes);
 		foreach ($level as $key => $value) {
 			$builder->add($key, $value['type'], $value['options']);
-
-//			if(array_key_exists('create_hidden', $value) && $value['create_hidden'] === true){
-//				$builder->add($key,HiddenType::class);
-//			}
 		}
 	}
 

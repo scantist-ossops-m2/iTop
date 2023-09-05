@@ -88,7 +88,6 @@ class AttributeBuilder
 					'class' => $bIsLocked ? 'locked' : ''
 				]
 			],
-			'create_hidden' => $bIsLocked
 		];
 
 		// register dependencies

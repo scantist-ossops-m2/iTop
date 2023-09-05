@@ -8,6 +8,8 @@ use Combodo\iTop\DI\Services\ObjectService;
 use Exception;
 use MetaModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -161,6 +163,12 @@ class ObjectController extends AbstractController
 			]
 		]);
 
+		// locked attributes
+		$oForm->add('locked_attributes', HiddenType::class, [
+			'mapped' => false,
+			'data' => json_encode($aData['locked_attributes'])
+		]);
+
 		// return object form
 		return new JsonResponse([
 			'template' => $this->renderView('DI/form.html.twig', [
@@ -191,6 +199,14 @@ class ObjectController extends AbstractController
 
 		// handle HTTP request
 		$oForm->handleRequest($request);
+
+		// locked attributes
+		$aValue = $request->get('new');
+		$sLockedAttributes = $aValue['locked_attributes'];
+		$aLockedAttributes = json_decode($sLockedAttributes);
+		foreach($aLockedAttributes as $sKey => $sValue){
+			$oObject->Set($sKey, $sValue);
+		}
 
 		// submitted and valid
 		if ($oForm->isSubmitted() && $oForm->isValid()) {
