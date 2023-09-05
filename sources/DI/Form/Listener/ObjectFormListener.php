@@ -191,9 +191,10 @@ class ObjectFormListener implements EventSubscriberInterface
 			$aOptions['disabled'] = true;
 		}
 
-		// ignore fields hidden
+		// ignore fields hidden  ISSUE WITH LINKSET PRESENTATION
 		if ($iFlags & (OPT_ATT_HIDDEN)) {
-			return null;
+//			$aOptions['attr']['class'] = 'd-none';
+//			return null;
 		}
 
 		return $aOptions;

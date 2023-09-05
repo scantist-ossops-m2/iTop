@@ -142,6 +142,11 @@ class ObjectController extends AbstractController
 		// decode data
 		$aData = json_decode($request->getContent(), true);
 
+		// locked attributes
+		foreach($aData['locked_attributes'] as $sKey => $sValue){
+			$oObject->Set($sKey, $sValue);
+		}
+
 		// create object form
 		$oForm = $oFormFactory->createNamed($name, ObjectType::class, $oObject, [
 			'object_class' => $class,
@@ -150,8 +155,38 @@ class ObjectController extends AbstractController
 				'data-reload-url' => $this->generateUrl('object_reload', [
 					'class' => $class,
 					'id' => $id
-				])
+				]),
+				'data-object-class' => $class,
+				'data-att-code' => $aData['att_code']
 			]
+		]);
+
+		// return object form
+		return new JsonResponse([
+			'template' => $this->renderView('DI/form.html.twig', [
+				'id' => $id,
+				'class' => $class,
+				'form' => $oForm->createView(),
+			])
+		]);
+	}
+
+	/**
+	 * @Route("/{class<\w+>}/{id<\d+>}/{name<\w+>}/save", name="object_save", methods={"POST"})
+	 */
+	public function objectSave(Request $request, string $name, string $class, int $id, ObjectService $oObjectService, FormFactoryInterface $oFormFactory) : Response
+	{
+		// retrieve object
+		try{
+			$oObject = $oObjectService->getObject($class, $id);
+		}
+		catch(Exception $e){
+			throw $this->createNotFoundException("The $class $id does not exist");
+		}
+
+		// create object form
+		$oForm = $oFormFactory->createNamed($name, ObjectType::class, $oObject, [
+			'object_class' => $class,
 		]);
 
 		// handle HTTP request
@@ -161,18 +196,32 @@ class ObjectController extends AbstractController
 		if ($oForm->isSubmitted() && $oForm->isValid()) {
 
 			try {
-				// handle link set (apply DbInsert, DbDelete, DbUpdate) could be automatic ?
-				$oObjectService->handleLinkSetDB($oObject);
-
 				// save object
-				$oObject->DBUpdate();
+				if($id === 0){
+					$id = $oObject->DBInsert();
+				}
+				else{
+					$oObject->DBUpdate();
+				}
 			}
 			catch(Exception $e){
 				throw new HttpException(500, 'Error while trying to save object');
 			}
 
-			// redirect to view object
-			return new JsonResponse();
+			// create object form
+			$oForm = $oFormFactory->createNamed($name, ObjectType::class, $oObject, [
+				'object_class' => $class,
+				'z_list' => 'list'
+			]);
+
+			// return object form
+			return new JsonResponse([
+				'template' => $this->renderView('DI/form.html.twig', [
+					'id' => $id,
+					'class' => $class,
+					'form' => $oForm->createView(),
+				])
+			]);
 		}
 
 		// return object form
@@ -198,10 +247,13 @@ class ObjectController extends AbstractController
 			throw $this->createNotFoundException("The $class $id does not exist");
 		}
 
+		$aDependencyAttCodes = explode(',', $request->get('dependency_att_codes'));
+		$aAttCodes = explode(',', $request->get('att_codes'));
+
 		// create form with request data (dependent field)
 		$oForm = $this->createForm(PartialObjectType::class, $oObject, [
 			'object_class' => $class,
-			'att_codes' => explode(',', $request->get('dependency_att_codes'))
+			'att_codes' => array_merge($aDependencyAttCodes, $aAttCodes)
 		]);
 
 		// handle form data
@@ -213,7 +265,7 @@ class ObjectController extends AbstractController
 		// create a new form for affected field with updated (but not persist) data
 		$oForm = $this->createForm(PartialObjectType::class, $oObject, [
 			'object_class' => $class,
-			'att_codes' => explode(',', $request->get('att_codes'))
+			'att_codes' => $aAttCodes
 		]);
 
 		// return object form

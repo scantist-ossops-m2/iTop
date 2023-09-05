@@ -63,8 +63,11 @@ class ExternalKeyType extends AbstractType implements IFormTypeOptionModifier
 			}
 
 			// !!! ensure current value is part of result
-			$object = MetaModel::GetObject($aInitialOptions['object_class'], $iVal);
-			$aInitialOptions['choices'][$object->GetName()] = $iVal;
+			if($iVal > 0){
+				$object = MetaModel::GetObject($aInitialOptions['object_class'], $iVal);
+				$aInitialOptions['choices'][$object->GetName()] = $iVal;
+			}
+
 		}
 		catch(Exception $e){
 

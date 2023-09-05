@@ -3,10 +3,11 @@
  *
  * @param oForm
  * @param objectFormUrl
+ * @param objectSaveUrl
  * @returns {{handleElement: handleElement}}
  * @constructor
  */
-const Collection = function(oForm, objectFormUrl){
+const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 
 	/**
 	 * Listen for add item buttons.
@@ -101,8 +102,12 @@ const Collection = function(oForm, objectFormUrl){
 	 */
 	function createObject(e){
 
+		let objectId = e.currentTarget.closest('form').dataset.objectId;
+
 		// set modal loading state
 		$('#object_modal .modal-body').html('loading...');
+
+		const cont = e.currentTarget.closest('.link_set_widget_container');
 
 		// open modal
 		const myModalAlternative = new bootstrap.Modal('#object_modal', []);
@@ -115,14 +120,15 @@ const Collection = function(oForm, objectFormUrl){
 
 		// prepare request data
 		const aLockedAttributes = {};
-		aLockedAttributes[e.currentTarget.dataset.extKeyToMe] = 0;
+		aLockedAttributes[e.currentTarget.dataset.extKeyToMe] = objectId;
 		const aData = {
-			locked_attributes: aLockedAttributes
+			locked_attributes: aLockedAttributes,
+			att_code: cont.dataset.attCode
 		}
 
 		// fetch url
 		fetch(url, {
-			method: 'post',
+			method: 'POST',
 			headers: {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json'
@@ -153,6 +159,70 @@ const Collection = function(oForm, objectFormUrl){
 		listenCreateItem(oContainer);
 		listenRemoveItem(oContainer);
 	}
+
+
+	function listenSaveModalobject(){
+		const oSave = document.querySelector('[data-action="save_modal_object"]');
+
+		oSave.addEventListener('click', function(e){
+
+			const oForm = document.querySelector('form[name="new"]');
+
+
+			for(let instanceName in CKEDITOR.instances) {
+
+				CKEDITOR.instances[instanceName].updateElement();
+			}
+
+			const data = new URLSearchParams();
+			for (const pair of new FormData(oForm)) {
+
+				console.log(pair[0] + ' = ' + pair[1]);
+
+				data.append(pair[0], pair[1]);
+			}
+			data.append('locked_attributes', '');
+
+			// compute object form url
+			const url = objectSaveUrl
+				.replaceAll('object_class', oForm.dataset.objectClass)
+				.replaceAll('form_name', 'new');
+
+			// fetch url
+			fetch(url, {
+				method: 'POST',
+				body: new URLSearchParams(new FormData(oForm))
+			})
+			.then((response) => response.json())
+			.then((data) => {
+
+				let form = $(data.template);
+
+				console.log(form);
+				//
+				// console.log(oForm.dataset.attCode);
+				//
+				// const fragment = oToolkit.createElementFromHtml(data.template);
+				// const inner = fragment.querySelector('form').innerHTML;
+				// const el = oToolkit.createElementFromHtml(inner);
+				// console.log(el);
+				//
+				// const myModalAlternative = new bootstrap.Modal('#object_modal', []);
+				// myModalAlternative.hide();
+
+				console.log($(`[data-att-code="${oForm.dataset.attCode}"] tbody`));
+
+				$(`[data-att-code="${oForm.dataset.attCode}"] tbody`).append($(form.innerHTML));
+
+			})
+			.catch(function (error) {
+
+				console.error(error);
+			});
+		});
+	}
+
+	listenSaveModalobject();
 
 	return {
 		handleElement

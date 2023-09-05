@@ -57,6 +57,7 @@ class LinkSetType extends AbstractType
 		$view->vars['labels'] = $this->oObjectService->getFormPresentationLabels($options['entry_options']['object_class'], 'list', $options['entry_options']['ext_key_to_me']);
 		$view->vars['object_class'] = $options['entry_options']['object_class'];
 		$view->vars['ext_key_to_me'] = $options['entry_options']['ext_key_to_me'];
+		$view->vars['att_code'] = $options['attr']['data-att-code'];
 		$view->vars['target_class'] = $options['target_class'];
 		$view->vars['is_indirect'] = $options['is_indirect'];
 		$view->vars['is_abstract'] = $options['is_abstract'];

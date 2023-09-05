@@ -32,7 +32,7 @@
 
     <body data-bs-theme="light">
 
-        <!-- nav -->
+        <!-- navbar -->
         <nav class="navbar navbar-expand-lg fixed-top bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand" href="#"><img class="app_icon" src="{{ asset_image('DI/flask-solid.svg') }}" width="24px"> Forms SDK</a>
@@ -80,18 +80,15 @@
             </div>
         </nav>
 
+        {# - BLOCK BODY - #}
         <div class="m-3">
-
-            {# - BLOCK BODY - #}
             {% block body %}{% endblock %}
 
         </div>
 
+        {# - BLOCK TOASTS - #}
         <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3">
-
-            {# - BLOCK TOASTS - #}
             {% block toasts %}{% endblock %}
-
         </div>
 
         <!-- Full screen modal -->
@@ -102,7 +99,7 @@
                         <h1 class="modal-title fs-4" id="exampleModalFullscreenLabel">Create object</h1>
                         <div>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" aria-label="Confirm">Confirm</button>
+                            <button type="button" class="btn btn-primary" data-action="save_modal_object" aria-label="Confirm">Confirm</button>
                         </div>
                     </div>
                     <div class="modal-body">
@@ -112,10 +109,15 @@
         </div>
 
 
+        <div id="test">
+
+
+        </div>
+
         <script>
 
             // Toolkit
-            var oToolkit = new Toolkit();
+            const oToolkit = new Toolkit();
             oToolkit.init();
 
             // App initialization

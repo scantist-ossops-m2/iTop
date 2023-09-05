@@ -91,6 +91,8 @@ const Form = function(oWidget, oDynamic){
 			});
 		});
 
+		const aAllAttCodes = aDependentAttCodes.concat(aDependenciesAttCodes);
+
 		/////////////////////////////////
 		// II - PREPARE RELOAD REQUEST
 
@@ -99,7 +101,7 @@ const Form = function(oWidget, oDynamic){
 		let $bFirst = true;
 
 		// iterate throw dependencies...
-		aDependenciesAttCodes.forEach(function(sAtt) {
+		aAllAttCodes.forEach(function(sAtt) {
 
 			const oDependsOnElement = oElement.querySelector(String.format(aSelectors.dataAttCode, sAtt));
 			if(!$bFirst){
@@ -110,7 +112,7 @@ const Form = function(oWidget, oDynamic){
 		});
 
 		sRequestBody += '&att_codes=' + aDependentAttCodes.join(',');
-		sRequestBody += '&dependency_att_codes=' + aDependenciesAttCodes.join(',');
+		sRequestBody += '&dependency_att_codes=' + aAllAttCodes.join(',');
 
 		/////////////////////////////////
 		// III - UPDATE THE FORM

@@ -79,7 +79,7 @@ class AttributeBuilder
 				'required' => !$oAttributeDefinition->IsNullAllowed(),
 				'disabled' => !$oAttributeDefinition->IsWritable() || $bIsLocked,
 				'attr' => [
-					'data-att-code' => $sCode
+					'data-att-code' => $sCode,
 				],
 				'row_attr' => [
 					'data-block' => 'container'
@@ -87,7 +87,8 @@ class AttributeBuilder
 				'label_attr' => [
 					'class' => $bIsLocked ? 'locked' : ''
 				]
-			]
+			],
+			'create_hidden' => $bIsLocked
 		];
 
 		// register dependencies

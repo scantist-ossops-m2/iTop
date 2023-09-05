@@ -6,6 +6,7 @@ use Combodo\iTop\DI\Form\Builder\AttributeBuilder;
 use Combodo\iTop\DI\Form\Builder\LayoutBuilder;
 use Dict;
 use MetaModel;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
@@ -57,6 +58,10 @@ class ObjectPresentationService
 		$level = $this->handleLevel($aPresentation, $class, $lockedAttributes);
 		foreach ($level as $key => $value) {
 			$builder->add($key, $value['type'], $value['options']);
+
+//			if(array_key_exists('create_hidden', $value) && $value['create_hidden'] === true){
+//				$builder->add($key,HiddenType::class);
+//			}
 		}
 	}
 
@@ -107,7 +112,7 @@ class ObjectPresentationService
 		$aPresentation = MetaModel::GetZListItems($class, $zList);
 		$aPresentation = $this->filterLinkSetpresentation($aPresentation, $class, $sExtKeyToMe);
 
-		$level = $this->handleLevel($aPresentation, $class, null, null);
+		$level = $this->handleLevel($aPresentation, $class, null);
 		$aLabels = [];
 		foreach ($level as $key => $value) {
 			$value['options']['attr']['data-att-code'] = $key;

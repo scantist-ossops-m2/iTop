@@ -27,12 +27,6 @@ class ObjectType extends AbstractType
 	/** @var ObjectPresentationService object presentation service */
 	private ObjectPresentationService $objectPresentationService;
 
-	/** @var \Combodo\iTop\DI\Form\Builder\AttributeBuilder attribute builder */
-	private AttributeBuilder $oAttributeBuilder;
-
-	/** @var \Combodo\iTop\DI\Form\Builder\LayoutBuilder layout builder */
-	private LayoutBuilder $oLayoutBuilder;
-
 	/**
 	 * Constructor.
 	 *
@@ -41,12 +35,10 @@ class ObjectType extends AbstractType
 	 * @param \Combodo\iTop\DI\Form\Builder\AttributeBuilder $oAttributeBuilder
 	 * @param \Combodo\iTop\DI\Form\Builder\LayoutBuilder $oLayoutBuilder
 	 */
-	public function __construct(ObjectFormListener $oObjectFormModifier, ObjectPresentationService $objectPresentationService, AttributeBuilder $oAttributeBuilder, LayoutBuilder $oLayoutBuilder)
+	public function __construct(ObjectFormListener $oObjectFormModifier, ObjectPresentationService $objectPresentationService)
 	{
 		$this->oObjectFormModifier = $oObjectFormModifier;
 		$this->objectPresentationService = $objectPresentationService;
-		$this->oAttributeBuilder = $oAttributeBuilder;
-		$this->oLayoutBuilder = $oLayoutBuilder;
 	}
 
 	/** @inheritdoc  */

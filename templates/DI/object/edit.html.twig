@@ -39,7 +39,7 @@
 
     {# inject form #}
     <div>
-        {{ form(form, {'attr': {'id' : 'object_form'}}) }}
+        {{ form(form, {'attr': {'id' : 'object_form', 'data-object-id' : id}}) }}
     </div>
 
 {% endblock %}
@@ -59,7 +59,7 @@
     });
 
     {# Collection #}
-    const oCollection = new Collection(oForm, '{{ path('object_form', {'class': 'object_class', 'id' : 0, 'name': 'form_name'}) }}');
+    const oCollection = new Collection(oForm, '{{ path('object_form', {'class': 'object_class', 'id' : 0, 'name': 'form_name'}) }}', '{{ path('object_save', {'class': 'object_class', 'id' : 0, 'name': 'form_name'}) }}');
     oCollection.handleElement(document);
 
     {# toast database information #}
