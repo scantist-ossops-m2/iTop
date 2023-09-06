@@ -143,8 +143,16 @@
 {# Object #}
 {%- block object_widget -%}
 
+    {# convert object id if new objet (>> controller use -1 instead of 0 for new objects) #}
+    {% if form.vars.data is not empty %}
+        {% set objectId = form.vars.data.id %}
+        {% if objectId == -1 %}
+            {% set objectId = 0 %}
+        {% endif  %}
+    {% endif %}
+
    {% if z_list == 'list' %}
-        <tr data-block="container">
+        <tr data-block="object_container" {% if form.vars.data is not empty %}data-container-id="{{ form.vars.id }}" data-object-id="{{ form.vars.data.id }}" data-reload-url="{{ path('object_reload', {class: form.vars.object_class, id: objectId }) }}"{% endif %}>
             {% for child in form %}
             <td data-block="container">
                 {{ form_widget(child) }}
@@ -155,9 +163,9 @@
             </td>
         </tr>
     {% else %}
-
-        {{ form_widget(form) }}
-
+        <div data-block="object_container" data-container-id="{{ form.vars.id }}" data-object-id="{{ form.vars.data.id }}" data-reload-url="{{ path('object_reload', {class: form.vars.object_class, id: objectId }) }}">
+            {{ form_widget(form) }}
+        </div>
     {% endif %}
 
 {%- endblock object_widget -%}

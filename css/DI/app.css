@@ -50,6 +50,9 @@ label.locked:after{
 	color: #ffcc00;
 	font-size: .7rem;
 }
+label.dependent{
+	color: #2757af;
+}
 form{
 	/*background-color: #f8f8f8;*/
 	border-radius: 10px;

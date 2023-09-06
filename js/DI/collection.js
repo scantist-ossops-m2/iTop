@@ -64,8 +64,6 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 	 */
 	function addFormToCollection(e){
 
-		alert('addFormToCollection');
-
 		// retrieve link set container
 		const oContainer = e.currentTarget.closest('.link_set_widget_container');
 
@@ -113,7 +111,7 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 		const cont = e.currentTarget.closest('.link_set_widget_container');
 
 		// open modal
-		const myModalAlternative = new bootstrap.Modal('#object_modal', []);
+		const myModalAlternative = new bootstrap.Modal('#object_modal', {});
 		myModalAlternative.show();
 
 		// compute object form url
@@ -159,8 +157,6 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 	 */
 	function handleElement(oContainer)
 	{
-		console.log('collection handleElement ' + oContainer);
-
 		listenAddItem(oContainer);
 		listenCreateItem(oContainer);
 		listenRemoveItem(oContainer);
@@ -208,8 +204,10 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 				// const el = oToolkit.createElementFromHtml(inner);
 				// console.log(el);
 				//
-				// const myModalAlternative = new bootstrap.Modal('#object_modal', []);
-				// myModalAlternative.hide();
+				const myModalAlternative = new bootstrap.Modal('#object_modal', {
+					hide: true
+				});
+
 
 				console.log($(`[data-att-code="${oForm.dataset.attCode}"] tbody`));
 

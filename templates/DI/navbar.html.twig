@@ -1,0 +1,57 @@
+
+<nav class="navbar navbar-expand-lg fixed-top bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#"><img class="app_icon" src="{{ asset_image('DI/flask-solid.svg') }}" width="24px"> Forms SDK</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{{ path('home') }}">Home</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Edit Object
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'Organization', 'id': 1}) }}">Organization</a></li>
+                        <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'Person', 'id': 1}) }}">Person</a></li>
+                        <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'UserLocal', 'id': 1}) }}">UserLocal</a></li>
+                        <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'UserRequest', 'id': 1}) }}">UserRequest</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        New Object
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'Organization', 'id': 0}) }}">Organization</a></li>
+                        <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'Person', 'id': 0}) }}">Person</a></li>
+                        <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'UserLocal', 'id': 0}) }}">UserLocal</a></li>
+                        <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'UserRequest', 'id': 0}) }}">UserRequest</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ path('configuration_edit') }}" class="nav-link">Edit Configuration</a>
+                </li>
+            </ul>
+            <div>
+                <button id="dark_mode" type="button" class="btn" role="button" data-bs-toggle="button" aria-pressed="false"><i class="fa-solid fa-moon text-warning"></i></button>
+            </div>
+            {% if aAction is defined %}
+            <form class="actions d-flex">
+                {% for button in aAction|sort((a, b) => a.rank <=> b.rank ) %}
+                    {% if button.type == 'link' %}
+                        <a href="{{ button.href }}" class="btn {% if button.primary is defined and button.primary %}btn-primary{% else %}btn-secondary{% endif %} btn {% if button.disabled is defined and button.disabled %} disabled {% endif %}"><i class="{{ button.icon }}"></i>{% if button.label is defined %} {{ button.label }}{% endif %}</a>
+                    {% elseif button.type == 'reset' %}
+                        <button type="reset" class="{% if button.primary is defined and button.primary %}btn-primary{% else %}btn-secondary{% endif %} btn" form="{{ button.form }}">{{ button.label }}</button>
+                    {% elseif button.type == 'submit' %}
+                        <button type="submit" class="{% if button.primary is defined and button.primary %}btn-primary{% else %}btn-secondary{% endif %} btn" form="{{ button.form }}">{{ button.label }}</button>
+                    {% endif %}
+                {% endfor %}
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</nav>

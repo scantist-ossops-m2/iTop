@@ -94,6 +94,10 @@ class AttributeBuilder
 		if(count($oAttributeDefinition->GetPrerequisiteAttributes()) > 0){
 			$dependencies = implode(' ', $oAttributeDefinition->GetPrerequisiteAttributes());
 			$aFormType['options']['attr']['data-depends-on'] = $dependencies;
+			$aFormType['options']['label_attr']['data-bs-toggle'] = 'tooltip';
+			$aFormType['options']['label_attr']['data-bs-title'] = '<b>Depends on</b> ' . $dependencies;
+			$aFormType['options']['label_attr']['data-bs-html'] = 'true';
+			$aFormType['options']['label_attr']['class'] .= ' dependent';
 			$aFormType['depends_on'] = $dependencies;
 		}
 

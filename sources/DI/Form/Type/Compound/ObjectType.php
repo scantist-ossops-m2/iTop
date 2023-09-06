@@ -3,8 +3,6 @@
 namespace Combodo\iTop\DI\Form\Type\Compound;
 
 use cmdbAbstractObject;
-use Combodo\iTop\DI\Form\Builder\AttributeBuilder;
-use Combodo\iTop\DI\Form\Builder\LayoutBuilder;
 use Combodo\iTop\DI\Form\Listener\ObjectFormListener;
 use Combodo\iTop\DI\Services\ObjectPresentationService;
 use Symfony\Component\Form\AbstractType;
@@ -32,8 +30,6 @@ class ObjectType extends AbstractType
 	 *
 	 * @param ObjectFormListener $oObjectFormModifier
 	 * @param ObjectPresentationService $objectPresentationService
-	 * @param \Combodo\iTop\DI\Form\Builder\AttributeBuilder $oAttributeBuilder
-	 * @param \Combodo\iTop\DI\Form\Builder\LayoutBuilder $oLayoutBuilder
 	 */
 	public function __construct(ObjectFormListener $oObjectFormModifier, ObjectPresentationService $objectPresentationService)
 	{
@@ -80,6 +76,7 @@ class ObjectType extends AbstractType
 		parent::buildView($view, $form, $options);
 
 		$view->vars['z_list'] = $options['z_list'];
+		$view->vars['object_class'] = $options['object_class'];
 	}
 
 }

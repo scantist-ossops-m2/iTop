@@ -81,10 +81,7 @@ class ObjectController extends AbstractController
 
 		// create object form
 		$oForm = $this->createForm(ObjectType::class, $oObject, [
-			'object_class' => $class,
-			'attr' => [
-				'data-reload-url' => $this->generateUrl('object_reload', ['class' => $class, "id" => $id])
-			]
+			'object_class' => $class
 		]);
 
 		// handle HTTP request

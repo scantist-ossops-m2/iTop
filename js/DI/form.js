@@ -54,12 +54,12 @@ const Form = function(oWidget, oDynamic){
 	 * updateField.
 	 *
 	 * @param oEvent
-	 * @param oForm
+	 * @param oObjectContainer
 	 * @param oElement
 	 * @param aDependentAttCodes
 	 * @returns {Promise<void>}
 	 */
-	async function updateField(oEvent, oForm, oElement, aDependentAttCodes){
+	async function updateField(oEvent, oObjectContainer, oElement, aDependentAttCodes){
 
 		const aDependenciesAttCodes = [];
 
@@ -119,7 +119,7 @@ const Form = function(oWidget, oDynamic){
 
 		// update fom
 
-		const sReloadResponse = await updateForm(sRequestBody, oForm.dataset.reloadUrl, oForm.getAttribute('method'));
+		const sReloadResponse = await updateForm(sRequestBody, oObjectContainer.dataset.reloadUrl, 'POST');
 
 		const oReloadedElement = oToolkit.parseTextToHtml(sReloadResponse);
 
@@ -152,9 +152,6 @@ const Form = function(oWidget, oDynamic){
 	 */
 	function initDependencies(oElement){
 
-		// retrieve parent form
-		const oForm = oElement.closest('form');
-
 		// compute dependencies map
 		let aMapDependencies = {};
 
@@ -163,6 +160,9 @@ const Form = function(oWidget, oDynamic){
 
 		// iterate throw dependent fields...
 		aDependentsFields.forEach(function (oDependentField) {
+
+			// retrieve object container
+			const oObjectContainer = oDependentField.closest('[data-block="object_container"]');
 
 			// retrieve dependency data
 			const sDependsOn = oDependentField.dataset.dependsOn;
@@ -173,27 +173,44 @@ const Form = function(oWidget, oDynamic){
 			// iterate throw the dependencies...
 			aDependsEls.forEach(function(sEl){
 
-				// add dependency att code to map
-				if(!(sEl in aMapDependencies)){
-					aMapDependencies[sEl] = [];
+				const sId = oObjectContainer.dataset.containerId;
+
+				if(!(sId in aMapDependencies)) {
+					aMapDependencies[sId] = [];
 				}
-				aMapDependencies[sEl].push(oDependentField.dataset.attCode);
+
+				// add dependency att code to map
+				if(!(sEl in aMapDependencies[sId])){
+					aMapDependencies[sId][sEl] = [];
+				}
+				aMapDependencies[sId][sEl].push(oDependentField.dataset.attCode);
 
 			});
 
 		});
 
 		// iterate throw dependencies map...
-		for(let sAttCode in aMapDependencies){
+		for(let sContainerId in aMapDependencies) {
 
-			// retrieve corresponding field
-			const oDependsOnElement = oElement.querySelector(String.format(aSelectors.dataAttCode, sAttCode));
+			// retrieve object container
+			const oObjectContainer = document.querySelector(`[data-container-id="${sContainerId}"]`);
 
-			// listen changes
-			if(oDependsOnElement !== null){
-				oDependsOnElement.addEventListener('change', (event) => updateField(event, oForm, oElement, aMapDependencies[sAttCode]));
+			const aMapContainer = aMapDependencies[sContainerId];
+
+			// iterate throw dependencies map...
+			for (let sAttCode in aMapContainer) {
+
+				// retrieve corresponding field
+				const oDependsOnElement = oObjectContainer.querySelector(String.format(aSelectors.dataAttCode, sAttCode));
+
+				// listen changes
+				if (oDependsOnElement !== null) {
+					oDependsOnElement.addEventListener('change', (event) => updateField(event, oObjectContainer, oElement, aMapContainer[sAttCode]));
+				}
 			}
+
 		}
+
 	}
 
 	/**

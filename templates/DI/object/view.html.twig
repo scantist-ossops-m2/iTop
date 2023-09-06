@@ -1,13 +1,33 @@
 {% extends "DI/base.html.twig" %}
 
+{% set aAction = {
+    previous: {
+        rank: 0,
+        type: 'link',
+        disabled: id <= 1,
+        href: path('object_view',  {'class': class, 'id': id - 1}),
+        icon: 'fa-solid fa-arrow-left'
+    },
+    next: {
+        rank: 1,
+        type: 'link',
+        disabled: id <= 1,
+        href: path('object_view',  {'class': class, 'id': id + 1}),
+        icon: 'fa-solid fa-arrow-left'
+    },
+    edit: {
+        rank: 2,
+        type: 'link',
+        href: path('object_edit', {'class' : class, 'id': object.id}),
+        icon: 'fa-solid fa-pen-to-square',
+        label: 'Edit Object',
+        primary: true
+    }
+}
+%}
+
 {% block title %}
     Object Edition
-{% endblock %}
-
-{% block actions %}
-    <a href="{{ path('object_view',  {'class': class, 'id': id - 1}) }}" class="btn btn-light btn {% if id <= 1 %}disabled{% endif %}"><i class="fa-solid fa-arrow-left"></i></a>
-    <a href="{{ path('object_view',  {'class': class, 'id': id + 1}) }}" class="btn btn-light btn"><i class="fa-solid fa-arrow-right"></i></a>
-    <a href="{{ path('object_edit', {'class' : class, 'id': object.id}) }}" class="btn-primary btn"><i class="fa-solid fa-pen-to-square"></i> Edit Object</a>
 {% endblock %}
 
 {% block body %}
