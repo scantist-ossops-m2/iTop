@@ -1,15 +1,28 @@
-
+{# navbar #}
 <nav class="navbar navbar-expand-lg fixed-top bg-body-tertiary">
+
+    {# container #}
     <div class="container-fluid">
+
+        {# brand #}
         <a class="navbar-brand" href="#"><img class="app_icon" src="{{ asset_image('DI/flask-solid.svg') }}" width="24px"> Forms SDK</a>
+
+        {# toggler #}
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
+        {# menu #}
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                {# home #}
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{{ path('home') }}">Home</a>
                 </li>
+
+                {# edit object... #}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Edit Object
@@ -21,6 +34,8 @@
                         <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'UserRequest', 'id': 1}) }}">UserRequest</a></li>
                     </ul>
                 </li>
+
+                {# new object... #}
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         New Object
@@ -32,26 +47,36 @@
                         <li><a class="dropdown-item" href="{{ path('object_edit',  {'class': 'UserRequest', 'id': 0}) }}">UserRequest</a></li>
                     </ul>
                 </li>
+
+                {# edit configuration #}
                 <li class="nav-item">
                     <a href="{{ path('configuration_edit') }}" class="nav-link">Edit Configuration</a>
                 </li>
+
             </ul>
+
+            {# theme dark/light #}
             <div>
                 <button id="dark_mode" type="button" class="btn" role="button" data-bs-toggle="button" aria-pressed="false"><i class="fa-solid fa-moon text-warning"></i></button>
             </div>
-            {% if aAction is defined %}
-            <form class="actions d-flex">
-                {% for button in aAction|sort((a, b) => a.rank <=> b.rank ) %}
-                    {% if button.type == 'link' %}
-                        <a href="{{ button.href }}" class="btn {% if button.primary is defined and button.primary %}btn-primary{% else %}btn-secondary{% endif %} btn {% if button.disabled is defined and button.disabled %} disabled {% endif %}"><i class="{{ button.icon }}"></i>{% if button.label is defined %} {{ button.label }}{% endif %}</a>
-                    {% elseif button.type == 'reset' %}
-                        <button type="reset" class="{% if button.primary is defined and button.primary %}btn-primary{% else %}btn-secondary{% endif %} btn" form="{{ button.form }}">{{ button.label }}</button>
-                    {% elseif button.type == 'submit' %}
-                        <button type="submit" class="{% if button.primary is defined and button.primary %}btn-primary{% else %}btn-secondary{% endif %} btn" form="{{ button.form }}">{{ button.label }}</button>
-                    {% endif %}
-                {% endfor %}
-            </form>
+
+            {# actions #}
+            {% if aPageAction is defined %}
+                <form class="actions d-flex">
+                    {% for button in aPageAction|sort((a, b) => a.rank <=> b.rank ) %}
+                        {% if button.type == 'link' %}
+                            <a href="{{ button.href }}" class="btn {% if button.primary is defined and button.primary %}btn-primary{% else %}btn-secondary{% endif %} btn {% if button.disabled is defined and button.disabled == true %} disabled {% endif %}"><i class="{{ button.icon }}"></i>{% if button.label is defined %} {{ button.label }}{% endif %}</a>
+                        {% elseif button.type == 'reset' %}
+                            <button type="reset" class="{% if button.primary is defined and button.primary %}btn-primary{% else %}btn-secondary{% endif %} btn" form="{{ button.form }}">{{ button.label }}</button>
+                        {% elseif button.type == 'submit' %}
+                            <button type="submit" class="{% if button.primary is defined and button.primary %}btn-primary{% else %}btn-secondary{% endif %} btn" form="{{ button.form }}">{{ button.label }}</button>
+                        {% endif %}
+                    {% endfor %}
+                </form>
             {% endif %}
+
         </div>
+
     </div>
+
 </nav>

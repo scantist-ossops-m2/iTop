@@ -143,6 +143,7 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 			oModalBody[0].querySelectorAll('form').forEach((formEl) => {
 				oForm.handleElement(formEl);
 				handleElement(formEl);
+				oApp.handleTooltips(formEl);
 			});
 		})
 		.catch(function (error) {

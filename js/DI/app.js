@@ -27,15 +27,19 @@ const App = function(){
 			$(aSelectors.darkModeButton).toggleClass('active', true);
 		}
 
-		const tooltips = document.querySelectorAll("[data-bs-toggle='tooltip']");
+		handleTooltips(document);
+	}
+
+	function handleTooltips(oElement){
+		const tooltips = oElement.querySelectorAll("[data-bs-toggle='tooltip']");
 		tooltips.forEach((el) => {
 			new bootstrap.Tooltip(el);
 		});
-
 	}
 
 	return {
-		init
+		init,
+		handleTooltips
 	}
 };
 

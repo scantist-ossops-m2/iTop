@@ -9,7 +9,6 @@ use Exception;
 use MetaModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -168,7 +167,7 @@ class ObjectController extends AbstractController
 
 		// return object form
 		return new JsonResponse([
-			'template' => $this->renderView('DI/form.html.twig', [
+			'template' => $this->renderView('DI/form/form.html.twig', [
 				'id' => $id,
 				'class' => $class,
 				'form' => $oForm->createView(),
@@ -229,6 +228,7 @@ class ObjectController extends AbstractController
 
 			// return object form
 			return new JsonResponse([
+				'succeeded' => true,
 				'template' => $this->renderView('DI/form.html.twig', [
 					'id' => $id,
 					'class' => $class,
@@ -239,11 +239,7 @@ class ObjectController extends AbstractController
 
 		// return object form
 		return new JsonResponse([
-			'template' => $this->renderView('DI/form.html.twig', [
-				'id' => $id,
-				'class' => $class,
-				'form' => $oForm->createView(),
-			])
+			'succeeded' => false,
 		]);
 	}
 
@@ -282,7 +278,7 @@ class ObjectController extends AbstractController
 		]);
 
 		// return object form
-		return $this->renderForm('DI/form.html.twig', [
+		return $this->renderForm('DI/form/form.html.twig', [
 			'form' => $oForm,
 		]);
 	}

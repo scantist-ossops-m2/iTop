@@ -1,6 +1,6 @@
 {% extends "DI/base.html.twig" %}
 
-{% set aAction = {
+{% set aPageAction = {
         reset: {
             rank: 2,
             type: 'reset',
@@ -19,7 +19,7 @@
 
 {% if id != 0 %}
 
-    {% set aAction = aAction|merge({
+    {% set aPageAction = aPageAction|merge({
             previous: {
                 rank: 0,
                 type: 'link',

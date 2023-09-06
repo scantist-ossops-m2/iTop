@@ -1,6 +1,7 @@
 {% extends "DI/base.html.twig" %}
 
-{% set aAction = {
+{# page actions #}
+{% set aPageAction = {
     previous: {
         rank: 0,
         type: 'link',
@@ -11,9 +12,8 @@
     next: {
         rank: 1,
         type: 'link',
-        disabled: id <= 1,
         href: path('object_view',  {'class': class, 'id': id + 1}),
-        icon: 'fa-solid fa-arrow-left'
+        icon: 'fa-solid fa-arrow-right'
     },
     edit: {
         rank: 2,
@@ -33,7 +33,7 @@
 {% block body %}
 
     <div>
-       <div class="text-center"><h3>{{ object.GetName() }}</h3></div>
+       <div class="text-center h3">{{ object.GetName() }}</div>
         {% for key,value in object.GetValues() %}
             <div class="d-flex offset-4 col-4">
                 <div class="flex-grow-1 fw-bold">{{ key|replace({'_' : ' '}) }}</div>
