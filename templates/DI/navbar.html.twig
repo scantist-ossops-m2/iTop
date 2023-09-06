@@ -62,7 +62,7 @@
 
             {# actions #}
             {% if aPageAction is defined %}
-                <form class="actions d-flex">
+                <form class="navbar-actions d-flex">
                     {% for button in aPageAction|sort((a, b) => a.rank <=> b.rank ) %}
                         {% if button.type == 'link' %}
                             <a href="{{ button.href }}" class="btn {% if button.primary is defined and button.primary %}btn-primary{% else %}btn-secondary{% endif %} btn {% if button.disabled is defined and button.disabled == true %} disabled {% endif %}"><i class="{{ button.icon }}"></i>{% if button.label is defined %} {{ button.label }}{% endif %}</a>

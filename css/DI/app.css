@@ -3,7 +3,27 @@ body{
 	padding-top: 64px;
 }
 
-.combodo-row{
+/* app icon dark */
+body[data-bs-theme="dark"] .app_icon{
+	filter: invert(1);
+}
+
+/* navbar actions */
+.navbar-actions button,a{
+	margin: 0 3px;
+}
+
+/* dropdown */
+.dropdown_scroll_300{
+	max-height: 300px;
+	overflow-y: auto;
+	overflow-x: clip;
+}
+
+/* LAYOUT */
+
+/* row */
+[data-block="row_container"] > div{
 	display: flex;
 }
 .combodo-row fieldset{

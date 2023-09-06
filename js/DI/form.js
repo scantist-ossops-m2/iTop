@@ -73,7 +73,7 @@ const Form = function(oWidget, oDynamic){
 			const oDependsOnElement = oElement.querySelector(String.format(aSelectors.dataAttCode, sAttCode));
 
 			// retrieve field container
-			const oContainer = oDependsOnElement.closest(aSelectors.dataBlockContainer);
+			const oContainer = oDependsOnElement.closest(aSelectors.dataAttributeContainer);
 
 			// set field container loading state
 			oContainer.classList.add('loading');
@@ -129,13 +129,13 @@ const Form = function(oWidget, oDynamic){
 
 			// dependent element
 			const oDependentElement = oElement.querySelector(String.format(aSelectors.dataAttCode, sAtt));
-			const oContainer = oDependentElement.closest(aSelectors.dataBlockContainer);
+			const oContainer = oDependentElement.closest(aSelectors.dataAttributeContainer);
 			const sId = oDependentElement.getAttribute('id');
 			const sName = oDependentElement.getAttribute('name');
 
 			// new element
 			const oNewElement = oPartial.querySelector(String.format(aSelectors.dataAttCode, sAtt));
-			const oNewContainer = oNewElement.closest(aSelectors.dataBlockContainer);
+			const oNewContainer = oNewElement.closest(aSelectors.dataAttributeContainer);
 			oNewElement.setAttribute('id', sId);
 			oNewElement.setAttribute('name', sName);
 

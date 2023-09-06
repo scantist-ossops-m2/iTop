@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * Object controller.
@@ -77,7 +78,7 @@ class ObjectController extends AbstractController
 	 *
 	 * @Route("/{class<\w+>}/{id<\d+>}/edit", name="object_edit")
 	 */
-	public function objectEdit(Request $request, string $class, int $id, ObjectService $oObjectService) : Response
+	public function objectEdit(Request $request, string $class, int $id, ObjectService $oObjectService, Stopwatch $oStopWatch) : Response
 	{
 		// retrieve object
 		try{
@@ -88,9 +89,11 @@ class ObjectController extends AbstractController
 		}
 
 		// create object form
+		$oStopWatch->start('creating form');
 		$oForm = $this->createForm(ObjectType::class, $oObject, [
 			'object_class' => $class
 		]);
+		$oStopWatch->stop('creating form');
 
 		// handle HTTP request
 		$oForm->handleRequest($request);

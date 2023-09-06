@@ -66,8 +66,6 @@ class ObjectService
 	 */
 	public function ToChoices(DBObjectSet $oObjectsSet) : array
 	{
-		$this->oStopWatch->start('ToChoices');
-
 		$aChoices = [];
 
 		// Retrieve friendly name complementary specification
@@ -86,8 +84,6 @@ class ObjectService
 			$aChoices[$oObj->GetName()] = $oObj->GetKey();
 			$i++;
 		}
-
-		$this->oStopWatch->stop('ToChoices');
 
 		return $aChoices;
 	}
