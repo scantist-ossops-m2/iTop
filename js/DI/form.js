@@ -193,7 +193,13 @@ const Form = function(oWidget, oDynamic){
 		for(let sContainerId in aMapDependencies) {
 
 			// retrieve object container
-			const oObjectContainer = document.querySelector(`[data-container-id="${sContainerId}"]`);
+			let oObjectContainer = null;
+			if(oElement.dataset !== undefined && oElement.dataset.containerId === sContainerId){
+				oObjectContainer = oElement;
+			}
+			else{
+				oObjectContainer = oElement.querySelector(`[data-container-id="${sContainerId}"]`);
+			}
 
 			const aMapContainer = aMapDependencies[sContainerId];
 

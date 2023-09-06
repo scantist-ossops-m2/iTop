@@ -1,7 +1,7 @@
 /**
  * Application handling.
  *
- * @returns {{init: init}}
+ * @returns {{init: init, handleTooltips: handleTooltips}}
  * @constructor
  */
 const App = function(){
@@ -12,24 +12,32 @@ const App = function(){
 	};
 
 	/**
-	 * init.
+	 * initialization.
 	 *
 	 */
 	function init(){
 
+		// dark theme button
 		$(aSelectors.darkModeButton).on('click', function(){
 			$('body').attr('data-bs-theme', this.ariaPressed === 'true' ? 'dark' : 'light');
 		});
 
+		// dark theme button state
 		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
 			$('body').attr('data-bs-theme', 'dark');
 			$(aSelectors.darkModeButton).attr('aria-pressed', 'true');
 			$(aSelectors.darkModeButton).toggleClass('active', true);
 		}
 
+		// handle tooltips
 		handleTooltips(document);
 	}
 
+	/**
+	 * Bootstrap tooltip initialization.
+	 *
+	 * @param oElement
+	 */
 	function handleTooltips(oElement){
 		const tooltips = oElement.querySelectorAll("[data-bs-toggle='tooltip']");
 		tooltips.forEach((el) => {

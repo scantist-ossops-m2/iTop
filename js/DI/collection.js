@@ -9,17 +9,23 @@
  */
 const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 
+	// dom selectors
+	const aSelectors = {
+		addItem: '.add_item_link',
+		createItem: '.create_item_link',
+		removeItem: '.btn-remove-link',
+		linkSetContainer: '.link_set_widget_container',
+	};
+
 	/**
 	 * Listen for add item buttons.
 	 *
 	 * @param oContainer
 	 */
 	function listenAddItem (oContainer) {
-
-		oContainer.querySelectorAll('.add_item_link').forEach(btn => {
-				btn.addEventListener("click", addFormToCollection)
+		oContainer.querySelectorAll(aSelectors.addItem).forEach(btn => {
+				btn.addEventListener('click', addFormToCollection)
 			});
-
 	}
 
 	/**
@@ -28,11 +34,9 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 	 * @param oContainer
 	 */
 	function listenCreateItem (oContainer) {
-
-		oContainer.querySelectorAll('.create_item_link').forEach(btn => {
-				btn.addEventListener("click", createObject)
+		oContainer.querySelectorAll(aSelectors.createItem).forEach(btn => {
+				btn.addEventListener('click', createObject)
 			});
-
 	}
 
 	/**
@@ -41,20 +45,9 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 	 * @param oContainer
 	 */
 	function listenRemoveItem(oContainer){
-
-		oContainer.querySelectorAll('.btn-remove-link').forEach(btn => {
-			btn.addEventListener("click", (e) => {
-
-				const oContainer = e.currentTarget.closest('.link_set_widget_container');
-
-				btn.closest('tr').remove()
-
-				if(oContainer.querySelectorAll('tbody tr').length === 1) {
-					oContainer.querySelector('.no_data').style.display = 'table-row';
-				}
-			})
+		oContainer.querySelectorAll(aSelectors.removeItem).forEach(btn => {
+			btn.addEventListener('click', removeItem);
 		});
-
 	}
 
 	/**
@@ -67,7 +60,7 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 		// retrieve link set container
 		const oContainer = e.currentTarget.closest('.link_set_widget_container');
 
-		// retrieve collection holder
+		// retrieve collection holder (replace ':' character otherwise the selector is invalid)
 		const exp = e.currentTarget.dataset.collectionHolderClass.replaceAll(/:/g, '\\:');
 		const collectionHolder = oContainer.querySelector('.' + exp);
 
@@ -145,10 +138,31 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 				handleElement(formEl);
 				oApp.handleTooltips(formEl);
 			});
+
+			listenSaveModalObject(myModalAlternative);
 		})
 		.catch(function (error) {
 			console.error(error);
 		});
+	}
+
+	/**
+	 * Remove an item.
+	 *
+	 * @param e
+	 */
+	function removeItem(e)
+	{
+		// retrieve link set container
+		const oContainer = e.currentTarget.closest(aSelectors.linkSetContainer);
+
+		// remove row
+		e.currentTarget.closest('tr').remove();
+
+		// handle no data row visibility
+		if(oContainer.querySelectorAll('tbody tr').length === 1) {
+			oContainer.querySelector('.no_data').style.display = 'table-row';
+		}
 	}
 
 	/**
@@ -163,8 +177,11 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 		listenRemoveItem(oContainer);
 	}
 
-
-	function listenSaveModalobject(){
+	/**
+	 *
+	 */
+	function listenSaveModalObject(myModalAlternative)
+	{
 		const oSave = document.querySelector('[data-action="save_modal_object"]');
 
 		oSave.addEventListener('click', function(e){
@@ -194,25 +211,29 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 			.then((response) => response.json())
 			.then((data) => {
 
-				let form = $(data.template);
+				if(data.succeeded){
 
-				console.log(form);
-				//
-				// console.log(oForm.dataset.attCode);
-				//
-				// const fragment = oToolkit.createElementFromHtml(data.template);
-				// const inner = fragment.querySelector('form').innerHTML;
-				// const el = oToolkit.createElementFromHtml(inner);
-				// console.log(el);
-				//
-				const myModalAlternative = new bootstrap.Modal('#object_modal', {
-					hide: true
-				});
+					let form = $(data.template);
 
+					console.log(form);
+					//
+					// console.log(oForm.dataset.attCode);
+					//
+					// const fragment = oToolkit.createElementFromHtml(data.template);
+					// const inner = fragment.querySelector('form').innerHTML;
+					// const el = oToolkit.createElementFromHtml(inner);
+					// console.log(el);
+					//
+					myModalAlternative.hide();
 
-				console.log($(`[data-att-code="${oForm.dataset.attCode}"] tbody`));
+					console.log($(`[data-att-code="${oForm.dataset.attCode}"] tbody`));
 
-				$(`[data-att-code="${oForm.dataset.attCode}"] tbody`).append($(form.innerHTML));
+					$(`[data-att-code="${oForm.dataset.attCode}"] tbody`).append($(form.innerHTML));
+
+				}
+				else{
+					console.error('Error while saving object');
+				}
 
 			})
 			.catch(function (error) {
@@ -222,7 +243,6 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 		});
 	}
 
-	listenSaveModalobject();
 
 	return {
 		handleElement

@@ -22,8 +22,8 @@ const Widget = function(){
 			// initialize widget
 			const sWidgetName = widgetField.dataset.widget;
 			const oWidget = eval(`$(widgetField).${sWidgetName}()`);
-			console.log('Init widget: ' + sWidgetName);
-			console.log(oWidget);
+			console.debug('Init widget: ' + sWidgetName);
+			console.debug(oWidget);
 		});
 
 	}

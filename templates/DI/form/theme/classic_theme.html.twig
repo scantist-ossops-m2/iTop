@@ -149,10 +149,12 @@
         {% if objectId == -1 %}
             {% set objectId = 0 %}
         {% endif  %}
+    {% else %}
+        {% set objectId = 0 %}
     {% endif %}
 
    {% if z_list == 'list' %}
-        <tr data-block="object_container" {% if form.vars.data is not empty %}data-container-id="{{ form.vars.id }}" data-object-id="{{ form.vars.data.id }}" data-reload-url="{{ path('object_reload', {class: form.vars.object_class, id: objectId }) }}"{% endif %}>
+        <tr data-block="object_container" data-container-id="{{ form.vars.id }}" data-object-id="{{ objectId }}" data-reload-url="{{ path('object_reload', {class: form.vars.object_class, id: objectId }) }}">
             {% for child in form %}
             <td data-block="container">
                 {{ form_widget(child) }}
@@ -163,7 +165,7 @@
             </td>
         </tr>
     {% else %}
-        <div data-block="object_container" data-container-id="{{ form.vars.id }}" data-object-id="{{ form.vars.data.id }}" data-reload-url="{{ path('object_reload', {class: form.vars.object_class, id: objectId }) }}">
+        <div data-block="object_container" data-container-id="{{ form.vars.id }}" data-object-id="{{ objectId }}" data-reload-url="{{ path('object_reload', {class: form.vars.object_class, id: objectId }) }}">
             {{ form_widget(form) }}
         </div>
     {% endif %}

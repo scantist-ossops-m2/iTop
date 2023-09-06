@@ -2,6 +2,7 @@
 
 namespace Combodo\iTop\DI\Controller;
 
+use Combodo\iTop\DI\Form\Manager\ObjectFormManager;
 use Combodo\iTop\DI\Form\Type\Compound\PartialObjectType;
 use Combodo\iTop\DI\Form\Type\Compound\ObjectType;
 use Combodo\iTop\DI\Services\ObjectService;
@@ -25,8 +26,9 @@ class ObjectController extends AbstractController
 
 
 	/**
-	 * @Route ("/{class<\w+>}/{id<\d+>}/view", name="object_view")
+	 * Return object view page with object data printed with key value representation.
 	 *
+	 * @Route ("/{class<\w+>}/{id<\d+>}/view", name="object_view")
 	 */
 	public function objectView(string $class, int $id) : Response
 	{
@@ -35,7 +37,7 @@ class ObjectController extends AbstractController
 			$oObject = MetaModel::GetObject($class, $id);
 		}
 		catch(Exception $e){
-			throw $this->createNotFoundException("The $class $id does not exist");
+			throw $this->createNotFoundException("The $class $id does not exist", $e);
 		}
 
 		// return object view
@@ -47,16 +49,18 @@ class ObjectController extends AbstractController
 	}
 
 	/**
+	 * Return object view as JSon response.
+	 *
 	 * @Route ("/{class<\w+>}/{id<\d+>}/json", name="object_json")
 	 */
-	public function objectJSon(string $class, int $id) : Response
+	public function objectJSon(string $class, int $id) : JsonResponse
 	{
 		// retrieve object
 		try{
 			$oObject = MetaModel::GetObject($class, $id);
 		}
 		catch(Exception $e){
-			throw $this->createNotFoundException("The $class $id does not exist");
+			throw $this->createNotFoundException("The $class $id does not exist", $e);
 		}
 
 		// return object as json response
@@ -66,6 +70,11 @@ class ObjectController extends AbstractController
 	}
 
 	/**
+	 * Return object edition view page.
+	 * The form is constructed with the ObjectType form type @see ObjectType
+	 *
+	 * @todo perform database DbInsert, DbDelete, DbUpdate on links
+	 *
 	 * @Route("/{class<\w+>}/{id<\d+>}/edit", name="object_edit")
 	 */
 	public function objectEdit(Request $request, string $class, int $id, ObjectService $oObjectService) : Response
@@ -91,7 +100,7 @@ class ObjectController extends AbstractController
 
 			try {
 
-				// handle link set (apply DbInsert, DbDelete, DbUpdate) could be automatic ?
+				// handle link set (apply DbInsert, DbDelete, DbUpdate) should be automatic ? handle by host object ?
 				$oObjectService->handleLinkSetDB($oObject);
 
 				// save object
@@ -104,7 +113,7 @@ class ObjectController extends AbstractController
 
 			}
 			catch(Exception $e){
-				throw new HttpException(500, 'Error while trying to save object');
+				throw new HttpException(500, 'Error while trying to save object', $e);
 			}
 
 			// redirect to view object
@@ -125,6 +134,8 @@ class ObjectController extends AbstractController
 	}
 
 	/**
+	 * Return an object form view.
+	 *
 	 * @Route("/{class<\w+>}/{id<\d+>}/{name<\w+>}/form", name="object_form", methods={"POST"})
 	 */
 	public function objectForm(Request $request, string $name, string $class, int $id, ObjectService $oObjectService, FormFactoryInterface $oFormFactory) : Response
@@ -134,7 +145,7 @@ class ObjectController extends AbstractController
 			$oObject = $oObjectService->getObject($class, $id);
 		}
 		catch(Exception $e){
-			throw $this->createNotFoundException("The $class $id does not exist");
+			throw $this->createNotFoundException("The $class $id does not exist", $e);
 		}
 
 		// decode data
@@ -176,16 +187,18 @@ class ObjectController extends AbstractController
 	}
 
 	/**
+	 * Save object into database and return its list representation.
+	 *
 	 * @Route("/{class<\w+>}/{id<\d+>}/{name<\w+>}/save", name="object_save", methods={"POST"})
 	 */
-	public function objectSave(Request $request, string $name, string $class, int $id, ObjectService $oObjectService, FormFactoryInterface $oFormFactory) : Response
+	public function objectSave(Request $request, string $name, string $class, int $id, ObjectService $oObjectService, FormFactoryInterface $oFormFactory, ObjectFormManager $oObjectFormManager) : Response
 	{
 		// retrieve object
 		try{
 			$oObject = $oObjectService->getObject($class, $id);
 		}
 		catch(Exception $e){
-			throw $this->createNotFoundException("The $class $id does not exist");
+			throw $this->createNotFoundException("The $class $id does not exist", $e);
 		}
 
 		// create object form
@@ -196,13 +209,8 @@ class ObjectController extends AbstractController
 		// handle HTTP request
 		$oForm->handleRequest($request);
 
-		// locked attributes
-		$aValue = $request->get('new');
-		$sLockedAttributes = $aValue['locked_attributes'];
-		$aLockedAttributes = json_decode($sLockedAttributes);
-		foreach($aLockedAttributes as $sKey => $sValue){
-			$oObject->Set($sKey, $sValue);
-		}
+		// apply locked attributes to object
+		$oObjectFormManager->applyRequestLockedAttributesToObject($request, $oObject, 'new');
 
 		// submitted and valid
 		if ($oForm->isSubmitted() && $oForm->isValid()) {
@@ -217,7 +225,7 @@ class ObjectController extends AbstractController
 				}
 			}
 			catch(Exception $e){
-				throw new HttpException(500, 'Error while trying to save object');
+				throw new HttpException(500, 'Error while trying to save object', $e);
 			}
 
 			// create object form
@@ -229,7 +237,7 @@ class ObjectController extends AbstractController
 			// return object form
 			return new JsonResponse([
 				'succeeded' => true,
-				'template' => $this->renderView('DI/form.html.twig', [
+				'template' => $this->renderView('DI/form/form.html.twig', [
 					'id' => $id,
 					'class' => $class,
 					'form' => $oForm->createView(),
@@ -244,6 +252,10 @@ class ObjectController extends AbstractController
 	}
 
 	/**
+	 * Actualize a piece of the form.
+	 * The first form, used to apply modifications, contains all dependencies attributes and dependent attributes.
+	 * The second form, used for new fields templates, contains only the dependent attributes.
+	 *
 	 * @Route("/{class<\w+>}/{id<\d+>}/reload", name="object_reload")
 	 */
 	public function objectReload(Request $request, string $class, int $id, ObjectService $oObjectService) : Response
@@ -253,7 +265,7 @@ class ObjectController extends AbstractController
 			$oObject = $oObjectService->getObject($class, $id);
 		}
 		catch(Exception $e){
-			throw $this->createNotFoundException("The $class $id does not exist");
+			throw $this->createNotFoundException("The $class $id does not exist", $e);
 		}
 
 		$aDependencyAttCodes = explode(',', $request->get('dependency_att_codes'));
