@@ -101,11 +101,11 @@ abstract class ItopTestCase extends TestCase
 	 * @param string $sFileRelPath for example 'portal/src/Helper/ApplicationHelper.php'
 	 * @since 2.7.10 3.1.1 3.2.0 N°6709 method creation
 	 */
-	protected function RequireOnceCurrentModuleFile(string $sFileRelPath): void
+	protected function RequireOnceCurrentModuleFile(string $sFileRelPath, string $sCallerDir): void
 	{
-		$aStack = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
-		$sCallerFileFullPath = $aStack[0]['file'];
-		$sCallerDir = dirname($sCallerFileFullPath);
+//		$aStack = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+//		$sCallerFileFullPath = $aStack[0]['file'];
+//		$sCallerDir = dirname($sCallerFileFullPath);
 
 		$sModuleRootPath = static::GetFirstDirUpContainingFile($sCallerDir, 'module.*.php');
 		require_once $sModuleRootPath . $sFileRelPath;
