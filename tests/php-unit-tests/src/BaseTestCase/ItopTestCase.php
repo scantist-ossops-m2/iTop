@@ -140,7 +140,7 @@ abstract class ItopTestCase extends TestCase
 				$iOffsetSep = strrpos($sSearchPath, '\\');
 				if ($iOffsetSep === false) {
 					// Do not throw an exception here as PHPUnit will not show it clearly when determing the list of test to perform
-					return 'Could not find the approot file in ' . $sSearchPath;
+					return 'Could not find the ' . $sFileToFindGlobPattern . ' file in ' . $sSearchPath;
 				}
 			}
 			$sSearchPath = substr($sSearchPath, 0, $iOffsetSep);
