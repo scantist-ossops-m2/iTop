@@ -9,12 +9,17 @@
  */
 const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 
+	const MODAL_LOADING_HTML = 'loading...';
+
 	// dom selectors
 	const aSelectors = {
 		addItem: '.add_item_link',
 		createItem: '.create_item_link',
 		removeItem: '.btn-remove-link',
-		linkSetContainer: '.link_set_widget_container',
+		dataAttributeContainer: '[data-block="attribute_container"]',
+		dataObjectContainer: '[data-block="object_container"]',
+		dataAttCode: '[data-att-code]',
+		dataAttCodeSpecific: '[data-att-code="{0}"]',
 	};
 
 	/**
@@ -57,12 +62,12 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 	 */
 	function addFormToCollection(e){
 
-		// retrieve link set container
-		const oContainer = e.currentTarget.closest('.link_set_widget_container');
+		// retrieve attribute container
+		const oAttributeContainer = e.currentTarget.closest(aSelectors.dataAttributeContainer);
 
 		// retrieve collection holder (replace ':' character otherwise the selector is invalid)
 		const exp = e.currentTarget.dataset.collectionHolderClass.replaceAll(/:/g, '\\:');
-		const collectionHolder = oContainer.querySelector('.' + exp);
+		const collectionHolder = oAttributeContainer.querySelector('.' + exp);
 
 		// compute template
 		const text = collectionHolder
@@ -85,8 +90,8 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 		// store new index
 		collectionHolder.dataset.index++;
 
-		// remove no data row
-		oContainer.querySelector('.no_data').style.display = 'none';
+		// hide no data row
+		oAttributeContainer.querySelector('.no_data').style.display = 'none';
 	}
 
 	/**
@@ -96,32 +101,40 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 	 */
 	function createObject(e){
 
-		let objectId = e.currentTarget.closest('form').dataset.objectId;
+		// retrieve attribute container
+		const oAttributeContainer = e.currentTarget.closest(aSelectors.dataAttributeContainer);
 
-		// set modal loading state
-		$('#object_modal .modal-body').html('loading...');
+		// retrieve attribute field
+		const oAttributeField = oAttributeContainer.querySelector(aSelectors.dataAttCode);
 
-		const cont = e.currentTarget.closest('.link_set_widget_container');
+		// retrieve attribute object container
+		const oObjectContainer = e.currentTarget.closest(aSelectors.dataObjectContainer);
 
 		// open modal
-		const myModalAlternative = new bootstrap.Modal('#object_modal', {});
-		myModalAlternative.show();
+		const oModalBody= document.querySelector('#object_modal .modal-body');
+		oModalBody.innerHTML = MODAL_LOADING_HTML;
+		const oModal = new bootstrap.Modal('#object_modal', {});
+		oModal.show();
 
 		// compute object form url
-		const url = objectFormUrl
+		const sUrl = objectFormUrl
 			.replaceAll('object_class', e.currentTarget.dataset.objectClass)
 			.replaceAll('form_name', 'new');
 
 		// prepare request data
 		const aLockedAttributes = {};
-		aLockedAttributes[e.currentTarget.dataset.extKeyToMe] = objectId;
+		if(!e.currentTarget.dataset.isIndirect) {
+			aLockedAttributes[e.currentTarget.dataset.extKeyToMe] = oObjectContainer.dataset.objectId;
+		}
 		const aData = {
 			locked_attributes: aLockedAttributes,
-			att_code: cont.dataset.attCode
+			att_code: oAttributeField.dataset.attCode
 		}
 
+		const sExtKeyToMe = e.currentTarget.dataset.extKeyToMe;
+
 		// fetch url
-		fetch(url, {
+		fetch(sUrl, {
 			method: 'POST',
 			headers: {
 				'Accept': 'application/json',
@@ -131,18 +144,78 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 		})
 		.then((response) => response.json())
 		.then((data) => {
-			const oModalBody = $('#object_modal .modal-body');
-			oModalBody.html(data.template);
-			oModalBody[0].querySelectorAll('form').forEach((formEl) => {
-				oForm.handleElement(formEl);
-				handleElement(formEl);
-				oApp.handleTooltips(formEl);
-			});
-
-			listenSaveModalObject(myModalAlternative);
+			oModalBody.innerHTML = data.template;
+			oForm.handleElement(oModalBody);
+			handleElement(oModalBody);
+			oApp.handleTooltips(oModalBody);
+			listenSaveModalObject(oModal, oModalBody, oObjectContainer, oAttributeField.dataset.attCode, sExtKeyToMe, oAttributeContainer.dataset.objectClass);
 		})
 		.catch(function (error) {
 			console.error(error);
+		});
+	}
+
+	/**
+	 *
+	 */
+	function listenSaveModalObject(oModal, oModalBody, oObjectContainer, sAttCode, sExtKeyToMe, sObjectClass)
+	{
+		const oSave = document.querySelector('[data-action="save_modal_object"]');
+
+		oSave.addEventListener('click', function(e){
+
+			const oForm = document.querySelector('form[name="new"]');
+
+			// set loading state
+			oModalBody.innerHTML = MODAL_LOADING_HTML;
+
+			// save CK editors
+			oApp.saveCkEditors();
+
+			// prepare data
+			const data = new URLSearchParams();
+			for (const pair of new FormData(oForm)) {
+				data.append(pair[0], pair[1]);
+			}
+			data.append('ext_key_to_me', sExtKeyToMe);
+			data.append('object_class', sObjectClass);
+
+			// compute object form url
+			const url = objectSaveUrl
+				.replaceAll('object_class', oForm.dataset.objectClass)
+				.replaceAll('form_name', 'new');
+
+			// fetch url
+			fetch(url, {
+				method: 'POST',
+				body: data,
+			})
+				.then((response) => response.json())
+				.then((data) => {
+
+					// on success
+					if(data.succeeded){
+
+						// extract form content
+						const reg = new RegExp(/<form .*?>(.*)<\/form>/gs);
+						const res = reg.exec(data.template);
+
+						// append new row
+						const row = oToolkit.createElementFromHtml(res[1]);
+						oObjectContainer.querySelector(`[data-att-code="${sAttCode}"] tbody`).appendChild(row);
+
+						// hide modal
+						oModal.hide();
+					}
+					else{
+						console.error('Error while saving object');
+					}
+
+				})
+				.catch(function (error) {
+
+					console.error(error);
+				});
 		});
 	}
 
@@ -153,15 +226,15 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 	 */
 	function removeItem(e)
 	{
-		// retrieve link set container
-		const oContainer = e.currentTarget.closest(aSelectors.linkSetContainer);
+		// retrieve attribute container
+		const oAttributeContainer = e.currentTarget.closest(aSelectors.dataAttributeContainer);
 
 		// remove row
 		e.currentTarget.closest('tr').remove();
 
 		// handle no data row visibility
-		if(oContainer.querySelectorAll('tbody tr').length === 1) {
-			oContainer.querySelector('.no_data').style.display = 'table-row';
+		if(oAttributeContainer.querySelectorAll('tbody tr').length === 1) {
+			oAttributeContainer.querySelector('.no_data').style.display = 'table-row';
 		}
 	}
 
@@ -176,73 +249,6 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 		listenCreateItem(oContainer);
 		listenRemoveItem(oContainer);
 	}
-
-	/**
-	 *
-	 */
-	function listenSaveModalObject(myModalAlternative)
-	{
-		const oSave = document.querySelector('[data-action="save_modal_object"]');
-
-		oSave.addEventListener('click', function(e){
-
-			const oForm = document.querySelector('form[name="new"]');
-
-			for(let instanceName in CKEDITOR.instances) {
-				CKEDITOR.instances[instanceName].updateElement();
-			}
-
-			const data = new URLSearchParams();
-			for (const pair of new FormData(oForm)) {
-				data.append(pair[0], pair[1]);
-			}
-			data.append('locked_attributes', '');
-
-			// compute object form url
-			const url = objectSaveUrl
-				.replaceAll('object_class', oForm.dataset.objectClass)
-				.replaceAll('form_name', 'new');
-
-			// fetch url
-			fetch(url, {
-				method: 'POST',
-				body: new URLSearchParams(new FormData(oForm))
-			})
-			.then((response) => response.json())
-			.then((data) => {
-
-				if(data.succeeded){
-
-					let form = $(data.template);
-
-					console.log(form);
-					//
-					// console.log(oForm.dataset.attCode);
-					//
-					// const fragment = oToolkit.createElementFromHtml(data.template);
-					// const inner = fragment.querySelector('form').innerHTML;
-					// const el = oToolkit.createElementFromHtml(inner);
-					// console.log(el);
-					//
-					myModalAlternative.hide();
-
-					console.log($(`[data-att-code="${oForm.dataset.attCode}"] tbody`));
-
-					$(`[data-att-code="${oForm.dataset.attCode}"] tbody`).append($(form.innerHTML));
-
-				}
-				else{
-					console.error('Error while saving object');
-				}
-
-			})
-			.catch(function (error) {
-
-				console.error(error);
-			});
-		});
-	}
-
 
 	return {
 		handleElement

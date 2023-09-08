@@ -1,34 +1,5 @@
 {% use "bootstrap_5_layout.html.twig" %}
 
-{# LAYOUT #}
-
-{# column #}
-{%- block column_widget -%}
-
-    {{ form_widget(form, {'attr': {'class': 'combodo-column'}}) }}
-    {{ form_help(form) }}
-    {{ form_errors(form) }}
-
-{%- endblock column_widget -%}
-
-{# row #}
-{%- block row_widget -%}
-
-    {{ form_widget(form, {'attr': {'class': 'combodo-row'}}) }}
-    {{ form_help(form) }}
-    {{ form_errors(form) }}
-
-{%- endblock row_widget -%}
-
-{# fieldset #}
-{%- block field_set_widget -%}
-
-    {{ form_widget(form, {'attr': {'class': 'combodo-field-set'}}) }}
-    {{ form_help(form) }}
-    {{ form_errors(form) }}
-
-{%- endblock field_set_widget -%}
-
 {# ATTRIBUTE #}
 
 {# DocumentType #}
@@ -68,19 +39,18 @@
 {# LinkSetType #}
 {%- block link_set_widget -%}
 
-    {% if is_indirect %}
-        <span class="badge bg-warning">Indirect</span>
-    {% endif %}
+    <div {{ block('widget_container_attributes') }}>
 
-    {% if is_abstract %}
-        <span class="badge bg-danger">abstract</span>
-    {% endif %}
+        {% if is_indirect %}
+            <span class="badge bg-warning">Indirect</span>
+        {% endif %}
 
-    {# container #}
-    <div class="link_set_widget_container" data-att-code="{{ att_code }}">
+        {% if is_abstract %}
+            <span class="badge bg-danger">abstract</span>
+        {% endif %}
 
         {# table #}
-        <table class="table link_set_widget" >
+        <table class="table" >
 
             {# header #}
             <thead>
@@ -109,32 +79,36 @@
 
         </table>
 
-        {% if is_abstract %}
-            {# create item button #}
-            <div class="d-inline-block">
-                <div class="dropdown">
-                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Create
-                    </button>
-                    <ul class="dropdown-menu dropdown_scroll_300">
-                        {% for object_class in object_classes %}
-                            <li><a class="dropdown-item create_item_link" href="#" data-object-class="{{ object_class }}" data-ext-key-to-me="{{ ext_key_to_me }}">{{ object_class }}</a></li>
-                        {% endfor %}
-                    </ul>
+        <div>
+
+            {% if is_abstract %}
+                {# create item button #}
+                <div class="d-inline-block">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Create
+                        </button>
+                        <ul class="dropdown-menu dropdown_scroll_300">
+                            {% for object_class in object_classes %}
+                                <li><a class="dropdown-item create_item_link" href="#" data-object-class="{{ object_class }}" data-ext-key-to-me="{{ ext_key_to_me }}">{{ object_class }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
-            </div>
-        {% elseif is_indirect %}
-            {# add item button #}
-            <button type="button" class="add_item_link btn btn-secondary btn-sm" data-collection-holder-class="{{ form.vars.id }}">Add {{ target_class }}</button>
-        {% else %}
-            {# create item button #}
-            <button type="button" class="btn btn-secondary create_item_link btn-sm" data-object-class="{{ target_class }}" data-ext-key-to-me="{{ ext_key_to_me }}">Create {{ target_class }}</button>
-        {% endif %}
+            {% elseif is_indirect %}
+                {# add item button #}
+                <button type="button" class="add_item_link btn btn-secondary btn-sm" data-collection-holder-class="{{ form.vars.id }}">Add {{ target_class }}</button>
+            {% else %}
+                {# create item button #}
+                <button type="button" class="btn btn-secondary create_item_link btn-sm" data-object-class="{{ target_class }}" data-ext-key-to-me="{{ ext_key_to_me }}">Create {{ target_class }}</button>
+            {% endif %}
+
+        </div>
+
+        {{ form_help(form) }}
+        {{ form_errors(form) }}
 
     </div>
-
-    {{ form_help(form) }}
-    {{ form_errors(form) }}
 
 {%- endblock link_set_widget -%}
 
@@ -156,7 +130,7 @@
    {% if z_list == 'list' %}
         <tr data-block="object_container" data-container-id="{{ form.vars.id }}" data-object-id="{{ objectId }}" data-reload-url="{{ path('object_reload', {class: form.vars.object_class, id: objectId }) }}">
             {% for child in form %}
-            <td data-block="container">
+            <td data-block="attribute_container">
                 {{ form_widget(child) }}
             </td>
             {% endfor %}

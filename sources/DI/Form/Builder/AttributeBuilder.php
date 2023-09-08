@@ -82,7 +82,7 @@ class AttributeBuilder
 					'data-att-code' => $sCode,
 				],
 				'row_attr' => [
-					'data-block' => 'container'
+					'data-block' => 'attribute_container',
 				],
 				'label_attr' => [
 					'class' => $bIsLocked ? 'locked' : ''
@@ -159,6 +159,7 @@ class AttributeBuilder
 			$aFormType['options']['is_indirect'] = $oAttributeDefinition->IsIndirect();
 			$aFormType['options']['is_abstract'] = MetaModel::IsAbstract(LinkSetModel::GetTargetClass($oAttributeDefinition));
 			$aFormType['options']['target_class'] = LinkSetModel::GetTargetClass($oAttributeDefinition);
+			$aFormType['options']['row_attr']['data-object-class'] = $oAttributeDefinition->GetLinkedClass();
 			if($aFormType['options']['is_abstract']){
 				$aFormType['options']['object_classes'] = $this->oObjectService->listConcreteChildClasses(LinkSetModel::GetTargetClass($oAttributeDefinition));
 			}
@@ -168,15 +169,6 @@ class AttributeBuilder
 				'is_link_set' => true,
 				'ext_key_to_me' => $oAttributeDefinition->GetExtKeyToMe(),
 				'z_list' => 'list',
-				'attr' => [
-					'class' => 'z_list_list'
-				]
-			];
-			$aFormType['options']['attr'] = [
-				'class' => 'link_set'
-			];
-			$aFormType['options']['label_attr'] = [
-				'class' => 'combodo-field-set-label'
 			];
 		}
 		else if($oAttributeDefinition instanceof AttributeText){

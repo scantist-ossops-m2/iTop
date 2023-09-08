@@ -1,3 +1,4 @@
+/* body */
 body{
 	font-family: 'Montserrat', serif;
 	padding-top: 64px;
@@ -26,26 +27,36 @@ body[data-bs-theme="dark"] .app_icon{
 [data-block="row_container"] > div{
 	display: flex;
 }
-.combodo-row fieldset{
+
+/* column */
+[data-block="column_container"]{
+	padding: 10px;
+	flex-grow: 1;
+	width: 0;
+}
+
+/* fieldset */
+[data-block="fieldset_container"]{
 	flex-grow: 1;
 }
-.combodo-column{
-	padding: 10px;
-}
-.combodo-field-set{
-	border: #b7b7b7 dashed 1px;
-	padding: 10px;
-	border-radius: 10px;
-}
-.combodo-field-set-label{
+[data-block="fieldset_container"] > legend{
 	font-weight: bold;
 	border-bottom: 2px solid #b7b7b7;
 	margin-bottom: 10px;
 }
-.loading{
+[data-block="fieldset_container"] > div{
+	border: #b7b7b7 dashed 1px;
+	padding: 10px;
+	border-radius: 10px;
+}
+
+/* ATTRIBUTES */
+
+/* attribute */
+[data-block="attribute_container"].loading{
 	position: relative;
 }
-.loading:after{
+[data-block="attribute_container"].loading:after{
 	content: 'loading...';
 	position: absolute;
 	top: 0;
@@ -58,11 +69,21 @@ body[data-bs-theme="dark"] .app_icon{
 	justify-content: center;
 	border-radius: 10px;
 }
-label.required:after{
+
+/* FORM */
+
+/* form */
+form{
+	border-radius: 10px;
+	padding: 5px;
+}
+
+/* label */
+form label.required:after{
 	content: ' *';
 	color: red;
 }
-label.locked:after{
+form label.locked:after{
 	content: "\f023";
 	font-family: "Font Awesome 5 Free", serif;
 	font-weight: 600;
@@ -70,40 +91,6 @@ label.locked:after{
 	color: #ffcc00;
 	font-size: .7rem;
 }
-label.dependent{
+form label.dependent{
 	color: #2757af;
-}
-form{
-	/*background-color: #f8f8f8;*/
-	border-radius: 10px;
-	padding: 5px;
-}
-form.actions button,a{
-	margin: 0 3px;
-}
-[data-block="container"]:has(.test:empty) {
-	display: none;
-}
-.z_list_list{
-	display: flex;
-}
-body[data-bs-theme="dark"] .app_icon{
-	filter: invert(1);
-}
-.combodo-field-set-label.is_indirect_1:after{
-	content: 'indirect';
-	margin-left: 5px;
-	font-size: .8rem;
-	color: #0C63E4;
-}
-.combodo-field-set-label.is_abstract_1:after{
-	content: 'abstract';
-	margin-left: 5px;
-	font-size: .8rem;
-	color: #0C63E4;
-}
-.dropdown_scroll_300{
-	max-height: 300px;
-	overflow-y: auto;
-	overflow-x: clip;
 }

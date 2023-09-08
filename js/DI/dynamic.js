@@ -41,6 +41,9 @@ const Dynamic = function(){
 
 			// retrieve condition
 			const aHideWhenCondition = JSON.parse(oInvisibleField.dataset.hideWhen);
+			if(aHideWhenCondition === null){
+				return;
+			}
 
 			// retrieve condition data
 			const oHideWhenElement = oElement.querySelector(String.format(aSelectors.dataAttCode, aHideWhenCondition.att_code));
@@ -72,9 +75,18 @@ const Dynamic = function(){
 
 			// retrieve condition
 			const aDisableWhenCondition = JSON.parse(oDisabledField.dataset.disableWhen);
+			if(aDisableWhenCondition === null){
+				return;
+			}
 
 			// retrieve condition data
 			const oDisableWhenElement = oElement.querySelector(`[data-att-code="${aDisableWhenCondition.att_code}"]`);
+			if(oDisableWhenElement === null){
+				return;
+			}
+
+			// retrieve container
+			const oContainer = oDisabledField.closest(aSelectors.dataAllBlocks);
 
 			// initial disabled state
 			oDisabledField.closest(aSelectors.dataBlockContainer).disabled = (oDisableWhenElement.value === aDisableWhenCondition.value);

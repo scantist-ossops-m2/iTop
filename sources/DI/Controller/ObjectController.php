@@ -215,6 +215,9 @@ class ObjectController extends AbstractController
 		// apply locked attributes to object
 		$oObjectFormManager->applyRequestLockedAttributesToObject($request, $oObject, 'new');
 
+		$sExtKeyToMe = $request->get('ext_key_to_me');
+		$sObjectClass = $request->get('object_class');
+
 		// submitted and valid
 		if ($oForm->isSubmitted() && $oForm->isValid()) {
 
@@ -233,8 +236,10 @@ class ObjectController extends AbstractController
 
 			// create object form
 			$oForm = $oFormFactory->createNamed($name, ObjectType::class, $oObject, [
-				'object_class' => $class,
-				'z_list' => 'list'
+				'object_class' => $sObjectClass,
+				'z_list' => 'list',
+				'is_link_set' => true,
+				'ext_key_to_me' => $sExtKeyToMe
 			]);
 
 			// return object form
@@ -242,7 +247,7 @@ class ObjectController extends AbstractController
 				'succeeded' => true,
 				'template' => $this->renderView('DI/form/form.html.twig', [
 					'id' => $id,
-					'class' => $class,
+					'class' => $sObjectClass,
 					'form' => $oForm->createView(),
 				])
 			]);

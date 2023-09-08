@@ -44,9 +44,6 @@ class ObjectType extends AbstractType
 			'z_list' => 'details',
 			'is_link_set' => false,
 			'ext_key_to_me' => null,
-			'attr' => [
-				'class' =>  'z_list_details'
-			],
 			'object_class' => null,
 			'locked_attributes' => null,
 			'data_class' => cmdbAbstractObject::class,

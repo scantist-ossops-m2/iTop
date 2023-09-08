@@ -45,9 +45,20 @@ const App = function(){
 		});
 	}
 
+	/**
+	 * ckeditor save editors.
+	 *
+	 */
+	function saveCkEditors(){
+		for(let instanceName in CKEDITOR.instances) {
+			CKEDITOR.instances[instanceName].updateElement();
+		}
+	}
+
 	return {
 		init,
-		handleTooltips
+		handleTooltips,
+		saveCkEditors
 	}
 };
 
