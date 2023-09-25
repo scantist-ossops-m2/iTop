@@ -139,9 +139,9 @@ class ObjectController extends AbstractController
 	/**
 	 * Return an object form view.
 	 *
-	 * @Route("/{class<\w+>}/{id<\d+>}/{name<\w+>}/form", name="object_form", methods={"POST"})
+	 * @Route("/{class<\w+>}/{id<\d+>}/form", name="object_form", methods={"POST"})
 	 */
-	public function objectForm(Request $request, string $name, string $class, int $id, ObjectService $oObjectService, FormFactoryInterface $oFormFactory) : Response
+	public function objectForm(Request $request, string $class, int $id, ObjectService $oObjectService, FormFactoryInterface $oFormFactory) : Response
 	{
 		// retrieve object
 		try{
@@ -160,7 +160,7 @@ class ObjectController extends AbstractController
 		}
 
 		// create object form
-		$oForm = $oFormFactory->createNamed($name, ObjectType::class, $oObject, [
+		$oForm = $oFormFactory->createNamed($aData['form_name'], ObjectType::class, $oObject, [
 			'object_class' => $class,
 			'locked_attributes' => $aData['locked_attributes'],
 			'attr' => [
@@ -192,9 +192,9 @@ class ObjectController extends AbstractController
 	/**
 	 * Save object into database and return its list representation.
 	 *
-	 * @Route("/{class<\w+>}/{id<\d+>}/{name<\w+>}/save", name="object_save", methods={"POST"})
+	 * @Route("/{class<\w+>}/{id<\d+>}/save", name="object_save", methods={"POST"})
 	 */
-	public function objectSave(Request $request, string $name, string $class, int $id, ObjectService $oObjectService, FormFactoryInterface $oFormFactory, ObjectFormManager $oObjectFormManager) : Response
+	public function objectSave(Request $request, string $class, int $id, ObjectService $oObjectService, FormFactoryInterface $oFormFactory, ObjectFormManager $oObjectFormManager) : Response
 	{
 		// retrieve object
 		try{
@@ -204,8 +204,12 @@ class ObjectController extends AbstractController
 			throw $this->createNotFoundException("The $class $id does not exist", $e);
 		}
 
+		$sExtKeyToMe = $request->get('ext_key_to_me');
+		$sObjectClass = $request->get('object_class');
+		$sName = $request->get('form_name');
+
 		// create object form
-		$oForm = $oFormFactory->createNamed($name, ObjectType::class, $oObject, [
+		$oForm = $oFormFactory->createNamed($sName, ObjectType::class, $oObject, [
 			'object_class' => $class,
 		]);
 
@@ -213,10 +217,7 @@ class ObjectController extends AbstractController
 		$oForm->handleRequest($request);
 
 		// apply locked attributes to object
-		$oObjectFormManager->applyRequestLockedAttributesToObject($request, $oObject, 'new');
-
-		$sExtKeyToMe = $request->get('ext_key_to_me');
-		$sObjectClass = $request->get('object_class');
+		$oObjectFormManager->applyRequestLockedAttributesToObject($request, $oObject, $sName);
 
 		// submitted and valid
 		if ($oForm->isSubmitted() && $oForm->isValid()) {
@@ -235,7 +236,7 @@ class ObjectController extends AbstractController
 			}
 
 			// create object form
-			$oForm = $oFormFactory->createNamed($name, ObjectType::class, $oObject, [
+			$oForm = $oFormFactory->createNamed($sName, ObjectType::class, $oObject, [
 				'object_class' => $sObjectClass,
 				'z_list' => 'list',
 				'is_link_set' => true,

@@ -14,9 +14,6 @@ class FieldSetType extends AbstractContainerType
 	{
 		parent::configureOptions($resolver);
 		$resolver->setDefault('icon', null);
-		$resolver->setDefault('label_attr', [
-			'class' => 'combodo-field-set-label',
-		]);
 	}
 
 	public function buildView(FormView $view, FormInterface $form, array $options)

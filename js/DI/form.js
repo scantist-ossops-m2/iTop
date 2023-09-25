@@ -14,22 +14,10 @@ const Form = function(oWidget, oDynamic){
 
 	const aSelectors = {
 		dataDependsOn: '[data-depends-on]',
-		dataBlockContainer: '[data-block="container"]',
-		dataAttCode: '[data-att-code="{0}"]'
+		dataAttributeContainer: '[data-block="attribute_container"]',
+		dataFieldsetContainer: '[data-block="fieldset_container"]',
+		dataAttCodeSpecific: '[data-att-code="{0}"]'
 	};
-
-	/**
-	 * hideEmptyContainers.
-	 *
-	 * The purpose of this function is to hide empty containers.
-	 * Ex: FieldSetType with no children
-	 *
-	 */
-	function hideEmptyContainers(oElement){
-		$('.combodo-field-set', oElement).each(function(){
-			$(this).parent().toggle($(this).children().length !== 0);
-		});
-	}
 
 	/**
 	 * updateForm.

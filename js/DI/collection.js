@@ -9,8 +9,6 @@
  */
 const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 
-	const MODAL_LOADING_HTML = 'loading...';
-
 	// dom selectors
 	const aSelectors = {
 		addItem: '.add_item_link',
@@ -106,20 +104,31 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 
 		// retrieve attribute field
 		const oAttributeField = oAttributeContainer.querySelector(aSelectors.dataAttCode);
+		const sAttributeId = oAttributeField.getAttribute('id');
 
 		// retrieve attribute object container
 		const oObjectContainer = e.currentTarget.closest(aSelectors.dataObjectContainer);
 
-		// open modal
-		const oModalBody= document.querySelector('#object_modal .modal-body');
-		oModalBody.innerHTML = MODAL_LOADING_HTML;
-		const oModal = new bootstrap.Modal('#object_modal', {});
-		oModal.show();
+		// form attributes
+		const sModalId = `${sAttributeId}_modal`;
+		const sFormName = `${sAttributeId}_form`;
+
+		// crate a new modal
+		const oModal = oToolkit.createFullScreenModal(sModalId, e.currentTarget.dataset.modalTitle);
+		const oModalBody= oModal.querySelector('.modal-body');
+		oModalBody.innerHTML = 'loading...';
+
+		// bootstrap modal
+		const oBootstrapModal = new bootstrap.Modal(`#${sModalId}`);
+		oModal.addEventListener('hidden.bs.modal', event => {
+			// cleanup
+			oBootstrapModal.dispose();
+			event.currentTarget.remove();
+		});
+		oBootstrapModal.show();
 
 		// compute object form url
-		const sUrl = objectFormUrl
-			.replaceAll('object_class', e.currentTarget.dataset.objectClass)
-			.replaceAll('form_name', 'new');
+		const sUrl = objectFormUrl.replaceAll('object_class', e.currentTarget.dataset.objectClass);
 
 		// prepare request data
 		const aLockedAttributes = {};
@@ -128,7 +137,8 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 		}
 		const aData = {
 			locked_attributes: aLockedAttributes,
-			att_code: oAttributeField.dataset.attCode
+			att_code: oAttributeField.dataset.attCode,
+			form_name: sFormName
 		}
 
 		const sExtKeyToMe = e.currentTarget.dataset.extKeyToMe;
@@ -144,11 +154,16 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 		})
 		.then((response) => response.json())
 		.then((data) => {
+
+			// load modal content
 			oModalBody.innerHTML = data.template;
+
+			// listen
 			oForm.handleElement(oModalBody);
 			handleElement(oModalBody);
 			oApp.handleTooltips(oModalBody);
-			listenSaveModalObject(oModal, oModalBody, oObjectContainer, oAttributeField.dataset.attCode, sExtKeyToMe, oAttributeContainer.dataset.objectClass);
+
+			listenSaveModalObject(oModal, oBootstrapModal, oModalBody, oObjectContainer, oAttributeContainer, oAttributeField.dataset.attCode, sExtKeyToMe, oAttributeContainer.dataset.objectClass, sModalId, sFormName, oAttributeField.getAttribute('name'));
 		})
 		.catch(function (error) {
 			console.error(error);
@@ -158,32 +173,33 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 	/**
 	 *
 	 */
-	function listenSaveModalObject(oModal, oModalBody, oObjectContainer, sAttCode, sExtKeyToMe, sObjectClass)
+	function listenSaveModalObject(oModal, oBootstrapModal, oModalBody, oObjectContainer, oAttributeContainer, sAttCode, sExtKeyToMe, sObjectClass, sModalId, sFormName, sVarName)
 	{
-		const oSave = document.querySelector('[data-action="save_modal_object"]');
+		const oSave = oModal.querySelector('[data-action="save_modal_object"]');
 
 		oSave.addEventListener('click', function(e){
 
-			const oForm = document.querySelector('form[name="new"]');
+			const oForm = document.querySelector('form[name="' + sFormName + '"]')
 
 			// set loading state
-			oModalBody.innerHTML = MODAL_LOADING_HTML;
+			oModalBody.innerHTML = 'Saving object...';
 
 			// save CK editors
 			oApp.saveCkEditors();
 
-			// prepare data
+			// prepare form data
 			const data = new URLSearchParams();
 			for (const pair of new FormData(oForm)) {
 				data.append(pair[0], pair[1]);
 			}
+
+			// append useful extra data
 			data.append('ext_key_to_me', sExtKeyToMe);
 			data.append('object_class', sObjectClass);
+			data.append('form_name', sFormName);
 
 			// compute object form url
-			const url = objectSaveUrl
-				.replaceAll('object_class', oForm.dataset.objectClass)
-				.replaceAll('form_name', 'new');
+			const url = objectSaveUrl.replaceAll('object_class', oForm.dataset.objectClass);
 
 			// fetch url
 			fetch(url, {
@@ -196,16 +212,29 @@ const Collection = function(oForm, objectFormUrl, objectSaveUrl){
 					// on success
 					if(data.succeeded){
 
+						// retrieve collection holder (replace ':' character otherwise the selector is invalid)
+						const collectionHolder = oAttributeContainer.querySelector('tbody');
+
 						// extract form content
 						const reg = new RegExp(/<form .*?>(.*)<\/form>/gs);
 						const res = reg.exec(data.template);
 
 						// append new row
 						const row = oToolkit.createElementFromHtml(res[1]);
+						row.querySelectorAll(aSelectors.dataAttCode).forEach(function(e){
+							e.setAttribute('id', `${oAttributeContainer.querySelector(aSelectors.dataAttCode).getAttribute('id')}_${collectionHolder.dataset.index}_${e.dataset.attCode}`);
+							e.setAttribute('name', `${oAttributeContainer.querySelector(aSelectors.dataAttCode).getAttribute('name')}[${collectionHolder.dataset.index}][${e.dataset.attCode}]`);
+						});
+
 						oObjectContainer.querySelector(`[data-att-code="${sAttCode}"] tbody`).appendChild(row);
 
+						// listen
+						listenRemoveItem(row);
+
 						// hide modal
-						oModal.hide();
+						oBootstrapModal.hide();
+
+						collectionHolder.dataset.index++;
 					}
 					else{
 						console.error('Error while saving object');

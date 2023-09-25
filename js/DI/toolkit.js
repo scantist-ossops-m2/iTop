@@ -48,10 +48,28 @@ const Toolkit = function(){
 		return t.content;
 	}
 
+	function createFullScreenModal(sId, sTitle){
+
+		// retrieve modal template
+		const oModalTemplate = document.getElementById('full_screen_modal_template');
+
+		// clone template content
+		const oModalFragment = oModalTemplate.content.cloneNode(true);
+
+		// append modal to container
+		const oModalContainer = document.getElementById('modal_container');
+		const oModal = oModalContainer.appendChild(oModalFragment.lastElementChild);
+		oModal.setAttribute('id', sId);
+		oModal.querySelector('.modal-title').textContent = sTitle;
+
+		return oModal;
+	}
+
 	return {
 		init,
 		parseTextToHtml,
-		createElementFromHtml
+		createElementFromHtml,
+		createFullScreenModal
 	}
 };
 

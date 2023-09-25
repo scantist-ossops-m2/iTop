@@ -25,7 +25,7 @@ class LayoutBuilder
 				'items' => $columns,
 				'label' => false,
 				'row_attr' => [
-					'data-block' => 'container'
+					'data-block' => 'row_container'
 				]
 			]
 		];
@@ -48,7 +48,7 @@ class LayoutBuilder
 				'items' => $items,
 				'label' => false,
 				'row_attr' => [
-					'data-block' => 'container'
+					'data-block' => 'column_container'
 				]
 			]
 		];
@@ -71,7 +71,7 @@ class LayoutBuilder
 				'items' => $items,
 				'label' => Dict::S(substr($key, 9)),
 				'row_attr' => [
-					'data-block' => 'container'
+					'data-block' => 'fieldset_container'
 				]
 			]
 		];

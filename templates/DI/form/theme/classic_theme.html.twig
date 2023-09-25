@@ -39,7 +39,7 @@
 {# LinkSetType #}
 {%- block link_set_widget -%}
 
-    <div {{ block('widget_container_attributes') }}>
+    <div {{ block('widget_container_attributes') }} name="{{ form.vars.full_name }}" id="{{ form.vars.id }}">
 
         {% if is_indirect %}
             <span class="badge bg-warning">Indirect</span>
@@ -90,7 +90,7 @@
                         </button>
                         <ul class="dropdown-menu dropdown_scroll_300">
                             {% for object_class in object_classes %}
-                                <li><a class="dropdown-item create_item_link" href="#" data-object-class="{{ object_class }}" data-ext-key-to-me="{{ ext_key_to_me }}">{{ object_class }}</a></li>
+                                <li><a class="dropdown-item create_item_link" href="#" data-object-class="{{ object_class }}" data-ext-key-to-me="{{ ext_key_to_me }}" data-collection-holder-class="{{ form.vars.id }}" data-modal-title="Create {{ object_class }}">{{ object_class }}</a></li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -100,7 +100,7 @@
                 <button type="button" class="add_item_link btn btn-secondary btn-sm" data-collection-holder-class="{{ form.vars.id }}">Add {{ target_class }}</button>
             {% else %}
                 {# create item button #}
-                <button type="button" class="btn btn-secondary create_item_link btn-sm" data-object-class="{{ target_class }}" data-ext-key-to-me="{{ ext_key_to_me }}">Create {{ target_class }}</button>
+                <button type="button" class="btn btn-secondary create_item_link btn-sm" data-object-class="{{ target_class }}" data-ext-key-to-me="{{ ext_key_to_me }}" data-collection-holder-class="{{ form.vars.id }}" data-modal-title="Create {{ target_class }}">Create {{ target_class }}</button>
             {% endif %}
 
         </div>

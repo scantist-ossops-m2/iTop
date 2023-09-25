@@ -10,7 +10,8 @@ const Dynamic = function(){
 		dataHideWhen: '[data-hide-when]',
 		dataDisableWhen: '[data-disable-when]',
 		dataAttCode: '[data-att-code="{0}"]',
-		dataBlockContainer: '[data-block="container"]',
+		dataAttributeContainer: '[data-block="attribute_container"]',
+		dataAllBlocks: '[data-block]'
 	};
 
 	/**
@@ -47,14 +48,20 @@ const Dynamic = function(){
 
 			// retrieve condition data
 			const oHideWhenElement = oElement.querySelector(String.format(aSelectors.dataAttCode, aHideWhenCondition.att_code));
+			if(oHideWhenElement === null){
+				return;
+			}
+
+			// retrieve container
+			const oContainer = oInvisibleField.closest(aSelectors.dataAllBlocks);
 
 			// initial hidden state
-			oInvisibleField.closest(aSelectors.dataBlockContainer).hidden = (oHideWhenElement.value === aHideWhenCondition.value);
+			oContainer.hidden = (oHideWhenElement.value === aHideWhenCondition.value);
 
 			// listen for changes
 			oHideWhenElement.addEventListener('change', (e) => {
-				oInvisibleField.closest(aSelectors.dataBlockContainer).hidden = (e.target.value === aHideWhenCondition.value);
-				oInvisibleField.closest(aSelectors.dataBlockContainer).style.visibility = (e.target.value === aHideWhenCondition.value) ? 'hidden' : '';
+				oContainer.hidden = (e.target.value === aHideWhenCondition.value);
+				oContainer.style.visibility = (e.target.value === aHideWhenCondition.value) ? 'hidden' : '';
 			});
 		});
 
@@ -89,11 +96,11 @@ const Dynamic = function(){
 			const oContainer = oDisabledField.closest(aSelectors.dataAllBlocks);
 
 			// initial disabled state
-			oDisabledField.closest(aSelectors.dataBlockContainer).disabled = (oDisableWhenElement.value === aDisableWhenCondition.value);
+			oContainer.disabled = (oDisableWhenElement.value === aDisableWhenCondition.value);
 
 			// listen for changes
 			oDisableWhenElement.addEventListener('change', (e) => {
-				oDisabledField.closest(aSelectors.dataBlockContainer).disabled  = (e.target.value === aDisableWhenCondition.value);
+				oContainer.disabled  = (e.target.value === aDisableWhenCondition.value);
 			});
 		});
 	}
