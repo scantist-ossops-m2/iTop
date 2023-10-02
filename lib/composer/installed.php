@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '20a663d6316c3d154642298f59863c24ff251350',
+        'reference' => '6e0bcd6d5506a32af675d78f19811498702203ce',
         'name' => 'combodo/itop',
         'dev' => true,
     ),
@@ -25,7 +25,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '20a663d6316c3d154642298f59863c24ff251350',
+            'reference' => '6e0bcd6d5506a32af675d78f19811498702203ce',
             'dev_requirement' => false,
         ),
         'combodo/tcpdf' => array(
@@ -393,6 +393,15 @@
             'install_path' => __DIR__ . '/../scssphp/scssphp',
             'aliases' => array(),
             'reference' => '6d44282ccf283e133ab70b6282f8e068ff2f9bf9',
+            'dev_requirement' => false,
+        ),
+        'sensio/framework-extra-bundle' => array(
+            'pretty_version' => 'v6.2.10',
+            'version' => '6.2.10.0',
+            'type' => 'symfony-bundle',
+            'install_path' => __DIR__ . '/../sensio/framework-extra-bundle',
+            'aliases' => array(),
+            'reference' => '2f886f4b31f23c76496901acaedfedb6936ba61f',
             'dev_requirement' => false,
         ),
         'symfony/cache' => array(

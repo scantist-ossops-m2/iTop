@@ -55,6 +55,7 @@ const App = function(){
 		}
 	}
 
+
 	return {
 		init,
 		handleTooltips,

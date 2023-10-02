@@ -53,6 +53,18 @@
                     <a href="{{ path('configuration_edit') }}" class="nav-link">Edit Configuration</a>
                 </li>
 
+                {# create task #}
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="create_task">Create Task (FileType)</a>
+                </li>
+
+                {# param converter #}
+                <li class="nav-item">
+                    <a href="{{ path('param_converter_test', {
+                        'parameter' : 'mon-url'
+                    }) }}" class="nav-link" id="create_task">Param Converter</a>
+                </li>
+
             </ul>
 
             {# theme dark/light #}

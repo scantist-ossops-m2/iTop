@@ -24,6 +24,7 @@
         {# JS #}
         <script src="{{ asset_js('DI/toolkit.js') }}"></script>
         <script src="{{ asset_js('DI/app.js') }}"></script>
+        <script src="{{ asset_js('DI/file_test.js') }}"></script>
 
         {# - BLOCK HEAD - #}
         {% block head %}{% endblock %}
@@ -79,6 +80,10 @@
             oApp.init();
 
             $(document).ready(function(e) {
+
+                // App initialization
+                const oFileTest = new FileTest('{{ path('file_test_form') }}');
+                oFileTest.init();
 
                 {# - BLOCK READY SCRIPTS - #}
                 {% block ready_scripts %}{% endblock %}
