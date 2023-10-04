@@ -891,19 +891,19 @@ class ormLinkSet implements iDBObjectSetIterator, Iterator, SeekableIterator, Ar
 	// to allow usage of CollectionType with orm link set
 	// Value needs to implement ArrayAccess
 
-	public function offsetExists($offset)
+	public function offsetExists($offset) : bool
 	{
 		$aOriginalObjects = array_flip($this->aOriginalObjects);
 		return array_key_exists($offset, $aOriginalObjects);
 	}
 
-	public function offsetGet($offset)
+	public function offsetGet($offset) : mixed
 	{
 		$aOriginalObjects = array_flip($this->aOriginalObjects);
 		return MetaModel::GetObject($this->sClass, $aOriginalObjects[$offset]);
 	}
 
-	public function offsetSet($offset, $value)
+	public function offsetSet($offset, $value) : void
 	{
 		$aData = array_flip($this->aPreserved);
 		if(array_key_exists($offset, $aData)){
@@ -914,7 +914,7 @@ class ormLinkSet implements iDBObjectSetIterator, Iterator, SeekableIterator, Ar
 		}
 	}
 
-	public function offsetUnset($offset)
+	public function offsetUnset($offset) : void
 	{
 		$aData = array_flip($this->aPreserved);
 		if(array_key_exists($offset, $aData)){
@@ -922,7 +922,8 @@ class ormLinkSet implements iDBObjectSetIterator, Iterator, SeekableIterator, Ar
 		}
 	}
 
-	public function IsDeleted($value){
+	public function IsDeleted($value) : bool
+	{
 		return (array_key_exists($value->GetKey(), $this->aRemoved));
 	}
 }
