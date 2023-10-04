@@ -24,6 +24,8 @@ class AnnotatedRouteControllerLoader extends AnnotationClassLoader
 {
     /**
      * Configures the _controller default parameter of a given Route instance.
+     *
+     * @return void
      */
     protected function configureRoute(Route $route, \ReflectionClass $class, \ReflectionMethod $method, object $annot)
     {
@@ -36,10 +38,8 @@ class AnnotatedRouteControllerLoader extends AnnotationClassLoader
 
     /**
      * Makes the default route name more sane by removing common keywords.
-     *
-     * @return string
      */
-    protected function getDefaultRouteName(\ReflectionClass $class, \ReflectionMethod $method)
+    protected function getDefaultRouteName(\ReflectionClass $class, \ReflectionMethod $method): string
     {
         $name = preg_replace('/(bundle|controller)_/', '_', parent::getDefaultRouteName($class, $method));
 

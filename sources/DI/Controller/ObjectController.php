@@ -29,8 +29,8 @@ class ObjectController extends AbstractController
 	/**
 	 * Return object view page with object data printed with key value representation.
 	 *
-	 * @Route ("/{class<\w+>}/{id<\d+>}/view", name="object_view")
 	 */
+	#[Route('/{class<\w+>}/{id<\d+>}/view', name: 'object_view')]
 	public function objectView(string $class, int $id) : Response
 	{
 		// retrieve object
@@ -52,8 +52,8 @@ class ObjectController extends AbstractController
 	/**
 	 * Return object view as JSon response.
 	 *
-	 * @Route ("/{class<\w+>}/{id<\d+>}/json", name="object_json")
 	 */
+	#[Route('/{class<\w+>}/{id<\d+>}/json', name: 'object_json')]
 	public function objectJSon(string $class, int $id) : JsonResponse
 	{
 		// retrieve object
@@ -76,8 +76,8 @@ class ObjectController extends AbstractController
 	 *
 	 * @todo perform database DbInsert, DbDelete, DbUpdate on links
 	 *
-	 * @Route("/{class<\w+>}/{id<\d+>}/edit", name="object_edit")
 	 */
+	#[Route('/{class<\w+>}/{id<\d+>}/edit', name: 'object_edit')]
 	public function objectEdit(Request $request, string $class, int $id, ObjectService $oObjectService, Stopwatch $oStopWatch) : Response
 	{
 		// retrieve object
@@ -139,8 +139,8 @@ class ObjectController extends AbstractController
 	/**
 	 * Return an object form view.
 	 *
-	 * @Route("/{class<\w+>}/{id<\d+>}/form", name="object_form", methods={"POST"})
 	 */
+	#[Route('/{class<\w+>}/{id<\d+>}/form', name: 'object_form', methods: ['POST'])]
 	public function objectForm(Request $request, string $class, int $id, ObjectService $oObjectService, FormFactoryInterface $oFormFactory) : Response
 	{
 		// retrieve object
@@ -192,8 +192,8 @@ class ObjectController extends AbstractController
 	/**
 	 * Save object into database and return its list representation.
 	 *
-	 * @Route("/{class<\w+>}/{id<\d+>}/save", name="object_save", methods={"POST"})
 	 */
+	#[Route('/{class<\w+>}/{id<\d+>}/save', name: 'object_save', methods: ['POST'])]
 	public function objectSave(Request $request, string $class, int $id, ObjectService $oObjectService, FormFactoryInterface $oFormFactory, ObjectFormManager $oObjectFormManager) : Response
 	{
 		// retrieve object
@@ -265,8 +265,8 @@ class ObjectController extends AbstractController
 	 * The first form, used to apply modifications, contains all dependencies attributes and dependent attributes.
 	 * The second form, used for new fields templates, contains only the dependent attributes.
 	 *
-	 * @Route("/{class<\w+>}/{id<\d+>}/reload", name="object_reload")
 	 */
+	#[Route('/{class<\w+>}/{id<\d+>}/reload', name: 'object_reload')]
 	public function objectReload(Request $request, string $class, int $id, ObjectService $oObjectService) : Response
 	{
 		// retrieve object

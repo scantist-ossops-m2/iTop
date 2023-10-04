@@ -11,6 +11,7 @@
 
 namespace Symfony\Bridge\Twig;
 
+use Composer\InstalledVersions;
 use Symfony\Bundle\FullStack;
 use Twig\Error\SyntaxError;
 use Twig\TwigFilter;
@@ -24,6 +25,7 @@ class UndefinedCallableHandler
     private const FILTER_COMPONENTS = [
         'humanize' => 'form',
         'trans' => 'translation',
+        'sanitize_html' => 'html-sanitizer',
         'yaml_encode' => 'yaml',
         'yaml_dump' => 'yaml',
     ];
@@ -61,6 +63,7 @@ class UndefinedCallableHandler
     ];
 
     private const FULL_STACK_ENABLE = [
+        'html-sanitizer' => 'enable "framework.html_sanitizer"',
         'form' => 'enable "framework.form"',
         'security-core' => 'add the "SecurityBundle"',
         'security-http' => 'add the "SecurityBundle"',
@@ -68,10 +71,7 @@ class UndefinedCallableHandler
         'workflow' => 'enable "framework.workflows"',
     ];
 
-    /**
-     * @return TwigFilter|false
-     */
-    public static function onUndefinedFilter(string $name)
+    public static function onUndefinedFilter(string $name): TwigFilter|false
     {
         if (!isset(self::FILTER_COMPONENTS[$name])) {
             return false;
@@ -80,17 +80,14 @@ class UndefinedCallableHandler
         throw new SyntaxError(self::onUndefined($name, 'filter', self::FILTER_COMPONENTS[$name]));
     }
 
-    /**
-     * @return TwigFunction|false
-     */
-    public static function onUndefinedFunction(string $name)
+    public static function onUndefinedFunction(string $name): TwigFunction|false
     {
         if (!isset(self::FUNCTION_COMPONENTS[$name])) {
             return false;
         }
 
         if ('webpack-encore-bundle' === self::FUNCTION_COMPONENTS[$name]) {
-            return new TwigFunction($name, static function () { return ''; });
+            return new TwigFunction($name, static fn () => '');
         }
 
         throw new SyntaxError(self::onUndefined($name, 'function', self::FUNCTION_COMPONENTS[$name]));
@@ -102,6 +99,12 @@ class UndefinedCallableHandler
             return sprintf('Did you forget to %s? Unknown %s "%s".', self::FULL_STACK_ENABLE[$component], $type, $name);
         }
 
-        return sprintf('Did you forget to run "composer require symfony/%s"? Unknown %s "%s".', $component, $type, $name);
+        $missingPackage = 'symfony/'.$component;
+
+        if (class_exists(InstalledVersions::class) && InstalledVersions::isInstalled($missingPackage)) {
+            $missingPackage = 'symfony/twig-bundle';
+        }
+
+        return sprintf('Did you forget to run "composer require %s"? Unknown %s "%s".', $missingPackage, $type, $name);
     }
 }

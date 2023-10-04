@@ -11,14 +11,19 @@
 
 namespace Symfony\Component\DependencyInjection\Attribute;
 
+use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
+
 #[\Attribute(\Attribute::TARGET_PARAMETER)]
-class TaggedIterator
+class TaggedIterator extends Autowire
 {
     public function __construct(
         public string $tag,
         public ?string $indexAttribute = null,
         public ?string $defaultIndexMethod = null,
         public ?string $defaultPriorityMethod = null,
+        public string|array $exclude = [],
+        public bool $excludeSelf = true,
     ) {
+        parent::__construct(new TaggedIteratorArgument($tag, $indexAttribute, $defaultIndexMethod, false, $defaultPriorityMethod, (array) $exclude, $excludeSelf));
     }
 }

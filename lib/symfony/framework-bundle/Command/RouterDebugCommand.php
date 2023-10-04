@@ -12,6 +12,7 @@
 namespace Symfony\Bundle\FrameworkBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Console\Helper\DescriptorHelper;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Completion\CompletionInput;
 use Symfony\Component\Console\Completion\CompletionSuggestions;
@@ -33,14 +34,13 @@ use Symfony\Component\Routing\RouterInterface;
  *
  * @final
  */
+#[AsCommand(name: 'debug:router', description: 'Display current routes for an application')]
 class RouterDebugCommand extends Command
 {
     use BuildDebugContainerTrait;
 
-    protected static $defaultName = 'debug:router';
-    protected static $defaultDescription = 'Display current routes for an application';
-    private $router;
-    private $fileLinkFormatter;
+    private RouterInterface $router;
+    private ?FileLinkFormatter $fileLinkFormatter;
 
     public function __construct(RouterInterface $router, FileLinkFormatter $fileLinkFormatter = null)
     {
@@ -50,19 +50,15 @@ class RouterDebugCommand extends Command
         $this->fileLinkFormatter = $fileLinkFormatter;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDefinition([
                 new InputArgument('name', InputArgument::OPTIONAL, 'A route name'),
                 new InputOption('show-controllers', null, InputOption::VALUE_NONE, 'Show assigned controllers in overview'),
-                new InputOption('format', null, InputOption::VALUE_REQUIRED, 'The output format (txt, xml, json, or md)', 'txt'),
+                new InputOption('format', null, InputOption::VALUE_REQUIRED, sprintf('The output format ("%s")', implode('", "', $this->getAvailableFormatOptions())), 'txt'),
                 new InputOption('raw', null, InputOption::VALUE_NONE, 'To output raw route(s)'),
             ])
-            ->setDescription(self::$defaultDescription)
             ->setHelp(<<<'EOF'
 The <info>%command.name%</info> displays the configured routes:
 
@@ -74,8 +70,6 @@ EOF
     }
 
     /**
-     * {@inheritdoc}
-     *
      * @throws InvalidArgumentException When route does not exist
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -86,9 +80,7 @@ EOF
         $routes = $this->router->getRouteCollection();
         $container = null;
         if ($this->fileLinkFormatter) {
-            $container = function () {
-                return $this->getContainerBuilder($this->getApplication()->getKernel());
-            };
+            $container = fn () => $this->getContainerBuilder($this->getApplication()->getKernel());
         }
 
         if ($name) {
@@ -157,8 +149,7 @@ EOF
         }
 
         if ($input->mustSuggestOptionValuesFor('format')) {
-            $helper = new DescriptorHelper();
-            $suggestions->suggestValues($helper->getFormats());
+            $suggestions->suggestValues($this->getAvailableFormatOptions());
         }
     }
 
@@ -172,5 +163,10 @@ EOF
         }
 
         return $foundRoutes;
+    }
+
+    private function getAvailableFormatOptions(): array
+    {
+        return (new DescriptorHelper())->getFormats();
     }
 }

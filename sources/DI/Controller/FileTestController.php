@@ -28,11 +28,7 @@ use Symfony\Component\Stopwatch\Stopwatch;
 class FileTestController extends AbstractController
 {
 
-
-	/**
-	 *
-	 * @Route("/file_test/form", name="file_test_form", methods={"POST"})
-	 */
+	#[Route('/file_test/form', name: 'file_test_form', methods: ['POST'])]
 	public function showForm(Request $request) : Response
 	{
 		$oTask = [

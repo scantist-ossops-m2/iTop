@@ -15,9 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ConfigurationController extends AbstractController
 {
 
-	/**
-	 * @Route("/configuration/edit", name="configuration_edit")
-	 */
+	#[Route('/configuration/edit', name: 'configuration_edit')]
 	public function configurationEdit(Request $request) : Response
 	{
 		// create object form

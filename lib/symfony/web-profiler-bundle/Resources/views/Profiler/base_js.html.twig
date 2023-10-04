@@ -39,11 +39,29 @@ if (typeof Sfjs === 'undefined' || typeof Sfjs.loadToolbar === 'undefined') {
         }
 
         if (navigator.clipboard) {
-            document.querySelectorAll('[data-clipboard-text]').forEach(function(element) {
-                removeClass(element, 'hidden');
-                element.addEventListener('click', function() {
-                    navigator.clipboard.writeText(element.getAttribute('data-clipboard-text'));
-                })
+            document.addEventListener('readystatechange', () => {
+                if (document.readyState !== 'complete') {
+                    return;
+                }
+
+                document.querySelectorAll('[data-clipboard-text]').forEach(function (element) {
+                    removeClass(element, 'hidden');
+                    element.addEventListener('click', function () {
+                        navigator.clipboard.writeText(element.getAttribute('data-clipboard-text'));
+
+                        if (element.classList.contains("label")) {
+                            let oldContent = element.textContent;
+
+                            element.textContent = "✅ Copied!";
+                            element.classList.add("status-success");
+
+                            setTimeout(() => {
+                                element.textContent = oldContent;
+                                element.classList.remove("status-success");
+                            }, 7000);
+                        }
+                    });
+                });
             });
         }
 
@@ -616,7 +634,7 @@ if (typeof Sfjs === 'undefined' || typeof Sfjs.loadToolbar === 'undefined') {
                         if (xhr.status !== 0 && !options.stop) {
                             var sfwdt = that.getSfwdt(token);
                             sfwdt.innerHTML = '\
-                                <div class="sf-toolbarreset">\
+                                <div class="sf-toolbarreset notranslate">\
                                     <div class="sf-toolbar-icon"><svg width="26" height="28" xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" viewBox="0 0 26 28" enable-background="new 0 0 26 28" xml:space="preserve"><path fill="#FFFFFF" d="M13 0C5.8 0 0 5.8 0 13c0 7.2 5.8 13 13 13c7.2 0 13-5.8 13-13C26 5.8 20.2 0 13 0z M20 7.5 c-0.6 0-1-0.3-1-0.9c0-0.2 0-0.4 0.2-0.6c0.1-0.3 0.2-0.3 0.2-0.4c0-0.3-0.5-0.4-0.7-0.4c-2 0.1-2.5 2.7-2.9 4.8l-0.2 1.1 c1.1 0.2 1.9 0 2.4-0.3c0.6-0.4-0.2-0.8-0.1-1.3C18 9.2 18.4 9 18.7 8.9c0.5 0 0.8 0.5 0.8 1c0 0.8-1.1 2-3.3 1.9 c-0.3 0-0.5 0-0.7-0.1L15 14.1c-0.4 1.7-0.9 4.1-2.6 6.2c-1.5 1.8-3.1 2.1-3.8 2.1c-1.3 0-2.1-0.6-2.2-1.6c0-0.9 0.8-1.4 1.3-1.4 c0.7 0 1.2 0.5 1.2 1.1c0 0.5-0.2 0.6-0.4 0.7c-0.1 0.1-0.3 0.2-0.3 0.4c0 0.1 0.1 0.3 0.4 0.3c0.5 0 0.9-0.3 1.2-0.5 c1.3-1 1.7-2.9 2.4-6.2l0.1-0.8c0.2-1.1 0.5-2.3 0.8-3.5c-0.9-0.7-1.4-1.5-2.6-1.8c-0.8-0.2-1.3 0-1.7 0.4C8.4 10 8.6 10.7 9 11.1 l0.7 0.7c0.8 0.9 1.3 1.7 1.1 2.7c-0.3 1.6-2.1 2.8-4.3 2.1c-1.9-0.6-2.2-1.9-2-2.7c0.2-0.6 0.7-0.8 1.2-0.6 c0.5 0.2 0.7 0.8 0.6 1.3c0 0.1 0 0.1-0.1 0.3C6 15 5.9 15.2 5.9 15.3c-0.1 0.4 0.4 0.7 0.8 0.8c0.8 0.3 1.7-0.2 1.9-0.9 c0.2-0.6-0.2-1.1-0.4-1.2l-0.8-0.9c-0.4-0.4-1.2-1.5-0.8-2.8c0.2-0.5 0.5-1 0.9-1.4c1-0.7 2-0.8 3-0.6c1.3 0.4 1.9 1.2 2.8 1.9 c0.5-1.3 1.1-2.6 2-3.8c0.9-1 2-1.7 3.3-1.8C20 4.8 21 5.4 21 6.3C21 6.7 20.8 7.5 20 7.5z"/></svg></div>\
                                     An error occurred while loading the web debug toolbar. <a href="{{ url("_profiler_home")|escape('js') }}' + newToken + '>Open the web profiler.</a>\
                                 </div>\
@@ -645,23 +663,31 @@ if (typeof Sfjs === 'undefined' || typeof Sfjs.loadToolbar === 'undefined') {
             },
 
             createTabs: function() {
+                /* the accessibility options of this component have been defined according to: */
+                /* www.w3.org/WAI/ARIA/apg/example-index/tabs/tabs-manual.html */
                 var tabGroups = document.querySelectorAll('.sf-tabs:not([data-processed=true])');
 
                 /* create the tab navigation for each group of tabs */
                 for (var i = 0; i < tabGroups.length; i++) {
                     var tabs = tabGroups[i].querySelectorAll(':scope > .tab');
-                    var tabNavigation = document.createElement('ul');
+                    var tabNavigation = document.createElement('div');
                     tabNavigation.className = 'tab-navigation';
+                    tabNavigation.setAttribute('role', 'tablist');
 
                     var selectedTabId = 'tab-' + i + '-0'; /* select the first tab by default */
                     for (var j = 0; j < tabs.length; j++) {
                         var tabId = 'tab-' + i + '-' + j;
                         var tabTitle = tabs[j].querySelector('.tab-title').innerHTML;
 
-                        var tabNavigationItem = document.createElement('li');
+                        var tabNavigationItem = document.createElement('button');
+                        tabNavigationItem.classList.add('tab-control');
                         tabNavigationItem.setAttribute('data-tab-id', tabId);
+                        tabNavigationItem.setAttribute('role', 'tab');
+                        tabNavigationItem.setAttribute('aria-controls', tabId);
                         if (hasClass(tabs[j], 'active')) { selectedTabId = tabId; }
-                        if (hasClass(tabs[j], 'disabled')) { addClass(tabNavigationItem, 'disabled'); }
+                        if (hasClass(tabs[j], 'disabled')) {
+                            addClass(tabNavigationItem, 'disabled');
+                        }
                         tabNavigationItem.innerHTML = tabTitle;
                         tabNavigation.appendChild(tabNavigationItem);
 
@@ -675,24 +701,31 @@ if (typeof Sfjs === 'undefined' || typeof Sfjs.loadToolbar === 'undefined') {
 
                 /* display the active tab and add the 'click' event listeners */
                 for (i = 0; i < tabGroups.length; i++) {
-                    tabNavigation = tabGroups[i].querySelectorAll(':scope > .tab-navigation li');
+                    tabNavigation = tabGroups[i].querySelectorAll(':scope > .tab-navigation .tab-control');
 
                     for (j = 0; j < tabNavigation.length; j++) {
                         tabId = tabNavigation[j].getAttribute('data-tab-id');
-                        document.getElementById(tabId).querySelector('.tab-title').className = 'hidden';
+                        const tabPanel = document.getElementById(tabId);
+                        tabPanel.setAttribute('role', 'tabpanel');
+                        tabPanel.setAttribute('aria-labelledby', tabId);
+                        tabPanel.querySelector('.tab-title').className = 'hidden';
 
                         if (hasClass(tabNavigation[j], 'active')) {
-                            document.getElementById(tabId).className = 'block';
+                            tabPanel.className = 'block';
+                            tabNavigation[j].setAttribute('aria-selected', 'true');
+                            tabNavigation[j].removeAttribute('tabindex');
                         } else {
-                            document.getElementById(tabId).className = 'hidden';
+                            tabPanel.className = 'hidden';
+                            tabNavigation[j].removeAttribute('aria-selected');
+                            tabNavigation[j].setAttribute('tabindex', '-1');
                         }
 
                         tabNavigation[j].addEventListener('click', function(e) {
                             var activeTab = e.target || e.srcElement;
 
                             /* needed because when the tab contains HTML contents, user can click */
-                            /* on any of those elements instead of their parent '<li>' element */
-                            while (activeTab.tagName.toLowerCase() !== 'li') {
+                            /* on any of those elements instead of their parent '<button>' element */
+                            while (activeTab.tagName.toLowerCase() !== 'button') {
                                 activeTab = activeTab.parentNode;
                             }
 
@@ -702,9 +735,13 @@ if (typeof Sfjs === 'undefined' || typeof Sfjs.loadToolbar === 'undefined') {
                                 var tabId = tabNavigation[k].getAttribute('data-tab-id');
                                 document.getElementById(tabId).className = 'hidden';
                                 removeClass(tabNavigation[k], 'active');
+                                tabNavigation[k].removeAttribute('aria-selected');
+                                tabNavigation[k].setAttribute('tabindex', '-1');
                             }
 
                             addClass(activeTab, 'active');
+                            activeTab.setAttribute('aria-selected', 'true');
+                            activeTab.removeAttribute('tabindex');
                             var activeTabId = activeTab.getAttribute('data-tab-id');
                             document.getElementById(activeTabId).className = 'block';
                         });
@@ -816,18 +853,32 @@ if (typeof Sfjs === 'undefined' || typeof Sfjs.loadToolbar === 'undefined') {
                 });
             },
 
+            initializeMailerTable: function() {
+                const emailRows = document.querySelectorAll('.mailer-email-summary-table-row');
+
+                emailRows.forEach((emailRow) => {
+                    emailRow.addEventListener('click', () => {
+                        emailRows.forEach((row) => row.classList.remove('active'));
+                        emailRow.classList.add('active');
+
+                        document.querySelectorAll('.mailer-email-details').forEach((emailDetails) => emailDetails.style.display = 'none');
+                        document.querySelector(emailRow.getAttribute('data-target')).style.display = 'block';
+                    });
+                });
+            },
+
             updateLogsTable: function() {
+                const logs = document.querySelector('table.logs');
+                if (null === logs) {
+                    return;
+                }
+
                 const selectedType = document.querySelector('#log-filter-type input:checked').value;
                 const priorities = document.querySelectorAll('#log-filter-priority input');
                 const allPriorities = Array.from(priorities).map((input) => input.value);
                 const selectedPriorities = Array.from(priorities).filter((input) => input.checked).map((input) => input.value);
                 const channels = document.querySelectorAll('#log-filter-channel input');
                 const selectedChannels = Array.from(channels).filter((input) => input.checked).map((input) => input.value);
-
-                const logs = document.querySelector('table.logs');
-                if (null === logs) {
-                    return;
-                }
 
                 /* hide rows that don't match the current filters */
                 let numVisibleRows = 0;
@@ -858,10 +909,42 @@ if (typeof Sfjs === 'undefined' || typeof Sfjs.loadToolbar === 'undefined') {
                 /* update the selected totals of all filters */
                 document.querySelector('#log-filter-priority .filter-active-num').innerText = (priorities.length === selectedPriorities.length) ? 'All' : selectedPriorities.length;
                 document.querySelector('#log-filter-channel .filter-active-num').innerText = (channels.length === selectedChannels.length) ? 'All' : selectedChannels.length;
+            },
 
-                /* update the currently selected "log type" tab */
-                document.querySelectorAll('#log-filter-type li').forEach((tab) => tab.classList.remove('active'));
-                document.querySelector(`#log-filter-type input[value="${selectedType}"]`).parentElement.classList.add('active');
+            convertDateTimesToUserTimezone: function() {
+                const userTimezoneName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+                document.querySelectorAll('time[data-convert-to-user-timezone]').forEach((timeElement) => {
+                    const iso8601Datetime = timeElement.getAttribute('datetime');
+                    const dateInUserTimezone = new Date(iso8601Datetime);
+
+                    let options = {};
+                    if (timeElement.hasAttribute('data-render-as-datetime')) {
+                        options = {
+                            year: 'numeric', month: 'long', day: 'numeric',
+                            hour: 'numeric', minute: 'numeric', second: 'numeric'
+                        };
+                    } else if (timeElement.hasAttribute('data-render-as-date')) {
+                        options = { year: 'numeric', month: 'long', day: 'numeric' };
+                    } else if (timeElement.hasAttribute('data-render-as-time')) {
+                        options = { hour: 'numeric', minute: 'numeric', second: 'numeric' };
+                    }
+
+                    if (timeElement.hasAttribute('data-render-with-millisecond-precision')) {
+                        options.fractionalSecondDigits = 3;
+                    }
+
+                    /* dates/times are always rendered in English to match the rest of the Profiler interface */
+                    timeElement.textContent = dateInUserTimezone.toLocaleString('en', options);
+
+                    if (undefined !== userTimezoneName) {
+                        const existingTitle = timeElement.getAttribute('title');
+                        const newTitle = null === existingTitle
+                            ? `Date/times shown in your timezone: ${userTimezoneName}`
+                            : existingTitle + ` (date/times shown in your timezone: ${userTimezoneName})`;
+                        timeElement.setAttribute('title', newTitle);
+                    }
+                });
             },
         };
     })();
@@ -869,6 +952,7 @@ if (typeof Sfjs === 'undefined' || typeof Sfjs.loadToolbar === 'undefined') {
     Sfjs.addEventListener(document, 'DOMContentLoaded', function() {
         Sfjs.createTabs();
         Sfjs.createToggles();
+        Sfjs.convertDateTimesToUserTimezone();
     });
 }
 /*]]>*/</script>

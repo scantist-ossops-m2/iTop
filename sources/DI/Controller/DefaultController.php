@@ -12,17 +12,14 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class DefaultController extends AbstractController
 {
-	/**
-	 * @Route ("/", name="root")
-	 */
+
+	#[Route('/', name: 'root')]
 	public function root(): Response
 	{
 		return $this->redirectToRoute('home');
 	}
 
-	/**
-	 * @Route ("/home", name="home")
-	 */
+	#[Route('/home', name: 'home')]
 	public function home(): Response
 	{
 		return $this->render('DI/home.html.twig');

@@ -2,7 +2,6 @@
 
 namespace Combodo\iTop\DI;
 
-use Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle;
 use Symfony;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -28,7 +27,6 @@ class ITopKernel extends BaseKernel
 		$bundles = [
 			new FrameworkBundle(),
 			new TwigBundle(),
-			new SensioFrameworkExtraBundle()
 		];
 
 		if ($this->getEnvironment() == 'dev') {
