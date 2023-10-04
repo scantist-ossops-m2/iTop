@@ -89,11 +89,11 @@ class ObjectController extends AbstractController
 		}
 
 		// create object form
-		$oStopWatch->start('creating form');
+		$oStopWatch->start('creating form', 'itop');
 		$oForm = $this->createForm(ObjectType::class, $oObject, [
 			'object_class' => $class
 		]);
-		$oStopWatch->stop('creating form');
+		$oStopWatch->stop('creating form', 'itop');
 
 		// handle HTTP request
 		$oForm->handleRequest($request);
