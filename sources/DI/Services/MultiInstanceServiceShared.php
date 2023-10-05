@@ -2,7 +2,7 @@
 
 namespace Combodo\iTop\DI\Services;
 
-class MultiInstanceService
+class MultiInstanceServiceShared
 {
 	public $sInstanceName;
 
