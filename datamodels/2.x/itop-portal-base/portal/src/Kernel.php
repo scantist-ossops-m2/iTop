@@ -43,7 +43,7 @@ class Kernel extends BaseKernel
 	/**
 	 * @return string
 	 */
-	public function getCacheDir()
+	public function getCacheDir() : string
 	{
 		$cacheDir = $_ENV['PORTAL_ID'].'-'.$this->environment;
 
@@ -53,7 +53,7 @@ class Kernel extends BaseKernel
 	/**
 	 * @return string
 	 */
-	public function getLogDir()
+	public function getLogDir() : string
     {
 	    $logDir = $_ENV['PORTAL_ID'] . '-' . $this->environment;
 
@@ -63,7 +63,7 @@ class Kernel extends BaseKernel
 	/**
 	 * @return \Generator|iterable|\Symfony\Component\HttpKernel\Bundle\BundleInterface[]
 	 */
-	public function registerBundles()
+	public function registerBundles() : \Generator
     {
         $contents = require $this->getProjectDir().'/config/bundles.php';
         foreach ($contents as $class => $envs) {
@@ -78,7 +78,7 @@ class Kernel extends BaseKernel
 	 *
 	 * @return void
 	 */
-	protected function configureContainer(ContainerConfigurator $container)
+	protected function configureContainer(ContainerConfigurator $container) : void
 	{
 		$confDir = '../config';
 
@@ -96,7 +96,7 @@ class Kernel extends BaseKernel
 	 *
 	 * @return void
 	 */
-	protected function configureRoutes(RoutingConfigurator $routes)
+	protected function configureRoutes(RoutingConfigurator $routes) : void
 	{
 		$confDir = '../config';
 

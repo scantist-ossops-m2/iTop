@@ -30,7 +30,7 @@ class ObjectController extends AbstractController
 	 * Return object view page with object data printed with key value representation.
 	 *
 	 */
-	#[Route('/{class<\w+>}/{id<\d+>}/view', name: 'object_view')]
+	#[Route('/{class<\w+>}/{id<\d+>}/view', name: 'object_view', methods: ['GET'])]
 	public function objectView(string $class, int $id) : Response
 	{
 		// retrieve object
@@ -53,7 +53,7 @@ class ObjectController extends AbstractController
 	 * Return object view as JSon response.
 	 *
 	 */
-	#[Route('/{class<\w+>}/{id<\d+>}/json', name: 'object_json')]
+	#[Route('/{class<\w+>}/{id<\d+>}/json', name: 'object_json', methods: ['GET'])]
 	public function objectJSon(string $class, int $id) : JsonResponse
 	{
 		// retrieve object
@@ -77,7 +77,7 @@ class ObjectController extends AbstractController
 	 * @todo perform database DbInsert, DbDelete, DbUpdate on links
 	 *
 	 */
-	#[Route('/{class<\w+>}/{id<\d+>}/edit', name: 'object_edit')]
+	#[Route('/{class<\w+>}/{id<\d+>}/edit', name: 'object_edit', methods: ['GET', 'POST'])]
 	public function objectEdit(Request $request, string $class, int $id, ObjectService $oObjectService, Stopwatch $oStopWatch) : Response
 	{
 		// retrieve object
@@ -85,11 +85,11 @@ class ObjectController extends AbstractController
 			$oObject = $oObjectService->getObject($class, $id);
 		}
 		catch(Exception $e){
-			throw $this->createNotFoundException("The $class $id does not exist");
+			throw $this->createNotFoundException("The $class $id does not exist", $e);
 		}
 
 		// create object form
-		$oStopWatch->start('creating form');
+		$oStopWatch->start('creating form', 'iTop');
 		$oForm = $this->createForm(ObjectType::class, $oObject, [
 			'object_class' => $class
 		]);
@@ -127,7 +127,7 @@ class ObjectController extends AbstractController
 		}
 
 		// return object edition form
-		return $this->renderForm('DI/object/edit.html.twig', [
+		return $this->render('DI/object/edit.html.twig', [
 			'id' => $id,
 			'class' => $class,
 			'form' => $oForm,
@@ -156,7 +156,12 @@ class ObjectController extends AbstractController
 
 		// locked attributes
 		foreach($aData['locked_attributes'] as $sKey => $sValue){
-			$oObject->Set($sKey, $sValue);
+			try {
+				$oObject->Set($sKey, $sValue);
+			}
+			catch (\Exception $e) {
+				throw new HttpException('Issue resolving locked_attributes', $e);
+			}
 		}
 
 		// create object form
@@ -266,7 +271,7 @@ class ObjectController extends AbstractController
 	 * The second form, used for new fields templates, contains only the dependent attributes.
 	 *
 	 */
-	#[Route('/{class<\w+>}/{id<\d+>}/reload', name: 'object_reload')]
+	#[Route('/{class<\w+>}/{id<\d+>}/reload', name: 'object_reload', methods: ['POST'])]
 	public function objectReload(Request $request, string $class, int $id, ObjectService $oObjectService) : Response
 	{
 		// retrieve object
@@ -299,7 +304,7 @@ class ObjectController extends AbstractController
 		]);
 
 		// return object form
-		return $this->renderForm('DI/form/form.html.twig', [
+		return $this->render('DI/form/form.html.twig', [
 			'form' => $oForm,
 		]);
 	}

@@ -63,7 +63,7 @@ class ITopKernel extends BaseKernel
 	 *
 	 * @return void
 	 */
-	protected function configureRoutes(RoutingConfigurator  $routes)
+	protected function configureRoutes(RoutingConfigurator  $routes) : void
 	{
 		// import the WebProfilerRoutes, only if the bundle is enabled
 		if (isset($this->bundles['WebProfilerBundle'])) {

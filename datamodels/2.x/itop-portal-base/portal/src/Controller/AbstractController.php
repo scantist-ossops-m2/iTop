@@ -118,4 +118,10 @@ abstract class AbstractController extends SymfonyAbstractController
 
 		return $aRouteDefaults['_controller'];
 	}
+
+
+	protected function get(string $sServiceName)
+	{
+		return $this->container->get($sServiceName);
+	}
 }

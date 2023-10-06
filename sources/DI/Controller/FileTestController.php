@@ -2,24 +2,14 @@
 
 namespace Combodo\iTop\DI\Controller;
 
-use Combodo\iTop\DI\Form\Manager\ObjectFormManager;
-use Combodo\iTop\DI\Form\Type\Compound\PartialObjectType;
-use Combodo\iTop\DI\Form\Type\Compound\ObjectType;
-use Combodo\iTop\DI\Services\ObjectService;
-use Exception;
-use MetaModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * File test controller.

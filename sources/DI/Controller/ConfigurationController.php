@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ConfigurationController extends AbstractController
 {
 
-	#[Route('/configuration/edit', name: 'configuration_edit')]
+	#[Route('/configuration/edit', name: 'configuration_edit', methods: ['GET'])]
 	public function configurationEdit(Request $request) : Response
 	{
 		// create object form
@@ -25,7 +25,7 @@ class ConfigurationController extends AbstractController
 		$oForm->handleRequest($request);
 
 		// return object form
-		return $this->renderForm('DI/configuration/edit.html.twig', [
+		return $this->render('DI/configuration/edit.html.twig', [
 			'form' => $oForm
 		]);
 	}

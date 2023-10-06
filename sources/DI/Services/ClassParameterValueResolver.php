@@ -13,17 +13,23 @@ class ClassParameterValueResolver implements ValueResolverInterface
 	{
 		if(\MetaModel::IsValidClass($argument->getType())){
 
+			// retrieve orm attribute
 			$aAttributes = $argument->getAttributesOfType(Orm::class);
 
-			$sParameterName = 'id';
+			// default mapping name
+			$sMapping = 'id';
 
+			// attribute defined mapping name
 			if(count($aAttributes) > 0){
-				$sParameterName = $aAttributes[0]->mapping;
+				$sMapping = $aAttributes[0]->mapping;
 			}
 
-			$sRef = $request->get($sParameterName);
+			// retrieve request parameter
+			$sRef = $request->get($sMapping);
 
+			// load orm object
 			$oObject = \MetaModel::GetObject($argument->getType(), $sRef);
+
 			return [$oObject];
 		}
 

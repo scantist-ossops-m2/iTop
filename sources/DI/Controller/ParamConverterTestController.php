@@ -31,10 +31,10 @@ use Combodo\iTop\DI\Services\Orm;
 class ParamConverterTestController extends AbstractController
 {
 
-	#[Route('/param_converter_test/{id<\d+>}', name: 'param_converter_test', methods: ['GET'])]
+	#[Route('/param_converter_test/Person/{id<\d+>}', name: 'param_converter_test', methods: ['GET'], priority: 1)]
 	public function convert(Request $request,
 		#[Orm(mapping: 'id')] Person $person,
-		#[MapQueryParameter(filter: \FILTER_VALIDATE_INT)] int $age
+		#[MapQueryParameter(filter: \FILTER_VALIDATE_INT)] int $age = 22
 	) : Response
 	{
 		$response = new JsonResponse([
