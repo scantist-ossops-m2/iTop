@@ -27,6 +27,7 @@ class ObjectService
 	 *
 	 * @param $sDbHost
 	 * @param $sDbName
+	 * @param \Symfony\Component\Stopwatch\Stopwatch $oStopWatch
 	 */
 	public function __construct($sDbHost, $sDbName, Stopwatch $oStopWatch)
 	{

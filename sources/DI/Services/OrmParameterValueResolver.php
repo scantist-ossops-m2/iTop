@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
-class ClassParameterValueResolver implements ValueResolverInterface
+class OrmParameterValueResolver implements ValueResolverInterface
 {
 
 	public function resolve(Request $request, ArgumentMetadata $argument): iterable
