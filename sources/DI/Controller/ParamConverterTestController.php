@@ -2,11 +2,13 @@
 
 namespace Combodo\iTop\DI\Controller;
 
+use Combodo\iTop\DI\Dto\TestDto;
 use Person;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Combodo\iTop\DI\Services\Orm;
@@ -32,7 +34,8 @@ class ParamConverterTestController extends AbstractController
 {
 
 	#[Route('/param_converter_test/Person/{person_id<\d+>}', name: 'param_converter_test', methods: ['GET'], priority: 1)]
-	public function convert(Request $request,
+	public function convert(
+		Request $request,
 		#[Orm(mapping: 'person_id')] Person $person,
 		#[MapQueryParameter(filter: \FILTER_VALIDATE_INT)] int $age = 22
 	) : Response
@@ -42,6 +45,20 @@ class ParamConverterTestController extends AbstractController
 				'name' => $person->GetName(),
 				'age' => $age,
 			]
+		]);
+		$response->setEncodingOptions( $response->getEncodingOptions() | JSON_PRETTY_PRINT );
+		return $response;
+	}
+
+
+	#[Route('/param_converter_test/dto', name: 'param_converter_dto', methods: ['GET'])]
+	public function validation(
+		#[MapQueryString] TestDto $query
+	) : Response
+	{
+
+
+		$response = new JsonResponse([
 		]);
 		$response->setEncodingOptions( $response->getEncodingOptions() | JSON_PRETTY_PRINT );
 		return $response;
