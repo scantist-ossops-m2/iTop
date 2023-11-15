@@ -509,4 +509,9 @@ class ExecutionKPI
 		// PHP > 5.2.1 - this verb depends on a compilation option
 		return 0;
 	}
+
+	static public function getExecData()
+	{
+		return self::$m_aExecData;
+	}
 }
