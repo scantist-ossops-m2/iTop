@@ -27,13 +27,19 @@ class OQLCollector extends AbstractDataCollector
 	public function collect(Request $request, Response $response, \Throwable $exception = null)
 	{
 		 $this->data = [
-			 'execution' => ExecutionKPI::getExecData()
+			 'exec_data' => ExecutionKPI::getExecData(),
+			 'stats' => ExecutionKPI::getStats()
 		 ];
 	}
 
-	public function getRequests()
+	public function getExecData()
 	{
-		return $this->data['execution'];
+		return $this->data['exec_data'];
+	}
+
+	public function getStats()
+	{
+		return $this->data['stats'];
 	}
 
 	public static function getTemplate(): ?string

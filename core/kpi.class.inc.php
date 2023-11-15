@@ -514,4 +514,9 @@ class ExecutionKPI
 	{
 		return self::$m_aExecData;
 	}
+
+	static public function getStats()
+	{
+		return self::$m_aStats;
+	}
 }

@@ -30,13 +30,29 @@
 {% block panel %}
     {# Optional, for showing the most details. #}
     <h2>iTop KPI</h2>
+
+    <h3>Exec data</h3>
+
     <table>
 
-        {% for request in collector.requests %}
+        {% for execData in collector.execData %}
             <tr>
-                <td>{{ dump(request) }}</td>
+                <td>{{ dump(execData) }}</td>
             </tr>
         {% endfor %}
 
     </table>
+
+    <h3>Stats</h3>
+
+    <table>
+
+        {% for stats in collector.stats %}
+            <tr>
+                <td>{{ dump(stats) }}</td>
+            </tr>
+        {% endfor %}
+
+    </table>
+
 {% endblock %}
