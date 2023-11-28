@@ -94,3 +94,21 @@ form label.locked:after{
 form label.dependent{
 	color: #2757af;
 }
+
+
+/* overriding theme template */
+
+.overriding_text_row{
+	border: 1px solid #00aac1;
+	padding: 15px;
+}
+
+.overriding_text_label{
+	color: #00aac1;
+}
+
+.overriding_text_widget{
+	border: 1px solid #00aac1;
+	border-radius: 20px;
+	outline: none;
+}

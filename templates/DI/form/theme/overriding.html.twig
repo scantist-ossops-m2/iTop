@@ -1,0 +1,21 @@
+{%- block text_row -%}
+
+    <div class="overriding_text_row">
+        {{ form_label(form) }}
+        {{ form_errors(form) }}
+        {{ form_widget(form) }}
+    </div>
+
+{%- endblock text_row -%}
+
+{%- block text_label -%}
+
+    <label class="overriding_text_label">The label</label>
+
+{%- endblock text_label -%}
+
+{%- block text_widget -%}
+
+    <input class="overriding_text_widget" type="text" {{ block('widget_attributes') -}}>
+
+{%- endblock text_widget -%}
