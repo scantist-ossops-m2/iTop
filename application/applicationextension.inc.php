@@ -19,6 +19,7 @@
  */
 
 use Combodo\iTop\Application\UI\Base\iUIBlock;
+use Combodo\iTop\Application\WebPage\iTopWebPage;
 use Symfony\Component\DependencyInjection\Container;
 
 require_once(APPROOT.'application/newsroomprovider.class.inc.php');

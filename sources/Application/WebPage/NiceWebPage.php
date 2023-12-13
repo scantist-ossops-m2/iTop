@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU Affero General Public License
  */
 
+namespace Combodo\iTop\Application\WebPage;
+
 /**
  * Web page with some associated CSS and scripts (jquery) for a fancier display
  */

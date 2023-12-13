@@ -4,6 +4,11 @@
  * @license     http://opensource.org/licenses/AGPL-3.0
  */
 
+namespace Combodo\iTop\Application\WebPage;
+
+use CoreException;
+use ExecutionKPI;
+use utils;
 
 /**
  * Class JsonPPage

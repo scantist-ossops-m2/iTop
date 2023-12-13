@@ -9,6 +9,7 @@ use Combodo\iTop\Application\Helper\WebResourcesHelper;
 use Combodo\iTop\Application\TwigBase\Twig\TwigHelper;
 use Combodo\iTop\Application\UI\Base\Component\Html\Html;
 use Combodo\iTop\Application\UI\Base\Component\Title\TitleUIBlockFactory;
+use Combodo\iTop\Application\WebPage\NiceWebPage;
 use Combodo\iTop\Controller\AjaxRenderController;
 use Combodo\iTop\Controller\Base\Layout\ActivityPanelController;
 use Combodo\iTop\Controller\Base\Layout\ObjectController;

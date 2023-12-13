@@ -17,11 +17,15 @@
  * You should have received a copy of the GNU Affero General Public License
  */
 
+namespace Combodo\iTop\Application\WebPage;
 
 use Combodo\iTop\Application\Branding;
 use Combodo\iTop\Application\TwigBase\Twig\TwigHelper;
 use Combodo\iTop\Renderer\BlockRenderer;
 use Combodo\iTop\Renderer\Console\ConsoleBlockRenderer;
+use Dict;
+use ExecutionKPI;
+use utils;
 
 $sPortalBaseFolderRelPath = 'env-' . utils::GetCurrentEnvironment() . '/itop-portal-base/portal/';
 $sPortalSourcesFolderRelPath = $sPortalBaseFolderRelPath . 'src/';
@@ -216,7 +220,7 @@ class UnauthenticatedWebPage extends NiceWebPage
 	/**
 	 * @param string $sPanelTitle
 	 *
-	 * @return \UnauthenticatedWebPage
+	 * @return UnauthenticatedWebPage
 	 */
 	public function SetPanelTitle(string $sPanelTitle): UnauthenticatedWebPage
 	{
@@ -235,7 +239,7 @@ class UnauthenticatedWebPage extends NiceWebPage
 	/**
 	 * @param string $sPanelIcon
 	 *
-	 * @return \UnauthenticatedWebPage
+	 * @return UnauthenticatedWebPage
 	 */
 	public function SetPanelIcon(string $sPanelIcon): UnauthenticatedWebPage
 	{

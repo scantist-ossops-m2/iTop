@@ -6,10 +6,20 @@
  * @license     http://opensource.org/licenses/AGPL-3.0
  */
 
+namespace Combodo\iTop\Core\Email;
+
+use AsyncSendEmail;
 use Combodo\iTop\Core\Authentication\Client\OAuth\OAuthClientProviderFactory;
+use DOMDocument;
+use DOMXPath;
+use EMail;
+use Exception;
+use ExecutionKPI;
+use InlineImage;
+use IssueLog;
 use Laminas\Mail\Header\ContentType;
 use Laminas\Mail\Message;
-use Laminas\Mail\Protocol\Smtp\Auth\Oauth;
+use Combodo\iTop\Core\Authentication\Client\Smtp\Oauth;
 use Laminas\Mail\Transport\File;
 use Laminas\Mail\Transport\FileOptions;
 use Laminas\Mail\Transport\Sendmail;
@@ -17,6 +27,7 @@ use Laminas\Mail\Transport\Smtp;
 use Laminas\Mail\Transport\SmtpOptions;
 use Laminas\Mime\Mime;
 use Laminas\Mime\Part;
+use MetaModel;
 use Pelago\Emogrifier\CssInliner;
 use Pelago\Emogrifier\HtmlProcessor\CssToAttributeConverter;
 use Pelago\Emogrifier\HtmlProcessor\HtmlPruner;

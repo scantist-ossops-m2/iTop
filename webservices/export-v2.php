@@ -11,10 +11,11 @@ use Combodo\iTop\Application\UI\Base\Component\Form\FormUIBlockFactory;
 use Combodo\iTop\Application\UI\Base\Component\Html\Html;
 use Combodo\iTop\Application\UI\Base\Component\Input\InputUIBlockFactory;
 use Combodo\iTop\Application\UI\Base\Component\Input\Select\SelectOptionUIBlockFactory;
-use Combodo\iTop\Application\UI\Base\Component\Input\SelectUIBlockFactory;
+use Combodo\iTop\Application\UI\Base\Component\Input\Select\SelectUIBlockFactory;
 use Combodo\iTop\Application\UI\Base\Component\Input\TextArea;
 use Combodo\iTop\Application\UI\Base\Component\Panel\PanelUIBlockFactory;
 use Combodo\iTop\Application\UI\Base\Layout\UIContentBlockUIBlockFactory;
+use Combodo\iTop\Application\WebPage\NiceWebPage;
 
 require_once(__DIR__.'/../approot.inc.php');
 require_once(APPROOT.'/application/application.inc.php');

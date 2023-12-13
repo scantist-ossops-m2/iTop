@@ -25,6 +25,10 @@
  * @license     http://opensource.org/licenses/AGPL-3.0
  */
 
+namespace Combodo\iTop\Application\WebPage;
+
+use DBSearch;
+use ExecutionKPI;
 
 class CSVPage extends WebPage
 {

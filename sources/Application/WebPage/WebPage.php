@@ -4,6 +4,8 @@
  * @license     http://opensource.org/licenses/AGPL-3.0
  */
 
+namespace Combodo\iTop\Application\WebPage;
+
 use Combodo\iTop\Application\Helper\Session;
 use Combodo\iTop\Application\Helper\WebResourcesHelper;
 use Combodo\iTop\Application\TwigBase\Twig\TwigHelper;
@@ -17,6 +19,14 @@ use Combodo\iTop\Application\UI\Base\Layout\iUIContentBlock;
 use Combodo\iTop\Application\UI\Base\Layout\UIContentBlock;
 use Combodo\iTop\Renderer\BlockRenderer;
 use Combodo\iTop\Renderer\Console\ConsoleBlockRenderer;
+use DBSearch;
+use DeprecatedCallsLog;
+use Dict;
+use ExecutionKPI;
+use IssueLog;
+use MetaModel;
+use UserRights;
+use utils;
 
 
 /**
