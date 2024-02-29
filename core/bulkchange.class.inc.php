@@ -1315,7 +1315,6 @@ class BulkChange
 					if(isset($aRowData[$iCol])) {
 						$aResult[$iRow][$iCol] = new CellStatus_Void(utils::HtmlEntities($aRowData[$iCol]));
 					} else {
-						IssueLog::Error('ICILO'.$iRow.'-'.$iCol);
 						$aResult[$iRow][$iCol] = new CellStatus_Issue('', null, Dict::S('UI:CSVReport-Value-Issue-NoValue'));
 					}
 				}
@@ -1334,7 +1333,6 @@ class BulkChange
 						if(isset($aRowData[$iCol])) {
 							$aResult[$iRow][$iCol] = new CellStatus_Void(utils::HtmlEntities($aRowData[$iCol]));
 						} else {
-							IssueLog::Error('ICILA'.$iRow.'-'.$iCol);
 							$aResult[$iRow][$iCol] = new CellStatus_Issue('', null, 'UI:CSVReport-Value-Issue-NoValue');
 						}
 					}
