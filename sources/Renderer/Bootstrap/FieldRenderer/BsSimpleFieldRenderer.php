@@ -177,12 +177,15 @@ EOF
 						$sJsConfig = json_encode($aConfig);
 						
 						$oOutput->AddJs(
-<<<EOF
-							$('#{$this->oField->GetGlobalId()}').addClass('htmlEditor');
-							$('#{$this->oField->GetGlobalId()}').ckeditor(function(){}, $sJsConfig).editor.on("change", function(){
-                                	$('#{$this->oField->GetGlobalId()}').trigger("change");
-                              });
-EOF
+<<<JS
+							(async () => {
+								$('#{$this->oField->GetGlobalId()}').addClass('htmlEditor');
+								let oEditor = await CombodoCKEditorHandler.CreateInstance('#{$this->oField->GetGlobalId()}');
+								oEditor.on("change", function(){
+	                                    $('#{$this->oField->GetGlobalId()}').trigger("change");
+	                              });
+                            })();
+JS
 						);
 						if (($this->oField->GetObject() !== null) && ($this->oField->GetTransactionId() !== null)) {
 							$oOutput->AddJs(InlineImage::EnableCKEditorImageUpload($this->oField->GetObject(), utils::GetUploadTempId($this->oField->GetTransactionId())));

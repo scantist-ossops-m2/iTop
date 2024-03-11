@@ -209,6 +209,7 @@ class iTopWebPage extends NiceWebPage implements iTabbedPage
 
 		// Used throughout the app.
 		$this->LinkScriptFromAppRoot('js/pages/backoffice/toolbox.js');
+		$this->LinkScriptFromAppRoot('js/ckeditor.handler.js');
 		$this->LinkScriptFromAppRoot('js/pages/backoffice/on-ready.js');
 
 		// Used by dashboard editor

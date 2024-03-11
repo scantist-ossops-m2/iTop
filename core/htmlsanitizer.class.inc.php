@@ -321,6 +321,7 @@ class HTMLDOMSanitizer extends DOMSanitizer
 		'hr' => array('style'),
 		'pre' => array(),
 		'center' => array(),
+		'figure' => array('class'),
 	);
 
 	protected static $aAttrsWhiteList = array(

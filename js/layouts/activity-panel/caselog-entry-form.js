@@ -78,19 +78,19 @@ $(function() {
 
 				this.element.trigger('ready.caselog_entry_form.itop');
 			},
-			_bindEvents: function() {
+			_bindEvents: async function () {
 				let me = this;
-
+				let CKEditorInstance = await this._GetCKEditorInstance();
 				// Handlers for the CKEditor itself
-				CKEDITOR.on('instanceReady', function (oEvent) {
+				CKEditorInstance.on('ready', () => {
 					// Handle only the current CKEditor instance
-					if (oEvent.editor.name !== me.options.text_input_id) {
-						return;
-					}
+					// if (oEvent.editor.name !== me.options.text_input_id) {
+					// 	return;
+					// }
 
 					// Update depending elements on change
 					// Note: That when images are uploaded, the "change" event is triggered before the image upload is complete, meaning that we don't have the <img> tag yet.
-					me._GetCKEditorInstance().on('change', function () {
+					CKEditorInstance.on('change', function () {
 						const bWasDraftBefore = me.is_draft;
 						const bIsDraftNow = !me._IsInputEmpty();
 
@@ -178,7 +178,7 @@ $(function() {
 				});
 				// Set focus in the input
 				this.element.on('set_focus.caselog_entry_form.itop', function () {
-					me._GetCKEditorInstance().focus();
+					CKEditorInstance.focus();
 				});
 			},
 
@@ -201,8 +201,12 @@ $(function() {
 				this.element.trigger('requested_submission.caselog_entry_form.itop', oData);
 			},
 			// - Form
-			_GetCKEditorInstance: function () {
-				return CKEDITOR.instances[this.options.text_input_id];
+			_GetCKEditorInstance: async function () {
+				// if(this.element.find('#' + this.options.text_input_id + ' ~ .ck .ck-editor__editable')[0] === undefined){
+				// 	return undefined;
+				// }
+				return await CombodoCKEditorHandler.GetInstance('#'+this.options.text_input_id);
+				//return this.element.find('#' + this.options.text_input_id + ' ~ .ck .ck-editor__editable')[0].ckeditorInstance;
 			},
 			_ShowEntryForm: function () {
 				this.element.closest(this.js_selectors.activity_panel).find(this.js_selectors.form).removeClass(this.css_classes.is_closed);
@@ -293,8 +297,9 @@ $(function() {
 			_IsInputEmpty: function() {
 				return this._GetInputData() === '';
 			},
-			_GetInputData: function() {
-				return (this._GetCKEditorInstance() === undefined) ? '' : this._GetCKEditorInstance().getData();
+			_GetInputData: async function () {
+				let oCKEditorInstance = await this._GetCKEditorInstance();
+				return (oCKEditorInstance === undefined) ? '' : oCKEditorInstance.getData();
 			},
 			_GetExtraInputs: function() {
 				let aExtraInputs = {};
