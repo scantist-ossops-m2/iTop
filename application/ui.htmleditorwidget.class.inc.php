@@ -84,16 +84,13 @@ class UIHTMLEditorWidget
 		if ($sHeightSpec != '') {
 			$aConfig['height'] = $sHeightSpec;
 		}
+		// TODO 3.2.0 Add the configuration for the editor
 		$sConfigJS = json_encode($aConfig);
 
 		WebResourcesHelper::EnableCKEditorToWebPage($oPage);
-	//	$oPage->add_ready_script("$('#$iId').ckeditor(function() { /* callback code */ }, $sConfigJS);"); // Transform $iId into a CKEdit
 		$oPage->add_ready_script("CombodoCKEditorHandler.CreateInstance('#$iId')");
 		
-//		ClassicEditor.create( $( '#$iId' )[0])
-//        .catch( error => {
-//            console.error( error );
-//        } );"); // Transform $iId into a C
+		
 		// Please read...
 		// ValidateCKEditField triggers a timer... calling itself indefinitely
 		// This design was the quickest way to achieve the field validation (only checking if the field is blank)

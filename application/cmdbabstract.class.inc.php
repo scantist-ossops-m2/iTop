@@ -2330,13 +2330,7 @@ JS
 					$sConfigJS = json_encode($aConfig);
 
 					WebResourcesHelper::EnableCKEditorToWebPage($oPage);
-					//$oPage->add_ready_script("$('#$iId').ckeditor(function() { /* callback code */ }, $sConfigJS);"); // Transform $iId into a CKEdit
 					$oPage->add_ready_script("CombodoCKEditorHandler.CreateInstance('#$iId')");
-//
-//					$oPage->add_ready_script("console.log('hohoho');ClassicEditor.create( $( '#$iId' )[0])
-//        .catch( error => {
-//            console.error( error );
-//        } );"); // Transform $iId into a CKEdit
 
 					$oPage->add_ready_script(
 <<<EOF

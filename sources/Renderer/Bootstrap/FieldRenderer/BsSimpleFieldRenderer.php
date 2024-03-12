@@ -178,13 +178,12 @@ EOF
 						
 						$oOutput->AddJs(
 <<<JS
-							(async () => {
-								$('#{$this->oField->GetGlobalId()}').addClass('htmlEditor');
-								let oEditor = await CombodoCKEditorHandler.CreateInstance('#{$this->oField->GetGlobalId()}');
+							$('#{$this->oField->GetGlobalId()}').addClass('htmlEditor');
+							CombodoCKEditorHandler.CreateInstance('#{$this->oField->GetGlobalId()}').then((oEditor) => {
 								oEditor.on("change", function(){
-	                                    $('#{$this->oField->GetGlobalId()}').trigger("change");
-	                              });
-                            })();
+                                    $('#{$this->oField->GetGlobalId()}').trigger("change");
+                            	});
+							});
 JS
 						);
 						if (($this->oField->GetObject() !== null) && ($this->oField->GetTransactionId() !== null)) {

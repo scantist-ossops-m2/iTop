@@ -12,7 +12,7 @@ const CombodoCKEditorHandler = {
 	 * @param {string} sElem The id object of the element
 	 * @constructor
 	 */
-	CreateInstance: async function (sElem) {
+	CreateInstance: function (sElem) {
 		return this.instances_promise[sElem] = new Promise((resolve, reject) => {
 			ClassicEditor.create($(sElem)[0])
 			.then(editor => {

@@ -82,34 +82,31 @@ $(function() {
 				let me = this;
 				let CKEditorInstance = await this._GetCKEditorInstance();
 				// Handlers for the CKEditor itself
-				CKEditorInstance.on('ready', () => {
-					// Handle only the current CKEditor instance
-					// if (oEvent.editor.name !== me.options.text_input_id) {
-					// 	return;
-					// }
+				// Handle only the current CKEditor instance
+				// if (oEvent.editor.name !== me.options.text_input_id) {
+				// 	return;
+				// }
 
-					// Update depending elements on change
-					// Note: That when images are uploaded, the "change" event is triggered before the image upload is complete, meaning that we don't have the <img> tag yet.
-					CKEditorInstance.on('change', function () {
-						const bWasDraftBefore = me.is_draft;
-						const bIsDraftNow = !me._IsInputEmpty();
+				// Update depending elements on change
+				// Note: That when images are uploaded, the "change" event is triggered before the image upload is complete, meaning that we don't have the <img> tag yet.
+				CKEditorInstance.model.document.on('change:data', async function () {
+					const bWasDraftBefore = me.is_draft;
+					const bIsDraftNow = !(await me._IsInputEmpty());
+					if (bWasDraftBefore !== bIsDraftNow) {
+						me.is_draft = bIsDraftNow;
+						me._UpdateEditingVisualHint();
+						// Note: We must not call me._UpdateSubmitButtonState() as it will be updated by the disable_submission/enable_submission events
+					}
+				});
 
-						if (bWasDraftBefore !== bIsDraftNow) {
-							me.is_draft = bIsDraftNow;
-							me._UpdateEditingVisualHint();
-							// Note: We must not call me._UpdateSubmitButtonState() as it will be updated by the disable_submission/enable_submission events
-						}
-					});
-
-					// Dispatch submission to the right pipeline on submit
-					$(me.element).on('submit', function (oSubmitEvent) {
-						oSubmitEvent.preventDefault();
-						if (me._IsSubmitAutonomous()) {
-							me._RequestSubmission();
-						} else {
-							me._GetGeneralFormElement().trigger('submit');
-						}
-					});
+				// Dispatch submission to the right pipeline on submit
+				$(me.element).on('submit', function (oSubmitEvent) {
+					oSubmitEvent.preventDefault();
+					if (me._IsSubmitAutonomous()) {
+						me._RequestSubmission();
+					} else {
+						me._GetGeneralFormElement().trigger('submit');
+					}
 				});
 
 				if (false === this._IsSubmitAutonomous()) {
@@ -222,13 +219,13 @@ $(function() {
 			_EnableSubmission: function () {
 				this.element.find(this.js_selectors.save_button+', '+this.js_selectors.save_choices_picker).prop('disabled', false);
 			},
-			_EnterPendingSubmissionState: function () {
-				this._GetCKEditorInstance().setReadOnly(true);
+			_EnterPendingSubmissionState: async function () {
+				(await this._GetCKEditorInstance()).enableReadOnlyMode('hi');
 				this.element.find(this.js_selectors.cancel_button).prop('disabled', true);
 				this._DisableSubmission();
 			},
-			_LeavePendingSubmissionState: function () {
-				this._GetCKEditorInstance().setReadOnly(false);
+			_LeavePendingSubmissionState: async function () {
+				(await this._GetCKEditorInstance()).disableReadOnlyMode('hi');
 				this.element.find(this.js_selectors.cancel_button).prop('disabled', false);
 				this._EnableSubmission();
 			},
@@ -287,18 +284,21 @@ $(function() {
 			},
 			// - Input zone
 			_EmptyInput: function() {
-				this._GetCKEditorInstance().setData('');
-				this._UpdateEditingVisualHint();
+				this._GetCKEditorInstance().then((oEditor) => {
+					oEditor.setData('');
+					this._UpdateEditingVisualHint();
+				});
 			},
 			/**
 			 * @returns {boolean} True if the input has no text
 			 * @private
 			 */
-			_IsInputEmpty: function() {
-				return this._GetInputData() === '';
+			_IsInputEmpty: async function () {
+				let sCKEditorValue = await this._GetInputData();
+				return sCKEditorValue === '';
 			},
 			_GetInputData: async function () {
-				let oCKEditorInstance = await this._GetCKEditorInstance();
+				let oCKEditorInstance = await this._GetCKEditorInstance()
 				return (oCKEditorInstance === undefined) ? '' : oCKEditorInstance.getData();
 			},
 			_GetExtraInputs: function() {
@@ -334,15 +334,20 @@ $(function() {
 				this._UpdateSubmitButtonState();
 			},
 			_UpdateSubmitButtonState: function() {
-				if (this._IsInputEmpty()) {
-					this._DisableSubmission();
-				} else {
-					this._EnableSubmission();
-				}
+				this._IsInputEmpty().then((bIsEmpty) => {
+					if (bIsEmpty) {
+						this._DisableSubmission();
+					} else {
+						this._EnableSubmission();
+					}
+				});
 			},
-			_UpdateEditingVisualHint: function() {
-				const sEvent = this._IsInputEmpty() ? 'emptied' : 'draft';
-				this.element.trigger(sEvent + '.caselog_entry_form.itop', {attribute_code: this.options.attribute_code});
+			_UpdateEditingVisualHint: function () {
+				this._IsInputEmpty().then((bIsEmpty) => {
+						const sEvent = bIsEmpty ? 'emptied' : 'draft';
+						this.element.trigger(sEvent+'.caselog_entry_form.itop', {attribute_code: this.options.attribute_code});
+					}
+				)
 			}
 		});
 });
