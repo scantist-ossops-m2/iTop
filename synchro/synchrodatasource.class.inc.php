@@ -1964,7 +1964,7 @@ class SynchroLog extends DBObject
 
 		// memory peak overflow protection
 		if($sMemPeak > 2147483647){
-			$sMemPeak = -1;
+			$sMemPeak = 2147483647;
 		}
 
 		$this->Set('memory_usage_peak', $sMemPeak);
