@@ -54,7 +54,7 @@ textarea.ibo-input{
   height:unset;
 }
 .ibo-input-wrapper.is-error, .ibo-input-field-wrapper.is-error {
-	.ibo-input, .ibo-input-vanilla,  .cke, textarea {
+	.ibo-input, .ibo-input-vanilla,  .ck-editor, textarea {
     border: 1px solid $ibo-input-wrapper--is-error--border-color;
   }
   .ibo-input-vanilla input{
