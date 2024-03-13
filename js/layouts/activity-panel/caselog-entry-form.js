@@ -276,11 +276,11 @@ $(function() {
 			 * @returns {void}
 			 * @private
 			 */
-			_UpdateBridgeInput: function() {
+			_UpdateBridgeInput: async function () {
 				const sCaseLogAttCode = this.element.closest(this.js_selectors.activity_panel_toolbar).attr('data-caselog-attribute-code');
 				let oBridgeInputElem = this._GetGeneralFormElement().find('input[name="attr_'+sCaseLogAttCode+'"]');
 
-				oBridgeInputElem.val(this._GetInputData());
+				oBridgeInputElem.val(await this._GetInputData());
 			},
 			// - Input zone
 			_EmptyInput: function() {
