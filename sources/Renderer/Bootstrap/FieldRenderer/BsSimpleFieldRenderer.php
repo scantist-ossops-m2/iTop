@@ -23,6 +23,7 @@ namespace Combodo\iTop\Renderer\Bootstrap\FieldRenderer;
 use AttributeDate;
 use AttributeDateTime;
 use AttributeText;
+use Combodo\iTop\Application\Helper\CKEditorHelper;
 use Combodo\iTop\Form\Field\DateField;
 use Combodo\iTop\Form\Field\DateTimeField;
 use Combodo\iTop\Form\Field\Field;
@@ -172,7 +173,7 @@ EOF
 
 				// Some additional stuff if we are displaying it with a rich editor
 					if ($bRichEditor) {
-						$aConfig = utils::GetCkeditorPref();
+						$aConfig = CKEditorHelper::GetCkeditorPref();
 						$aConfig['extraPlugins'] = 'codesnippet';
 						$sJsConfig = json_encode($aConfig);
 						

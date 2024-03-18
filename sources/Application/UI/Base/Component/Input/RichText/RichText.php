@@ -4,6 +4,7 @@
  * @license     http://opensource.org/licenses/AGPL-3.0
  */
 namespace Combodo\iTop\Application\UI\Base\Component\Input\RichText;
+use Combodo\iTop\Application\Helper\CKEditorHelper;
 use Combodo\iTop\Application\UI\Base\UIBlock;
 use utils;
 
@@ -20,12 +21,14 @@ class RichText extends UIBlock
 	public const DEFAULT_JS_TEMPLATE_REL_PATH = 'base/components/input/richtext/layout';
 	public const DEFAULT_JS_FILES_REL_PATH = [
 		'js/ckeditor/build/ckeditor.js',
+		'js/ckeditor/build/translations/fr.js',
 		'js/ckeditor/adapters/jquery.js',
 		'js/ckeditor/plugins/codesnippet/lib/highlight/highlight.pack.js',
 		'js/ckeditor.on-init.js',
 	];
 	public const DEFAULT_CSS_FILES_REL_PATH = [
 		'js/ckeditor/plugins/codesnippet/lib/highlight/styles/obsidian.css',
+		'css/ckeditor/contents.css',
 	];
 
 	/** @var string|null */
@@ -42,7 +45,7 @@ class RichText extends UIBlock
 	{
 		parent::__construct($sId);
 		$this->sValue = null;
-		$this->aConfig = utils::GetCkeditorPref();
+		$this->aConfig = CKEditorHelper::GetCkeditorPref();
 	}
 
 	/**

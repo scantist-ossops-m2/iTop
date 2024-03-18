@@ -6,15 +6,51 @@
 const CombodoCKEditorHandler = {
 	instances: {},
 	instances_promise: {},
+
+	/**
+	 *
+	 * @param sElem
+	 * @param aConfiguration
+	 * @constructor
+	 */
+	PrepareConfiguration: function(sElem, aConfiguration){
+
+		// mention
+		if(aConfiguration['mention'] !== undefined){
+
+			// iterate throw feeds...
+			aConfiguration['mention']['feeds'].forEach(function(e){
+
+				// ajax feed
+				if(e['feed_type'] === 'ajax'){
+
+					// feed callback
+					e['feed'] = CombodoCKEditorFeeds.getAjaxItems(e['feed_ajax_options']);
+
+					// feed item render
+					e['itemRenderer'] = CombodoCKEditorFeeds.customItemRenderer(sElem);
+				}
+			})
+		}
+	},
+
 	/**
 	 * Make the oElem enter the fullscreen mode, meaning that it will take all the screen and be above everything else.
 	 *
 	 * @param {string} sElem The id object of the element
+	 * @param {array} aConfiguration The CKEditor configuration
 	 * @constructor
 	 */
-	CreateInstance: function (sElem) {
+	CreateInstance: function (sElem, aConfiguration) {
+
+		// install plugin mention
+		ClassicEditor.builtinPlugins.push(MentionCustomization);
+
+		// prepare configuration
+		CombodoCKEditorHandler.PrepareConfiguration(sElem, aConfiguration);
+
 		return this.instances_promise[sElem] = new Promise((resolve, reject) => {
-			ClassicEditor.create($(sElem)[0])
+			ClassicEditor.create($(sElem)[0], aConfiguration)
 			.then(editor => {
 				this.instances[sElem] = editor;
 				resolve(editor);

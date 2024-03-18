@@ -1,1 +1,1 @@
-CombodoCKEditorHandler.CreateInstance('#{{ oUIBlock.GetId() }}');
+CombodoCKEditorHandler.CreateInstance('#{{ oUIBlock.GetId() }}', {{ oUIBlock.GetConfig()|json_encode|raw }});

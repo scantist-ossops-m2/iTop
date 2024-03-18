@@ -4,6 +4,7 @@
  * @license     http://opensource.org/licenses/AGPL-3.0
  */
 
+use Combodo\iTop\Application\Helper\CKEditorHelper;
 use Combodo\iTop\Application\Helper\FormHelper;
 use Combodo\iTop\Application\Helper\Session;
 use Combodo\iTop\Application\Helper\WebResourcesHelper;
@@ -2323,7 +2324,7 @@ JS
 					// To change the default settings of the editor,
 					// a) edit the file /js/ckeditor/config.js
 					// b) or override some of the configuration settings, using the second parameter of ckeditor()
-					$aConfig = utils::GetCkeditorPref();
+					$aConfig = CKEditorHelper::GetCkeditorPref();
 					$aConfig['placeholder'] = Dict::S('UI:CaseLogTypeYourTextHere');
 
 					// - Final config
