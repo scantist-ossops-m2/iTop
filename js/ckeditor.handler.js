@@ -86,6 +86,9 @@ const CombodoCKEditorHandler = {
 			return oEditor;
 		}
 	},
+	GetInstanceSynchronous: function(sElem) {
+		return this.instances[sElem];
+	},
 	EnableImageUpload: async function(sElem, sUrl){
 		const editor = await this.GetInstance(sElem);
 				class SimpleUploadAdapter {

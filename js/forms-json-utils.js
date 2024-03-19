@@ -182,8 +182,7 @@ function CheckFields(sFormId, bDisplayAlert)
 		}
 		$('#'+sFormId+' :submit').prop('disable', false);
 		$('#'+sFormId+' :button[type=submit]').prop('disable', false);
-		if (oFormErrors['input_'+sFormId] != null)
-		{
+		if (oFormErrors['input_'+sFormId] != null) {
 			$('#'+oFormErrors['input_'+sFormId]).focus();
 		}
 	}
@@ -306,21 +305,27 @@ function ValidateCKEditField(sFieldId, sPattern, bMandatory, sFormId, nullValue,
 {
 	let oField = $('#'+sFieldId);
 	if (oField.length === 0) {
-		return;
+		return false;
 	}
-	
-	
+
+	let oCKEditor = CombodoCKEditorHandler.GetInstanceSynchronous('#'+sFieldId);
 
 	var bValid;
 	var sExplain = '';
 	if (oField.prop('disabled')) {
 		bValid = true; // disabled fields are not checked
 	} else {
-		CombodoCKEditorHandler.GetInstance('#'+sFieldId).then(function (oCKEditor) {
+		// If the CKEditor is not yet loaded, we need to wait for it to be ready
+		// but as we need this function to be synchronous, we need to call it again when the CKEditor is ready
+		if (oCKEditor === undefined){
+			CombodoCKEditorHandler.GetInstance('#'+sFieldId).then((oCKEditor) => {
+				ValidateCKEditField(sFieldId, sPattern, bMandatory, sFormId, nullValue, originalValue);
+			});
+			return;
+		}
 		let sTextContent;
 		// Get the contents without the tags
 		let sFormattedContent = oCKEditor.getData();
-		console.log('sFormatedContent', sFormattedContent);
 		// Get the contents without the tags
 
 		sTextContent = $(sFormattedContent).text();
@@ -332,7 +337,6 @@ function ValidateCKEditField(sFieldId, sPattern, bMandatory, sFormId, nullValue,
 				sTextContent = 'image';
 			}
 		}
-		
 
 		// Get the original value without the tags
 		let oFormattedOriginalContents = (originalValue !== undefined) ? $('<div></div>').html(originalValue) : undefined;
@@ -352,16 +356,16 @@ function ValidateCKEditField(sFieldId, sPattern, bMandatory, sFormId, nullValue,
 		} else {
 			bValid = true;
 		}
-		ReportFieldValidationStatus(sFieldId, sFormId, bValid, sExplain);
-	});
-	}
-	ReportFieldValidationStatus(sFieldId, sFormId, bValid, sExplain);
-
-	CombodoCKEditorHandler.GetInstance('#'+sFieldId).then(function (oCKEditor) {
-		oCKEditor.model.document.once('change:data', () => {
+		
+		// Put and event to check the field when the content changes, remove the event right after as we'll call this same function again, and we don't want to call the event more than once (especially not ^2 times on each call)
+		oCKEditor.model.document.on('change:data', (event) => {
+			oCKEditor.model.document.off('change:data');
 			ValidateCKEditField(sFieldId, sPattern, bMandatory, sFormId, nullValue, originalValue);
 		});
-	});
+	}
+	
+	ReportFieldValidationStatus(sFieldId, sFormId, bValid, sExplain);
+	return bValid;
 }
 
 function ResetPwd(id)
