@@ -43,7 +43,7 @@ const CombodoCKEditorFeeds = {
 	 */
 	customItemRenderer: function( id ) {
 		return function(item){
-			return CombodoGlobalToolbox.RenderTemplate(id + '_items_template', item, 'my_class')[0];
+			return CombodoGlobalToolbox.RenderTemplate(id + '_items_template', item, 'ibo-mention-item')[0];
 		};
 	}
 

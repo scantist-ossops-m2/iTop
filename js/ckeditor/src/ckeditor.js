@@ -29,6 +29,10 @@ import PasteFromOffice from '@ckeditor/ckeditor5-paste-from-office/src/pastefrom
 import Table from '@ckeditor/ckeditor5-table/src/table.js';
 import TableToolbar from '@ckeditor/ckeditor5-table/src/tabletoolbar.js';
 import TextTransformation from '@ckeditor/ckeditor5-typing/src/texttransformation.js';
+import FullScreen from '@pikulinpw/ckeditor5-fullscreen';
+
+// change scss variables
+import './console.css';
 
 class Editor extends ClassicEditor {}
 

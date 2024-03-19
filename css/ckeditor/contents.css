@@ -6,3 +6,14 @@
 .ck-content{
 	min-height: 300px;
 }
+
+.ibo-mention-item{
+	line-height: 1.6rem;
+}
+
+[data-role="object-mention"]{
+	color: #0782C1;
+}
+[data-role="object-mention"]:hover{
+	color: #0782C1;
+}
