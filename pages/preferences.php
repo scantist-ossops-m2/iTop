@@ -629,7 +629,7 @@ function GetTabsNavigationFieldBlock(): iUIBlock
  */
 function GetRichTextToolbarExpandedFieldBlock(): iUIBlock
 {
-	$bCurrentValue = isset(CKEditorHelper::GetCkeditorPref()['toolbarStartupExpanded']) ? (bool)utils::GetCkeditorPref()['toolbarStartupExpanded'] : false;
+	$bCurrentValue = isset(CKEditorHelper::GetCkeditorPref()['toolbarStartupExpanded']) ? (bool)CKEditorHelper::GetCkeditorPref()['toolbarStartupExpanded'] : false;
 	$sCurrentValueAsString = $bCurrentValue ? 'true' : 'false';
 
 	$aOptionsValues = [
