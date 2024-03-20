@@ -77,7 +77,7 @@ class CKEditorHelper
 
 		// links
 		$aDefaultConf['link'] = [
-		defaultProtocol => 'http://'
+			'defaultProtocol' => 'http://'
 		];
 
 		// rich text config
