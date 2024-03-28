@@ -114,7 +114,7 @@ class CellStatus_Issue extends CellStatus_Modify
 		{
 			return Dict::Format('UI:CSVReport-Value-SetIssue');
 		}
-		return Dict::Format('UI:CSVReport-Value-ChangeIssue', \utils::EscapeHtml($this->m_proposedValue));
+		return Dict::Format('UI:CSVReport-Value-ChangeIssue',$this->m_proposedValue);
 	}
 
 	public function GetDescription()
@@ -446,7 +446,7 @@ class BulkChange
 				$value = $oForeignAtt->MakeValueFromString($aRowData[$iCol], $this->m_bLocalizedValues);
 			}
 			$oReconFilter->AddCondition($sReconKeyAttCode, $value, '=');
-			$aResults[$iCol] = new CellStatus_Void(utils::HtmlEntities($aRowData[$iCol]));
+			$aResults[$iCol] = new CellStatus_Void($aRowData[$iCol]);// cas couvert par tests
 		}
 
 		$oExtObjects = new CMDBObjectSet($oReconFilter);
@@ -501,17 +501,17 @@ class BulkChange
 				{
 					// Default reporting
 					// $aRowData[$iCol] is always null
-					$aResults[$iCol] = new CellStatus_Void($aRowData[$iCol]);
+					$aResults[$iCol] = new CellStatus_Void($aRowData[$iCol]);//couvert
 				}
 				if ($oExtKey->IsNullAllowed())
 				{
 					$oTargetObj->Set($sAttCode, $oExtKey->GetNullValue());
-					$aResults[$sAttCode]= new CellStatus_Void($oExtKey->GetNullValue());
+					$aResults[$sAttCode]= new CellStatus_Void($oExtKey->GetNullValue()); // non necessaire
 				}
 				else
 				{
 					$aErrors[$sAttCode] = Dict::S('UI:CSVReport-Value-Issue-Null');
-					$aResults[$sAttCode]= new CellStatus_Issue(null, $oTargetObj->Get($sAttCode), Dict::S('UI:CSVReport-Value-Issue-Null'));
+					$aResults[$sAttCode]= new CellStatus_Issue(null, $oTargetObj->Get($sAttCode), Dict::S('UI:CSVReport-Value-Issue-Null')); // couvert
 				}
 			}
 			else
@@ -533,7 +533,7 @@ class BulkChange
 					}
 					$aCacheKeys[] = $value;
 					$oReconFilter->AddCondition($sReconKeyAttCode, $value, '=');
-					$aResults[$iCol] = new CellStatus_Void(utils::HtmlEntities($aRowData[$iCol]));
+					$aResults[$iCol] = new CellStatus_Void(utils::HtmlEntities($aRowData[$iCol])); // cas couvert par tests
 				}
 				$sCacheKey = implode('_|_', $aCacheKeys); // Unique key for this query...
 				$iForeignKey = null;
@@ -582,7 +582,7 @@ class BulkChange
 
 					default:
 						$aErrors[$sAttCode] = Dict::Format('UI:CSVReport-Value-Issue-FoundMany', $iObjectFoundCount);
-						$aResults[$sAttCode]= new CellStatus_Ambiguous($oTargetObj->Get($sAttCode), $iObjectFoundCount, $oReconFilter->serialize());
+						$aResults[$sAttCode]= new CellStatus_Ambiguous($oTargetObj->Get($sAttCode), $iObjectFoundCount, $oReconFilter->serialize()); //NON  couvert
 				}
 			}
 
@@ -594,21 +594,21 @@ class BulkChange
 				{
 					if ($oTargetObj->IsNew())
 					{
-						$aResults[$sAttCode]= new CellStatus_Void($iForeignObj);
+						$aResults[$sAttCode]= new CellStatus_Void($iForeignObj);// NON necessaire
 					}
 					else
 					{
-						$aResults[$sAttCode]= new CellStatus_Modify($iForeignObj, $oTargetObj->GetOriginal($sAttCode));
+						$aResults[$sAttCode]= new CellStatus_Modify($iForeignObj, $oTargetObj->GetOriginal($sAttCode));// cas couvert
 						foreach ($aReconKeys as $sReconKeyAttCode => $iCol)
 						{
 							// Report the change on reconciliation values as well
-							$aResults[$iCol] = new CellStatus_Modify(utils::HtmlEntities($aRowData[$iCol]));
+							$aResults[$iCol] = new CellStatus_Modify($aRowData[$iCol]);//cas couvert
 						}
 					}
 				}
 				else
 				{
-					$aResults[$sAttCode]= new CellStatus_Void($iForeignObj);
+					$aResults[$sAttCode]= new CellStatus_Void($iForeignObj);// non necessaire
 				}
 			}
 		}
@@ -684,7 +684,7 @@ class BulkChange
 		{
 			if ($sAttCode == 'id')
 			{
-				$aResults[$iCol]= new CellStatus_Void(utils::HtmlEntities($aRowData[$iCol]));
+				$aResults[$iCol]= new CellStatus_Void(utils::HtmlEntities($aRowData[$iCol]));// cas couvert par tests
 			}
 			else
 			{
@@ -700,13 +700,13 @@ class BulkChange
 				}
 				if (isset($aErrors[$sAttCode]))
 				{
-					$aResults[$iCol]= new CellStatus_Issue(utils::HtmlEntities($aRowData[$iCol]), $sOrigValue, $aErrors[$sAttCode]);
+					$aResults[$iCol]= new CellStatus_Issue(utils::HtmlEntities($aRowData[$iCol]), $sOrigValue, $aErrors[$sAttCode]);// cas couvert par tests
 				}
 				elseif (array_key_exists($sAttCode, $aChangedFields))
 				{
 					if ($oTargetObj->IsNew())
 					{
-						$aResults[$iCol]= new CellStatus_Void($sCurValue);
+						$aResults[$iCol]= new CellStatus_Void($sCurValue);// cas couvert par tests
 					}
 					else
 					{
@@ -719,11 +719,11 @@ class BulkChange
 					$oAttDef = MetaModel::GetAttributeDef($this->m_sClass, $sAttCode);
 					if ($oAttDef instanceof AttributeDateTime)
 					{
-						$aResults[$iCol]= new CellStatus_Void($oAttDef->GetFormat()->Format($aRowData[$iCol]));
+						$aResults[$iCol]= new CellStatus_Void($oAttDef->GetFormat()->Format($aRowData[$iCol]));//cas couvert
 					}
 					else
 					{
-						$aResults[$iCol]= new CellStatus_Void(utils::HtmlEntities($aRowData[$iCol]));
+						$aResults[$iCol]= new CellStatus_Void(utils::HtmlEntities($aRowData[$iCol]));// cas couvert par tests
 					}
 				}
 			}
@@ -768,7 +768,7 @@ class BulkChange
 
 		if ($iAllowAllDataObjectCount === 0) {
 			$sReason = Dict::Format('UI:CSVReport-Value-NoMatch-NoObject', $oDbSearchWithConditions->GetClass());
-			return new CellStatus_SearchIssue($sSerializedSearch, $sReason);
+			return new CellStatus_SearchIssue($sSerializedSearch, $sReason); // cas NON couvert par tests
 		}
 
 		// Count all objects with current user permissions
@@ -780,7 +780,7 @@ class BulkChange
 		if ($iCurrentUserRightsObjectCount === 0){
 			// No objects visible by current user
 			$sReason = Dict::Format('UI:CSVReport-Value-NoMatch-NoObject-ForCurrentUser', $oDbSearchWithConditions->GetClass());
-			return new CellStatus_SearchIssue($sSerializedSearch, $sReason);
+			return new CellStatus_SearchIssue($sSerializedSearch, $sReason);// cas NON couvert par tests
 		}
 
 		try{
@@ -810,13 +810,13 @@ class BulkChange
 				[ 'target_class' => $oDbSearchWithConditions->GetClass(), 'criteria' => $oDbSearchWithConditions->GetCriteria(), 'message' => $e->getMessage()]
 			);
 			$sReason = Dict::Format('UI:CSVReport-Value-NoMatch-NoObject-ForCurrentUser', $oDbSearchWithConditions->GetClass());
-			return new CellStatus_SearchIssue($sSerializedSearch, $sReason);
+			return new CellStatus_SearchIssue($sSerializedSearch, $sReason);// cas NON couvert par tests
 		}
 
 		if ($iAllowAllDataObjectCount != $iCurrentUserRightsObjectCount) {
 			// No match and some objects NOT visible by current user. including current search maybe...
 			$sReason = Dict::Format('UI:CSVReport-Value-NoMatch-SomeObjectNotVisibleForCurrentUser', $oDbSearchWithConditions->GetClass());
-			return new CellStatus_SearchIssue($sSerializedSearch, $sReason, $oDbSearchWithConditions->GetClass(), $allowedValues, $sAllowedValuesOql);
+			return new CellStatus_SearchIssue($sSerializedSearch, $sReason, $oDbSearchWithConditions->GetClass(), $allowedValues, $sAllowedValuesOql);// cas NON couvert par tests
 		}
 
 		// No match. This is not linked to any right issue
@@ -827,7 +827,7 @@ class BulkChange
 		}
 		$value =implode(" ", $aCurrentValueFields);
 		$sReason = Dict::Format('UI:CSVReport-Value-NoMatch', $value);
-		return new CellStatus_SearchIssue($sSerializedSearch, $sReason, $oDbSearchWithConditions->GetClass(), $allowedValues, $sAllowedValuesOql);
+		return new CellStatus_SearchIssue($sSerializedSearch, $sReason, $oDbSearchWithConditions->GetClass(), $allowedValues, $sAllowedValuesOql);// cas NON couvert par tests
 	}
 
 	protected function PrepareMissingObject(&$oTargetObj, &$aErrors)
@@ -840,11 +840,11 @@ class BulkChange
 		foreach($this->m_aExtKeys as $sAttCode => $aKeyConfig)
 		{
 			//$oExtKey = MetaModel::GetAttributeDef(get_class($oTargetObj), $sAttCode);
-			$aResults[$sAttCode]= new CellStatus_Void($oTargetObj->Get($sAttCode));
+			$aResults[$sAttCode]= new CellStatus_Void($oTargetObj->Get($sAttCode)); // non necessaire
 
 			foreach ($aKeyConfig as $sForeignAttCode => $iCol)
 			{
-				$aResults[$iCol] = new CellStatus_Void('?');
+				$aResults[$iCol] = new CellStatus_Void('?'); // non necessaire
 			}
 		}
 
@@ -866,16 +866,16 @@ class BulkChange
 		{
 			if ($sAttCode == 'id')
 			{
-				$aResults[$iCol]= new CellStatus_Void($oTargetObj->GetKey());
+				$aResults[$iCol]= new CellStatus_Void($oTargetObj->GetKey()); // non necessaire
 			}
 			if (array_key_exists($sAttCode, $aChangedFields))
 			{
-				$aResults[$iCol]= new CellStatus_Modify($oTargetObj->Get($sAttCode), $oTargetObj->GetOriginal($sAttCode));
+				$aResults[$iCol]= new CellStatus_Modify($oTargetObj->Get($sAttCode), $oTargetObj->GetOriginal($sAttCode));// cas NON couvert
 			}
 			else
 			{
 				// By default... nothing happens
-				$aResults[$iCol]= new CellStatus_Void($oTargetObj->Get($sAttCode));
+				$aResults[$iCol]= new CellStatus_Void($oTargetObj->Get($sAttCode));//cas NON couvert
 			}
 		}
 
@@ -978,7 +978,7 @@ class BulkChange
 
 		$aResult[$iRow]["__STATUS__"] = new RowStatus_NewObj();
 		$aResult[$iRow]["finalclass"] = get_class($oTargetObj);
-		$aResult[$iRow]["id"] = new CellStatus_Void($newID);
+		$aResult[$iRow]["id"] = new CellStatus_Void($newID); // NON necessaire
 
 		return $oTargetObj;
 	}
@@ -1003,7 +1003,7 @@ class BulkChange
 		// Reporting
 		//
 		$aResult[$iRow]["finalclass"] = get_class($oTargetObj);
-		$aResult[$iRow]["id"] = new CellStatus_Void($oTargetObj->GetKey());
+		$aResult[$iRow]["id"] = new CellStatus_Void($oTargetObj->GetKey()); // NON necessaire
 
 		if (count($aErrors) > 0)
 		{
@@ -1054,7 +1054,7 @@ class BulkChange
 		// Reporting
 		//
 		$aResult[$iRow]["finalclass"] = get_class($oTargetObj);
-		$aResult[$iRow]["id"] = new CellStatus_Void($oTargetObj->GetKey());
+		$aResult[$iRow]["id"] = new CellStatus_Void($oTargetObj->GetKey()); // NON necessaire
 
 		if (count($aErrors) > 0)
 		{
@@ -1155,7 +1155,7 @@ class BulkChange
 							if (!preg_match($sRegExp, $sValue))
 							{
 								$aResult[$iRow]["__STATUS__"]= new RowStatus_Issue(Dict::S('UI:CSVReport-Row-Issue-DateFormat'));
-								$aResult[$iRow][$iCol] = new CellStatus_Issue(utils::HtmlEntities($sValue), null, $sErrorMsg);
+								$aResult[$iRow][$iCol] = new CellStatus_Issue(utils::HtmlEntities($sValue), null, $sErrorMsg);// cas couvert par tests
 
 							}
 							else
@@ -1170,7 +1170,7 @@ class BulkChange
 								{
 									// Leave the cell unchanged
 									$aResult[$iRow]["__STATUS__"]= new RowStatus_Issue(Dict::S('UI:CSVReport-Row-Issue-DateFormat'));
-									$aResult[$iRow][$iCol] = new CellStatus_Issue($sValue, null, $sErrorMsg);
+									$aResult[$iRow][$iCol] = new CellStatus_Issue($sValue, null, $sErrorMsg);// cas NON couvert par tests
 								}
 							}
 						}
@@ -1211,9 +1211,9 @@ class BulkChange
 								$oExtKey = MetaModel::GetAttributeDef($this->m_sClass, $sAttCode);
 								if ($oExtKey->IsNullAllowed()) {
 									$valuecondition = $oExtKey->GetNullValue();
-									$aResult[$iRow][$sAttCode] = new CellStatus_Void($oExtKey->GetNullValue());
+									$aResult[$iRow][$sAttCode] = new CellStatus_Void($oExtKey->GetNullValue()); // NON necessaire
 								} else {
-									$aResult[$iRow][$sAttCode] = new CellStatus_NullIssue();
+									$aResult[$iRow][$sAttCode] = new CellStatus_NullIssue(); // NON necessaire
 								}
 							} else {
 								// The value has to be found or verified
@@ -1224,12 +1224,12 @@ class BulkChange
 								if (count($aMatches) == 1) {
 									$oRemoteObj = reset($aMatches); // first item
 									$valuecondition = $oRemoteObj->GetKey();
-									$aResult[$iRow][$sAttCode] = new CellStatus_Void($oRemoteObj->GetKey());
+									$aResult[$iRow][$sAttCode] = new CellStatus_Void($oRemoteObj->GetKey()); // non necessaire
 								} elseif (count($aMatches) == 0) {
 									$oCellStatus_SearchIssue = $this->GetCellSearchIssue($oReconFilter);
 									$aResult[$iRow][$sAttCode] = $oCellStatus_SearchIssue;
 								} else {
-									$aResult[$iRow][$sAttCode] = new CellStatus_Ambiguous(null, count($aMatches), $oReconFilter->serialize());
+									$aResult[$iRow][$sAttCode] = new CellStatus_Ambiguous(null, count($aMatches), $oReconFilter->serialize());// cas NON couvert par tests
 								}
 							}
 						} else {
@@ -1269,7 +1269,7 @@ class BulkChange
 							default:
 								// Found several matches, ambiguous
 								$aResult[$iRow]["__STATUS__"] = new RowStatus_Issue(Dict::S('UI:CSVReport-Row-Issue-Ambiguous'));
-								$aResult[$iRow]["id"] = new CellStatus_Ambiguous(0, $oReconciliationSet->Count(), $oReconciliationFilter->serialize());
+								$aResult[$iRow]["id"] = new CellStatus_Ambiguous(0, $oReconciliationSet->Count(), $oReconciliationFilter->serialize());// cas couvert par tests
 								$aResult[$iRow]["finalclass"] = 'n/a';
 						}
 					}
@@ -1307,21 +1307,21 @@ class BulkChange
 			{
 				if (!array_key_exists($iCol, $aResult[$iRow]))
 				{
-					$aResult[$iRow][$iCol] = new CellStatus_Void(utils::HtmlEntities($aRowData[$iCol]));
+					$aResult[$iRow][$iCol] = new CellStatus_Void(utils::HtmlEntities($aRowData[$iCol]));// cas couvert par tests
 				}
 			}
 			foreach($this->m_aExtKeys as $sAttCode => $aForeignAtts)
 			{
 				if (!array_key_exists($sAttCode, $aResult[$iRow]))
 				{
-					$aResult[$iRow][$sAttCode] = new CellStatus_Void('n/a');
+					$aResult[$iRow][$sAttCode] = new CellStatus_Void('n/a');// non necessaire
 				}
 				foreach ($aForeignAtts as $sForeignAttCode => $iCol)
 				{
 					if (!array_key_exists($iCol, $aResult[$iRow]))
 					{
 						// The foreign attribute is one of our reconciliation key
-						$aResult[$iRow][$iCol] = new CellStatus_Void(utils::HtmlEntities($aRowData[$iCol]));
+						$aResult[$iRow][$iCol] = new CellStatus_Void(utils::HtmlEntities($aRowData[$iCol]));// cas couvert par tests
 					}
 				}
 			}

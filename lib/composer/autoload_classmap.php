@@ -393,6 +393,7 @@ return array(
     'Combodo\\iTop\\Controller\\AjaxRenderController' => $baseDir . '/sources/Controller/AjaxRenderController.php',
     'Combodo\\iTop\\Controller\\Base\\Layout\\ActivityPanelController' => $baseDir . '/sources/Controller/Base/Layout/ActivityPanelController.php',
     'Combodo\\iTop\\Controller\\Base\\Layout\\ObjectController' => $baseDir . '/sources/Controller/Base/Layout/ObjectController.php',
+    'Combodo\\iTop\\Controller\\CSVImport' => $baseDir . '/sources/Controller/CSVImport.php',
     'Combodo\\iTop\\Controller\\Links\\LinkSetController' => $baseDir . '/sources/Controller/Links/LinkSetController.php',
     'Combodo\\iTop\\Controller\\Newsroom\\iTopNewsroomController' => $baseDir . '/sources/Controller/Newsroom/iTopNewsroomController.php',
     'Combodo\\iTop\\Controller\\Notifications\\ActionController' => $baseDir . '/sources/Controller/Notifications/ActionController.php',
@@ -3169,5 +3170,5 @@ return array(
     'privUITransactionFile' => $baseDir . '/application/transaction.class.inc.php',
     'privUITransactionSession' => $baseDir . '/application/transaction.class.inc.php',
     'utils' => $baseDir . '/application/utils.inc.php',
-    '©' => $vendorDir . '/symfony/cache/Traits/ValueWrapper.php',
+    'ï¿½' => $vendorDir . '/symfony/cache/Traits/ValueWrapper.php',
 );
