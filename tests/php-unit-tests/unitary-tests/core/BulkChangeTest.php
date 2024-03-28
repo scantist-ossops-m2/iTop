@@ -252,7 +252,7 @@ class BulkChangeTest extends ItopDataTestCase
 
 	public function bulkChangeWithExistingDataProvider() {
 		return [
-			"Ambigous case" => [
+			"Ambigous case on reconciliation" => [
 					"initData"=>
 						["1", "Server1", "production", ""],
 					"csvData" =>
@@ -497,7 +497,8 @@ class BulkChangeTest extends ItopDataTestCase
 			$oOrganisation = $this->createObject('Organization', array(
 				'name' => $aInitData["orgName"]
 			));
-			$aResult["org_id"] = $oOrganisation->GetKey();
+			if ($aResult["org_id"]==="{org id of the server created by the test}") $aResult["org_id"] = $oOrganisation->GetKey();
+
 			$oServer = $this->createObject('Server', array(
 				'name' => $aInitData["serverName"],
 				'status' => $aInitData["serverStatus"],
@@ -506,7 +507,7 @@ class BulkChangeTest extends ItopDataTestCase
 			));
 			$aCsvData[0][2]=$oServer->GetKey();
 			$aResult[2]=$oServer->GetKey();
-			$aResult["id"]=$oServer->GetKey();
+			if ($aResult["id"]==="{Id of the server created by the test}") $aResult["id"]=$oServer->GetKey();
 		}
 		$oBulk = new \BulkChange(
 			"Server",
@@ -527,7 +528,7 @@ class BulkChangeTest extends ItopDataTestCase
 					$this->debug("i:".$i);
 					$this->debug('GetDisplayableValue:'.$oCell->GetDisplayableValue());
 					$this->debug("aResult:".$aResult[$i]);
-					$this->assertEquals($aResult[$i], $oCell->GetDisplayableValue());
+					$this->assertEquals($aResult[$i], $oCell->GetDisplayableValue(), "$i cell is incorrect");
 				} elseif ($i === "__STATUS__") {
 					$sStatus = $aRow['__STATUS__'];
 					$this->assertEquals($aResult["__STATUS__"], $sStatus->GetDescription());
@@ -543,6 +544,27 @@ class BulkChangeTest extends ItopDataTestCase
 
 	public function bulkChangeWithExistingDataAndSpecificOrgProvider() {
 		return [
+			"Ambigous case " => [
+				"initData"=>
+					["orgName" => "Demo", "serverName" => "ServerYO", "serverStatus" => "production", "serverPurchaseDate" =>""],
+				"csvData" =>
+					[["Demo", "Server1"]],
+				"attributes"=>
+					["name" => 1],
+				"extKeys"=>
+					["org_id" => ["name" => 0]],
+				"reconcilKeys"=>
+					["org_id"],
+				"expectedResult"=>
+					[
+						0 => "Demo",
+						"org_id" => "Invalid value for attribute",
+						1 => "Server1",
+						"id" => "Invalid value for attribute",
+						"__STATUS__" => "Issue: failed to reconcile",
+						"__ERRORS__" => "Allowed 'status' value(s): stock,implemfentation,production,obsolete",
+					],
+			],
 			"Case 3 : unchanged name" => [
 				"initData"=>
 					["orgName" => "dodo", "serverName" => "ServerYO", "serverStatus" => "production", "serverPurchaseDate" =>""],
@@ -555,7 +577,7 @@ class BulkChangeTest extends ItopDataTestCase
 				"reconcilKeys"=>
 					["id"],
 				"expectedResult"=>
-					[0 => "dodo", "org_id" => "3", 1 => "ServerYO", 2 => "1", 3 => "production", 4 => "", "id" => 1, "__STATUS__" => "unchanged"],
+					[0 => "dodo", "org_id" => "{org id of the server created by the test}", 1 => "ServerYO", 2 => "1", 3 => "production", 4 => "", "id" => "{Id of the server created by the test}", "__STATUS__" => "unchanged"],
 			],
 			"Case 3 bis : unchanged name" => [
 				"initData"=>
@@ -569,7 +591,7 @@ class BulkChangeTest extends ItopDataTestCase
 				"reconcilKeys"=>
 					["id"],
 				"expectedResult"=>
-					[0 => "&lt;svg &gt;", "org_id" => "3", 1 => "ServerYO", 2 => "1", 3 => "production", 4 => "", "id" => 1, "__STATUS__" => "unchanged"],
+					[0 => "&lt;svg &gt;", "org_id" => "{org id of the server created by the test}", 1 => "ServerYO", 2 => "1", 3 => "production", 4 => "", "id" => "{Id of the server created by the test}", "__STATUS__" => "unchanged"],
 			],
 			"Case 3 ter : unchanged name" => [
 				"initData"=>
@@ -583,7 +605,7 @@ class BulkChangeTest extends ItopDataTestCase
 				"reconcilKeys"=>
 					["id"],
 				"expectedResult"=>
-					[0 => "&lt;svg onclick&quot;alert(1)&quot; &gt;", "org_id" => "3", 1 => "ServerYO", 2 => "1", 3 => "production", 4 => "", "id" => 1, "__STATUS__" => "unchanged"],
+					[0 => "&lt;svg onclick&quot;alert(1)&quot; &gt;", "org_id" => "{org id of the server created by the test}", 1 => "ServerYO", 2 => "1", 3 => "production", 4 => "", "id" => "{Id of the server created by the test}", "__STATUS__" => "unchanged"],
 			],
 			"Case reconciliation on external key" => [
 				"initData"=>
@@ -597,7 +619,7 @@ class BulkChangeTest extends ItopDataTestCase
 				"reconcilKeys"=>
 					["org_id", "name"],
 				"expectedResult"=>
-					[0 => "&lt;svg onclick&quot;alert(1)&quot; &gt;", "org_id" => "3", 1 => "ServerYO", 2 => "1", 3 => "production", 4 => "", "id" => 1, "__STATUS__" => "unchanged"],
+					[0 => "&lt;svg onclick&quot;alert(1)&quot; &gt;", "org_id" => "{org id of the server created by the test}", 1 => "ServerYO", 2 => "1", 3 => "production", 4 => "", "id" => "{Id of the server created by the test}", "__STATUS__" => "unchanged"],
 			],
 		];
 	}

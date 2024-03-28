@@ -768,7 +768,7 @@ class BulkChange
 
 		if ($iAllowAllDataObjectCount === 0) {
 			$sReason = Dict::Format('UI:CSVReport-Value-NoMatch-NoObject', $oDbSearchWithConditions->GetClass());
-			return new CellStatus_SearchIssue($sSerializedSearch, $sReason); // cas NON couvert par tests
+			return new CellStatus_SearchIssue($sSerializedSearch, $sReason);// non necessaire mais peut etre que ...
 		}
 
 		// Count all objects with current user permissions
@@ -780,7 +780,7 @@ class BulkChange
 		if ($iCurrentUserRightsObjectCount === 0){
 			// No objects visible by current user
 			$sReason = Dict::Format('UI:CSVReport-Value-NoMatch-NoObject-ForCurrentUser', $oDbSearchWithConditions->GetClass());
-			return new CellStatus_SearchIssue($sSerializedSearch, $sReason);// cas NON couvert par tests
+			return new CellStatus_SearchIssue($sSerializedSearch, $sReason);// non necessaire mais peut etre que ...
 		}
 
 		try{
@@ -810,13 +810,13 @@ class BulkChange
 				[ 'target_class' => $oDbSearchWithConditions->GetClass(), 'criteria' => $oDbSearchWithConditions->GetCriteria(), 'message' => $e->getMessage()]
 			);
 			$sReason = Dict::Format('UI:CSVReport-Value-NoMatch-NoObject-ForCurrentUser', $oDbSearchWithConditions->GetClass());
-			return new CellStatus_SearchIssue($sSerializedSearch, $sReason);// cas NON couvert par tests
+			return new CellStatus_SearchIssue($sSerializedSearch, $sReason);// non necessaire mais peut etre que ...
 		}
 
 		if ($iAllowAllDataObjectCount != $iCurrentUserRightsObjectCount) {
 			// No match and some objects NOT visible by current user. including current search maybe...
 			$sReason = Dict::Format('UI:CSVReport-Value-NoMatch-SomeObjectNotVisibleForCurrentUser', $oDbSearchWithConditions->GetClass());
-			return new CellStatus_SearchIssue($sSerializedSearch, $sReason, $oDbSearchWithConditions->GetClass(), $allowedValues, $sAllowedValuesOql);// cas NON couvert par tests
+			return new CellStatus_SearchIssue($sSerializedSearch, $sReason, $oDbSearchWithConditions->GetClass(), $allowedValues, $sAllowedValuesOql);// non necessaire mais peut etre que ...
 		}
 
 		// No match. This is not linked to any right issue
@@ -827,7 +827,7 @@ class BulkChange
 		}
 		$value =implode(" ", $aCurrentValueFields);
 		$sReason = Dict::Format('UI:CSVReport-Value-NoMatch', $value);
-		return new CellStatus_SearchIssue($sSerializedSearch, $sReason, $oDbSearchWithConditions->GetClass(), $allowedValues, $sAllowedValuesOql);// cas NON couvert par tests
+		return new CellStatus_SearchIssue($sSerializedSearch, $sReason, $oDbSearchWithConditions->GetClass(), $allowedValues, $sAllowedValuesOql);// non necessaire mais peut etre que ...
 	}
 
 	protected function PrepareMissingObject(&$oTargetObj, &$aErrors)
@@ -870,12 +870,12 @@ class BulkChange
 			}
 			if (array_key_exists($sAttCode, $aChangedFields))
 			{
-				$aResults[$iCol]= new CellStatus_Modify($oTargetObj->Get($sAttCode), $oTargetObj->GetOriginal($sAttCode));// cas NON couvert
+				$aResults[$iCol]= new CellStatus_Modify($oTargetObj->Get($sAttCode), $oTargetObj->GetOriginal($sAttCode));// cas NON couvert -- cf syncroscope
 			}
 			else
 			{
 				// By default... nothing happens
-				$aResults[$iCol]= new CellStatus_Void($oTargetObj->Get($sAttCode));//cas NON couvert
+				$aResults[$iCol]= new CellStatus_Void($oTargetObj->Get($sAttCode));//cas NON couvert -- cf syncroscope
 			}
 		}
 
@@ -1168,9 +1168,10 @@ class BulkChange
 								}
 								else
 								{
+									// almost impossible ti reproduce since even incorrect dates with correct formats are formated and $oDate will not be false
 									// Leave the cell unchanged
 									$aResult[$iRow]["__STATUS__"]= new RowStatus_Issue(Dict::S('UI:CSVReport-Row-Issue-DateFormat'));
-									$aResult[$iRow][$iCol] = new CellStatus_Issue($sValue, null, $sErrorMsg);// cas NON couvert par tests
+									$aResult[$iRow][$iCol] = new CellStatus_Issue($sValue, null, $sErrorMsg);;// non necessaire
 								}
 							}
 						}
@@ -1229,7 +1230,7 @@ class BulkChange
 									$oCellStatus_SearchIssue = $this->GetCellSearchIssue($oReconFilter);
 									$aResult[$iRow][$sAttCode] = $oCellStatus_SearchIssue;
 								} else {
-									$aResult[$iRow][$sAttCode] = new CellStatus_Ambiguous(null, count($aMatches), $oReconFilter->serialize());// cas NON couvert par tests
+									$aResult[$iRow][$sAttCode] = new CellStatus_Ambiguous(null, count($aMatches), $oReconFilter->serialize());// cas couvert par tests
 								}
 							}
 						} else {
