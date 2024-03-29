@@ -3,10 +3,6 @@
  * @license     http://opensource.org/licenses/AGPL-3.0
  */
 
-.ck-content{
-	min-height: 300px;
-}
-
 .ibo-mention-item{
 	line-height: 1.6rem;
 }
@@ -15,5 +11,14 @@
 	color: #0782C1;
 }
 [data-role="object-mention"]:hover{
-	color: #0782C1;
+	color: #2b6bb0;
+}
+
+.ck.ck-editor.cke-maximized{
+	position: fixed;
+	left: 0px;
+	top:0px;
+	right: 0px;
+	bottom: 0px;
+	z-index: 999;
 }

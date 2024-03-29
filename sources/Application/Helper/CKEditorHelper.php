@@ -67,18 +67,10 @@ class CKEditorHelper
 
 		$aDefaultConf = array(
 			'language'=> $sLanguage,
-			'toolbar' => [
-				'shouldNotGroupWhenFull' => true,
-			]
 		);
 
 		// mentions
 		$aDefaultConf['mention'] = self::GetMentionConfiguration();
-
-		// links
-		$aDefaultConf['link'] = [
-			'defaultProtocol' => 'http://'
-		];
 
 		// rich text config
 		$aRichTextConfig = 	json_decode(appUserPreferences::GetPref('richtext_config', '{}'), true);

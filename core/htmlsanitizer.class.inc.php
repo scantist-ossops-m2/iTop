@@ -322,6 +322,7 @@ class HTMLDOMSanitizer extends DOMSanitizer
 		'pre' => array(),
 		'center' => array(),
 		'figure' => array('class'), // Ckeditor 5 puts images in figures
+		'mark' => array('class')
 	);
 
 	protected static $aAttrsWhiteList = array(

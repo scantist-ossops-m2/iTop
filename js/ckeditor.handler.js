@@ -32,9 +32,6 @@ const CombodoCKEditorHandler = {
 				}
 			})
 		}
-
-		// extra plugins
-		aConfiguration['extraPlugins'] = [MentionCustomization, EditorUICustomization];
 	},
 
 	/**
@@ -129,26 +126,4 @@ const CombodoCKEditorHandler = {
 					return new SimpleUploadAdapter(loader);
 				};
 	}
-}
-
-/**
- * EditorUICustomization.
- *
- * @param editor
- * @constructor
- */
-function EditorUICustomization( editor ) {
-
-	// exclude ck-reset_all for mention dropdown
-	editor.ui.on( 'ready', () => {
-		for (const element of document.getElementsByClassName('ck-body-wrapper')) {
-			element.classList.add('ck-reset_all-excluded');
-		}
-	} );
-
-	// appends ibo-is-html-content class
-	editor.editing.view.change( writer => {
-		writer.addClass( 'ibo-is-html-content', editor.editing.view.document.getRoot() );
-	});
-
 }
