@@ -204,7 +204,6 @@ private function GetFunctionParametersAndValues($functionName, $args): array
             $sChosenDateFormat, // date format
             true // localize
         );
-        $oBulk->SetReportHtml();
 
         $oPage->AddSubBlock(InputUIBlockFactory::MakeForHidden("csvdata_truncated", $sCSVDataTruncated, "csvdata_truncated"));
         $aRes = $oBulk->Process($oMyChange);
@@ -304,10 +303,10 @@ private function GetFunctionParametersAndValues($functionName, $args): array
                     if (isset($aExternalKeysByColumn[$iNumber - 1])) {
                         $sExtKeyName = $aExternalKeysByColumn[$iNumber - 1];
                         $oExtKeyCellStatus = $aResRow[$sExtKeyName];
-                        $oExtKeyCellStatus->SetDisplayableValue($oCellStatus->GetDisplayableValue());
+                        $oExtKeyCellStatus->SetDisplayableValue($oCellStatus->GetHTMLValue());
                         $oCellStatus = $oExtKeyCellStatus;
                     }
-                    $sHtmlValue = utils::EscapeHtml( $oCellStatus->GetDisplayableValue());
+                    $sHtmlValue = $oCellStatus->GetHTMLValue();
                     switch (get_class($oCellStatus)) {
                         case 'CellStatus_Issue':
                         case 'CellStatus_NullIssue':
